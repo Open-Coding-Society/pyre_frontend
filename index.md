@@ -5,743 +5,317 @@ hide: true
 show_reading_time: false 
 ---
 
-<script type="module">
-    import { pythonURI, fetchOptions } from "{{site.baseurl}}/assets/js/api/config.js";
+<header class="hero">
+  <div class="hero-content">
+    <h1>NaviQ: Smart Streets</h1>
+    <p>Enhancing autonomous vehicle navigation using Poway's transport data</p>
+    <button class="cta-button" onclick="scrollToExplore()">Explore Our Solution</button>
+  </div>
+</header>
 
-    async function checkAuthorization() {
-        try {
-            const response = await fetch(`${pythonURI}/api/id`, fetchOptions);
+<section id="about" class="section">
+  <div class="container">
+    <h2>Smarter Navigation for a Faster Future</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">🚗</div>
+        <h3>Predictive Traffic Flow</h3>
+        <p>Machine learning models that anticipate congestion before it happens</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⏱️</div>
+        <h3>20% Reduced Travel Time</h3>
+        <p>Our algorithms optimize routes for Poway commuters in real-time</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h3>Data-Driven Decisions</h3>
+        <p>Leveraging Poway's Open Data Portal for smarter transportation</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-            if (response.status === 401) {
-                // Redirect immediately to login if unauthorized
-                window.location.href = "{{site.baseurl}}/login";
-            } else if (response.ok) {
-                // If authorized, allow body to render
-                const contentElements = document.querySelectorAll('.content');
-                contentElements.forEach(element => {
-                    element.style.display = "block";
-                });;
-            }
-        } catch (error) {
-            console.error("Authorization check failed:", error);
-            // Redirect to login as a fallback
-            window.location.href = "{{site.baseurl}}/login";
-        }
-    }
+<section id="map" class="section map-section">
+  <div class="container">
+    <h2>Poway Smart Navigation Map</h2>
+    <div class="map-placeholder">
+      <p>Interactive map visualization coming soon</p>
+      <div class="map-overlay">
+        <div class="pulse-point" style="top: 45%; left: 30%;"></div>
+        <div class="pulse-point" style="top: 25%; left: 60%;"></div>
+        <div class="pulse-point" style="top: 70%; left: 50%;"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    // Run the check before rendering anything
-    checkAuthorization();
+<section id="stats" class="section stats-section">
+  <div class="container">
+    <h2>Our Impact</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>20%</h3>
+        <p>Reduction in travel time</p>
+      </div>
+      <div class="stat-card">
+        <h3>15%</h3>
+        <p>Decrease in traffic congestion</p>
+      </div>
+      <div class="stat-card">
+        <h3>30%</h3>
+        <p>Lower carbon emissions</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section">
+    <div class="container">
+        <h2>Get Involved</h2>
+        <p>Interested in learning more about NaviQ or partnering with us?</p>
+        <a href="mailto:placeholder@gmail.com" class="contact-button">Contact Us</a>
+    </div>
+</section>
+
+<script>
+function scrollToExplore() {
+  document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+}
 </script>
 
 <style>
-    .content {
-        display: none;
+  /* Color Palette */
+  :root {
+    --primary: #1a5b92;
+    --secondary: #12b5c8;
+    --background: #f7f9fb;
+    --text: #2d3748;
+    --accent: #ff8a2c;
+    --light: #ffffff;
+    --dark: #0a2e4a;
+    --gray: #e2e8f0;
+  }
+  
+  /* Base Styles */
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: var(--background);
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .section {
+    padding: 80px 0;
+  }
+  
+  h1, h2, h3 {
+    color: var(--primary);
+    margin-top: 0;
+  }
+  
+  /* Hero Section */
+  .hero {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--light);
+    padding: 100px 0;
+    text-align: center;
+  }
+  
+  .hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    color: var(--light);
+  }
+  
+  .hero p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .cta-button {
+    background-color: var(--accent);
+    color: var(--light);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .cta-button:hover {
+    background-color: #e67a20;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Feature Grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+  }
+  
+  .feature-card {
+    background-color: var(--light);
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  
+  .icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Map Section */
+  .map-placeholder {
+    background-color: var(--light);
+    border-radius: 8px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e2e8f0' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+  
+  .map-placeholder p {
+    background-color: rgba(255,255,255,0.8);
+    padding: 10px 20px;
+    border-radius: 4px;
+  }
+  
+  .map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .pulse-point {
+    width: 20px;
+    height: 20px;
+    background-color: var(--secondary);
+    border-radius: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+  
+  .pulse-point::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--secondary);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    opacity: 0.8;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.8;
     }
-
-    .heading {
-        background-color: #b30000;
-        padding: 40px 20px;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    70% {
+      transform: scale(3);
+      opacity: 0;
     }
-
-    .heading h1 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin: 0;
-        color: #ffffff;
-        text-transform: uppercase;
-        letter-spacing: 2px;
+    100% {
+      transform: scale(1);
+      opacity: 0;
     }
-
-    .heading p {
-        font-size: 1.2rem;
-        margin: 10px 0 0;
-        color: #ffcccc;
+  }
+  
+  /* Stats Section */
+  .stats-section {
+    background-color: var(--dark);
+    color: var(--light);
+    text-align: center;
+  }
+  
+  .stats-section h2 {
+    color: var(--light);
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+  }
+  
+  .stat-card {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 30px;
+  }
+  
+  .stat-card h3 {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    color: var(--accent);
+  }
+  
+  /* Contact Section */
+  #contact {
+    text-align: center;
+  }
+  
+  .contact-button {
+    background-color: var(--primary);
+    color: var(--light);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .contact-button:hover {
+    background-color: var(--dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2.5rem;
     }
-
-    section {
-        margin-bottom: 40px;
-        padding: 20px;
-        background-color: #2e2e2e;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    
+    .section {
+      padding: 60px 0;
     }
-
-    section h2 {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-        color: #ff6666;
-        border-bottom: 2px solid #b30000;
-        padding-bottom: 5px;
-        display: inline-block;
+    
+    .map-placeholder {
+      height: 300px;
     }
-
-    .profile-card {
-        background-color: #b30000;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-        color: #ffffff;
-        font-weight: bold;
-        margin-bottom: 10px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .profile-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
-    }
-
-    button {
-        background-color: #ff4d4d;
-        color: #ffffff;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 25px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    button:hover {
-        background-color: #e60000;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .green-button {
-        background-color: #28a745;
-    }
-
-    .green-button:hover {
-        background-color: #218838;
-    }
-
-    .purple-button {
-        background-color: #ff3333;
-        color: #ffffff;
-    }
-
-    .purple-button:hover {
-        background-color: #b30000;
-    }
-
-    .copyright {
-        background-color: #b30000;
-        text-align: center;
-        padding: 20px;
-        font-size: 0.9rem;
-        color: #ffcccc;
-    }
-
-    .copyright p {
-        margin: 0;
-    }
-    #leaderboard-container {
-        background-color: #2e2e2e;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    #leaderboard-container div {
-        border-radius: 5px;
-    }
-
-    #leaderboard-container div div {
-        border-radius: 5px;
-    }
-
-    .mini-card {
-        background-color: #2e2e2e;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        margin-bottom: 20px;
-    }
-
-    .mini-card h2 {
-        color: #ff6666;
-        border-bottom: 2px solid #b30000;
-        padding-bottom: 5px;
-        display: inline-block;
-        margin-bottom: 10px;
-    }
-
-    .mini-message, .mini-poll {
-        background-color: #b30000;
-        padding: 8px;
-        border-radius: 5px;
-        color: #fff;
-        margin-bottom: 5px;
-    }
-
-    .mini-button {
-        background-color: #ff4d4d;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        display: block;
-        width: 100%;
-        margin-top: 10px;
-        text-align: center;
-        transition: background-color 0.3s ease;
-    }
-
-    .mini-button:hover {
-        background-color: #b30000;
-    }
-    .vote-button {
-        font-size: 1rem;
-        font-weight: bold;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease-in-out;
-        text-transform: uppercase;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .upvote-button {
-        background: linear-gradient(90deg, #28a745, #218838);
-        color: white;
-        border: 2px solid #1e7e34;
-        box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
-    }
-
-    .upvote-button:hover {
-        background: linear-gradient(90deg, #218838, #1e7e34);
-        transform: scale(1.05);
-        box-shadow: 0 0 15px rgba(40, 167, 69, 1);
-    }
-
-    .downvote-button {
-        background: linear-gradient(90deg, #dc3545, #c82333);
-        color: white;
-        border: 2px solid #bd2130;
-        box-shadow: 0 0 10px rgba(220, 53, 69, 0.7);
-    }
-
-    .downvote-button:hover {
-        background: linear-gradient(90deg, #c82333, #bd2130);
-        transform: scale(1.05);
-        box-shadow: 0 0 15px rgba(220, 53, 69, 1);
-    }
-
-    /* Add Disabled State for Buttons */
-    .vote-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
+  }
 </style>
-
-<div class="content">
-    <header class="heading">
-        <h1>Prism</h1>
-        <p>An AI powered social media platform around fun and creativity</p>
-    </header>
-
-    <br>
-
-    <section>
-        <h2>Suggestions for You</h2>
-        <div id="suggestions"></div>
-    </section>
-
-    <section>
-        <h2>Leaderboard of Top Interests</h2>
-        <div id="leaderboard-container" style="position: relative; width: 100%; height: auto;"></div>
-    </section>
-
-    <div id="user-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                background-color: #2e2e2e; padding: 20px; border-radius: 10px; 
-                                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); z-index: 1000;">
-        <h3 id="modal-title" style="color: #ff6666;">Users with this Interest</h3>
-        <ul id="user-list" style="list-style: none; padding: 0; color: #fff;"></ul>
-        <button onclick="closeModal()" style="margin-top: 10px; background-color: #b30000; color: white; border: none; 
-                                            padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-            Close
-        </button>
-    </div>
-
-    <div id="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                                    background-color: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
-
-    <section>
-        <button class="purple-button" onclick="window.location.href='{{ site.baseurl }}/profile'">Access Your Profile</button>
-    </section>
-
-    <section class="mini-card">
-        <h2>💬 Latest Messages</h2>
-        <div id="mini-chatroom-container"></div>
-        <button onclick="window.location.href='{{ site.baseurl }}/prism/topicchatroom'" class="mini-button">
-            Join Chatroom
-        </button>
-    </section>
-
-    <section class="mini-card">
-        <h2>📊 Latest Polls</h2>
-        <div id="mini-polls-container"></div>
-        <button onclick="window.location.href='{{ site.baseurl }}/prism/polls'" class="mini-button">
-            Vote in Polls
-        </button>
-    </section>
-
-    <footer class="copyright">
-        <p>&copy; 2025 Prism. All rights reserved.</p>
-    </footer>
-</div>
-
-
-<script type="module">
-
-        // Fetch and Display Mini Chatroom Messages
-    async function fetchMiniChatroom() {
-        try {
-            const response = await fetch(`${pythonURI}/api/chat?id=8`, fetchOptions);
-            if (!response.ok) throw new Error("Failed to fetch chat messages");
-            const messages = await response.json();
-
-            const chatContainer = document.getElementById("mini-chatroom-container");
-            chatContainer.innerHTML = ""; // Clear previous messages
-
-            messages.slice(0, 5).forEach(chat => { // Show only 3 latest messages
-                const messageElement = document.createElement("div");
-                messageElement.className = "mini-message";
-                messageElement.innerHTML = `<p><strong>${chat.message}</p>`;
-                chatContainer.appendChild(messageElement);
-            });
-        } catch (error) {
-            console.error("Error fetching chat messages:", error);
-        }
-    }
-
-    // Fetch and Display Mini Polls Results
-    async function fetchMiniPolls() {
-        try {
-            const response = await fetch(`${pythonURI}/api/poll`, fetchOptions);
-            if (!response.ok) throw new Error("Failed to fetch polls");
-            const polls = await response.json();
-
-            const pollsContainer = document.getElementById("mini-polls-container");
-            pollsContainer.innerHTML = ""; // Clear previous content
-
-            polls.slice(0, 2).forEach(poll => { // Show only 2 latest polls
-                const pollElement = document.createElement("div");
-                pollElement.className = "mini-poll";
-                pollElement.innerHTML = `<p><strong>${poll.name}:</strong> ${poll.interests}</p>`;
-                pollsContainer.appendChild(pollElement);
-            });
-        } catch (error) {
-            console.error("Error fetching polls:", error);
-        }
-    }
-
-    // Run both fetch functions on page load
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchMiniChatroom();
-        fetchMiniPolls();
-    });
-
-    import { pythonURI, fetchOptions } from "{{site.baseurl}}/assets/js/api/config.js";
-
-    async function fetchSuggestions() {
-        try {
-            const response = await fetch(`${pythonURI}/api/id`, fetchOptions);
-            if (!response.ok) throw new Error("Failed to fetch user data");
-
-            const currentUser = await response.json();
-            const interests = currentUser.interests.split(", ");
-
-            const allUsersResponse = await fetch(`${pythonURI}/api/users`, fetchOptions);
-            if (!allUsersResponse.ok) throw new Error("Failed to fetch all users");
-
-            const allUsers = await allUsersResponse.json();
-
-            const matchedUsers = allUsers.filter(user => {
-                const userInterests = user.interests.split(", ");
-                return userInterests.some(interest => interests.includes(interest)) && user.uid !== currentUser.uid;
-            });
-
-            const suggestionsContainer = document.getElementById("suggestions");
-            suggestionsContainer.innerHTML = "";
-
-            matchedUsers.forEach(user => {
-                const card = document.createElement("div");
-                card.className = "profile-card";
-                card.textContent = `${user.name} - Interests: ${user.interests}`;
-                suggestionsContainer.appendChild(card);
-            });
-        } catch (error) {
-            console.error("Error fetching suggestions:", error);
-        }
-    }
-
-    async function fetchLeaderboard() {
-        try {
-            const response = await fetch(`${pythonURI}/api/users`, fetchOptions);
-            if (!response.ok) throw new Error("Failed to fetch all users");
-
-            const allUsers = await response.json();
-            const interestCounts = {};
-            const interestToUsers = {};
-
-            // Count interests and map users to interests
-            allUsers.forEach(user => {
-                user.interests.split(", ").forEach(interest => {
-                    interestCounts[interest] = (interestCounts[interest] || 0) + 1;
-                    if (!interestToUsers[interest]) interestToUsers[interest] = [];
-                    interestToUsers[interest].push(user.name); // Add user name to the interest
-                });
-            });
-
-            // Sort interests by count
-            const sortedInterests = Object.entries(interestCounts).sort((a, b) => b[1] - a[1]);
-            const maxVotes = sortedInterests[0][1];
-
-            // State for showing all interests or top 5
-            let showAll = false;
-
-            const leaderboardContainer = document.getElementById("leaderboard-container");
-
-            // Create a reusable render function
-            const renderLeaderboard = () => {
-                leaderboardContainer.innerHTML = ""; // Clear previous content
-
-                // Determine how many interests to show
-                const interestsToShow = showAll ? sortedInterests : sortedInterests.slice(0, 5);
-
-                interestsToShow.forEach(([interest, count]) => {
-                    const barContainer = document.createElement("div");
-                    barContainer.style.display = "flex";
-                    barContainer.style.alignItems = "center";
-                    barContainer.style.marginBottom = "15px";
-                    barContainer.style.cursor = "pointer"; // Add cursor for clickability
-
-                    // Label
-                    const label = document.createElement("div");
-                    label.textContent = `${interest}`;
-                    label.style.width = "150px";
-                    label.style.fontWeight = "bold";
-                    label.style.color = "#ff6666";
-
-                    // Bar
-                    const bar = document.createElement("div");
-                    bar.style.height = "30px";
-                    bar.style.width = "0"; // Start width at 0 for animation
-                    bar.style.transition = "width 1s ease, transform 0.2s ease";
-                    bar.style.marginLeft = "10px";
-                    bar.style.background = `linear-gradient(90deg, #ff4d4d, #b30000)`; // Dynamic gradient
-                    bar.style.borderRadius = "5px";
-
-                    // Hover effect
-                    bar.addEventListener("mouseover", () => {
-                        bar.style.transform = "scale(1.05)";
-                    });
-                    bar.addEventListener("mouseout", () => {
-                        bar.style.transform = "scale(1)";
-                    });
-
-                    // Set bar width dynamically based on votes
-                    setTimeout(() => {
-                        bar.style.width = `${(count / maxVotes) * 80}%`; // Scale bar to max 80% width
-                    }, 100);
-
-                    // Click to show user details
-                    bar.addEventListener("click", () => {
-                        showModal(interest, interestToUsers[interest]);
-                    });
-
-                    // Count display
-                    const countLabel = document.createElement("div");
-                    countLabel.textContent = `${count} Votes`;
-                    countLabel.style.marginLeft = "10px";
-                    countLabel.style.color = "#ffffff";
-                    countLabel.style.fontWeight = "bold";
-
-                    barContainer.appendChild(label);
-                    barContainer.appendChild(bar);
-                    barContainer.appendChild(countLabel);
-
-                    leaderboardContainer.appendChild(barContainer);
-                });
-
-                // Ensure the toggle button stays persistent
-                if (!leaderboardContainer.querySelector("#toggle-button")) {
-                    const toggleButton = document.createElement("button");
-                    toggleButton.id = "toggle-button";
-                    toggleButton.className = "purple-button";
-                    toggleButton.style.marginTop = "20px";
-                    toggleButton.textContent = showAll ? "Show Less" : "Show More";
-
-                    // Toggle between showing all interests or top 5
-                    toggleButton.addEventListener("click", () => {
-                        showAll = !showAll;
-                        toggleButton.textContent = showAll ? "Show Less" : "Show More";
-                        renderLeaderboard();
-                    });
-
-                    leaderboardContainer.appendChild(toggleButton);
-                }
-            };
-
-            // Initial render
-            renderLeaderboard();
-        } catch (error) {
-            console.error("Error fetching leaderboard:", error);
-            const leaderboardContainer = document.getElementById("leaderboard-container");
-            leaderboardContainer.innerHTML = "<p>Error loading leaderboard.</p>";
-        }
-    }
-
-
-
-    // Show modal with user details
-    function showModal(interest, users) {
-        const modal = document.getElementById("user-modal");
-        const overlay = document.getElementById("modal-overlay");
-        const userList = document.getElementById("user-list");
-        const modalTitle = document.getElementById("modal-title");
-
-        modalTitle.textContent = `Users Interested in "${interest}"`;
-        userList.innerHTML = ""; // Clear previous content
-
-        // Populate user list
-        users.forEach(user => {
-            const listItem = document.createElement("li");
-            listItem.textContent = user;
-            userList.appendChild(listItem);
-        });
-
-        modal.style.display = "block";
-        overlay.style.display = "block";
-    }
-
-    // Close modal
-    function closeModal() {
-        const modal = document.getElementById("user-modal");
-        const overlay = document.getElementById("modal-overlay");
-        modal.style.display = "none";
-        overlay.style.display = "none";
-    }
-
-    window.closeModal = closeModal;
-
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchSuggestions();
-        fetchLeaderboard();
-    });
-</script>
-
-
-
-
-<script type="module">
-    import { pythonURI, fetchOptions } from "{{site.baseurl}}/assets/js/api/config.js";
-
-    async function fetchVoteData() {
-        try {
-            const voteData = { upvotes: [], downvotes: [] }; // Initialize data structure
-            const postIds = [1, 2, 3]; // Replace with your actual post IDs
-
-            for (const postId of postIds) {
-                const response = await fetch(`${pythonURI}/api/vote/post?post_id=${postId}`, {
-                    ...fetchOptions,
-                    method: "GET", // Use GET method
-                    headers: {
-                        ...fetchOptions.headers,
-                    },
-                });
-
-                if (!response.ok) throw new Error(`Failed to fetch votes for post ID ${postId}`);
-
-                const data = await response.json();
-
-                // Collect post IDs for upvotes and downvotes
-                data.upvotes.forEach(vote => voteData.upvotes.push(parseInt(vote.post_id, 10)));
-                data.downvotes.forEach(vote => voteData.downvotes.push(parseInt(vote.post_id, 10)));
-            }
-
-            return voteData;
-        } catch (error) {
-            console.error("Error fetching vote data:", error);
-            return { upvotes: [], downvotes: [] };
-        }
-    }
-
-
-    async function sendVote(sectionId, voteType, method) {
-        try {
-            const response = await fetch(`${pythonURI}/api/vote`, {
-                ...fetchOptions,
-                method: method,
-                headers: {
-                    ...fetchOptions.headers,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    post_id: sectionId,
-                    vote_type: voteType,
-                }),
-            });
-
-            if (!response.ok) throw new Error("Vote submission failed");
-        } catch (error) {
-            console.error("Error submitting vote:", error);
-        }
-    }
-
-    function toggleSectionVisibility(sectionId, show) {
-        const section = document.getElementById(sectionId);
-        const placeholder = document.getElementById(`${sectionId}-placeholder`);
-
-        if (show) {
-            section.style.display = "block";
-            if (placeholder) placeholder.style.display = "none";
-        } else {
-            section.style.display = "none";
-            if (!placeholder) {
-                const newPlaceholder = document.createElement("div");
-                newPlaceholder.id = `${sectionId}-placeholder`;
-                newPlaceholder.innerHTML = `<button class="green-button" onclick="handleShowSection('${sectionId}')">Show Section</button>`;
-                section.insertAdjacentElement("afterend", newPlaceholder);
-            } else {
-                placeholder.style.display = "block";
-            }
-        }
-    }
-
-    async function handleUpvote(sectionId) {
-        await sendVote(sectionId, "upvote", "POST");
-        const section = document.getElementById(sectionId);
-        const upvoteButton = section.querySelector(".upvote-button");
-        const downvoteButton = section.querySelector(".downvote-button");
-
-        upvoteButton.textContent = "Suggestion Upvoted";
-        upvoteButton.disabled = true;
-        downvoteButton.disabled = false;
-    }
-
-    async function handleDownvote(sectionId) {
-        await sendVote(sectionId, "downvote", "POST");
-        toggleSectionVisibility(sectionId, false);
-    }
-
-    async function handleShowSection(sectionId) {
-        await sendVote(sectionId, "upvote", "PUT");
-        toggleSectionVisibility(sectionId, true);
-
-        const section = document.getElementById(sectionId);
-        const upvoteButton = section.querySelector(".upvote-button");
-        const downvoteButton = section.querySelector(".downvote-button");
-
-        upvoteButton.textContent = "Suggestion Upvoted";
-        upvoteButton.disabled = true;
-        downvoteButton.disabled = false;
-    }
-
-    window.handleShowSection = handleShowSection;
-
-    async function deleteVotesForPosts(postIds) {
-        try {
-            for (const postId of postIds) {
-                await fetch(`${pythonURI}/api/vote`, {
-                    ...fetchOptions,
-                    method: "DELETE",
-                    headers: {
-                        ...fetchOptions.headers,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ post_id: postId }),
-                });
-            }
-        } catch (error) {
-            console.error("Error deleting votes:", error);
-        }
-    }
-
-    async function handleResetAllSuggestions() {
-        await deleteVotesForPosts([1, 2, 3]);
-
-        document.querySelectorAll("section").forEach(section => {
-            const sectionId = section.id;
-
-            toggleSectionVisibility(sectionId, true);
-
-            const upvoteButton = section.querySelector(".upvote-button");
-            const downvoteButton = section.querySelector(".downvote-button");
-
-            upvoteButton.textContent = "Upvote";
-            upvoteButton.disabled = false;
-
-            downvoteButton.textContent = "Downvote";
-            downvoteButton.disabled = false;
-        });
-    }
-
-    async function initializeSections() {
-        const voteData = await fetchVoteData();
-
-        document.querySelectorAll("section").forEach((section, index) => {
-            const sectionId = `${index + 1}`;
-            section.id = sectionId;
-
-            const isUpvoted = voteData.upvotes.includes(parseInt(sectionId, 10)); // Check if section is upvoted
-            const isDownvoted = voteData.downvotes.includes(parseInt(sectionId, 10)); // Check if section is downvoted
-
-            // Create a button container
-            const buttonContainer = document.createElement("div");
-            buttonContainer.style.textAlign = "right";
-
-            // Upvote button
-            const upvoteButton = document.createElement("button");
-            upvoteButton.className = "vote-button purple-button upvote-button";
-            upvoteButton.textContent = isUpvoted ? "Suggestion Upvoted" : "Upvote";
-            upvoteButton.disabled = isUpvoted;
-            upvoteButton.onclick = () => handleUpvote(sectionId);
-
-            // Downvote button
-            const downvoteButton = document.createElement("button");
-            downvoteButton.className = "vote-button purple-button downvote-button";
-            downvoteButton.textContent = "Downvote";
-            downvoteButton.disabled = isDownvoted;
-            downvoteButton.onclick = () => {
-                if (isUpvoted) {
-                    sendVote(sectionId, "downvote", "PUT");
-                }
-                handleDownvote(sectionId);
-            };
-
-            buttonContainer.appendChild(upvoteButton);
-            buttonContainer.appendChild(downvoteButton);
-            section.appendChild(buttonContainer);
-
-            // Set visibility based on vote status
-            if (isDownvoted) {
-                toggleSectionVisibility(sectionId, false);
-            } else {
-                toggleSectionVisibility(sectionId, true);
-            }
-        });
-
-        // Add Reset All Suggestions Button if not already present
-        if (!document.querySelector("#reset-all-button")) {
-            const resetButton = document.createElement("button");
-            resetButton.id = "reset-all-button";
-            resetButton.className = "green-button";
-            resetButton.textContent = "Reset all Suggestions";
-            resetButton.onclick = handleResetAllSuggestions;
-
-            document.body.appendChild(resetButton);
-        }
-    }
-
-
-    document.addEventListener("DOMContentLoaded", initializeSections);
-</script>

@@ -1,9 +1,9 @@
-title: Prism
+title: NaviQ; Smart Streets
 description : "A platform that evolves around your connections and creativity."
-owner_name: Yash Parikh
-github_username: illuminati1618
-github_repo: "prism_frontend" 
-baseurl: "/prism_frontend"
+owner_name: Pranav Santhosh
+github_username: SanPranav
+github_repo: "QcommVNE_frontend" 
+baseurl: "/QcommVNE_frontend"
 future: true
 remote_theme: jekyll/minima
 minima:

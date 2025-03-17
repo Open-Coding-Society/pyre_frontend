@@ -7,32 +7,32 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap');
 
 // Color Theme
-$primary-color: #ff1900;     // Red
-$secondary-color: #cf1500;   // Dark Red
-$background-dark: #000000;   // Black background
-$container-bg: #1a1a1a;      // Dark Grey container
-$card-bg: #2e2e2e;          // Card/Section background
-$input-bg: #333;             // Input background
-$text-light: #ffffff;        // White text
-$text-muted: #ddd;           // Muted text
-$border-color: #b30000;      // Red border
-$button-bg: #690000;         // Light Red button
-$button-hover: #e60000;      // Darker Red on hover
+$primary-color: #1a5b92;     // Deep Blue
+$secondary-color: #12b5c8;   // Teal/Aqua
+$background-dark: #f7f9fb;   // Light Gray background
+$container-bg: #ffffff;      // White container
+$card-bg: #ffffff;           // Card/Section background
+$input-bg: #ffffff;          // Input background
+$text-light: #2d3748;        // Dark Slate Gray text
+$text-muted: #718096;        // Muted text
+$border-color: #e2e8f0;      // Light Gray border
+$button-bg: #ff8a2c;         // Orange button
+$button-hover: #e07b24;      // Darker Orange on hover
 $success-color: #28a745;     // Success states
 $error-color: #dc3545;       // Error states
-$warning-color: #ffc107;     // Warning states (This was missing)
-$table-stripe: #6f0e0e;      // Table striping
+$warning-color: #ffc107;     // Warning states
+$table-stripe: #edf2f7;      // Table striping
 
 // Light theme colors
-$light-primary: #ff1900;
-$light-secondary: #cf1500;
-$light-background: #ffffff;
-$light-container: #f0f0f0;
+$light-primary: #1a5b92;
+$light-secondary: #12b5c8;
+$light-background: #f7f9fb;
+$light-container: #ffffff;
 $light-card: #ffffff;
-$light-input: #f5f5f5;
-$light-text: #333333;
-$light-text-muted: #666666;
-$light-border: #ff1900;
+$light-input: #ffffff;
+$light-text: #2d3748;
+$light-text-muted: #718096;
+$light-border: #e2e8f0;
 $light-warning: #ffc107;     // Light theme warning color
 
 // Base theme styles

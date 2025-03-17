@@ -23,38 +23,38 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
     
     &[data-theme="light"] {
-        background-color: #ffffff !important;
-        color: #333333 !important;
+        background-color: #f7f9fb !important; // Light gray background
+        color: #2d3748 !important; // Dark slate gray text
 
         .site-header {
-            background-color: #f8f9fa !important;
+            background-color: #ffffff !important;
             border-bottom: 1px solid #e1e4e8 !important;
         }
 
         .site-title, .site-nav .page-link {
-            color: #24292e !important;
+            color: #1a5b92 !important; // Deep blue primary color
         }
 
         .card, .section, .container, .profile {
-            background-color: #f5f5f5 !important;
-            color: #333333 !important;
+            background-color: #ffffff !important;
+            color: #2d3748 !important; // Dark slate gray text
         }
 
         .heading h1, h2, h3, h4, h5, h6 {
-            color: #24292e !important;
+            color: #1a5b92 !important; // Deep blue primary color
         }
 
         a {
-            color: #0366d6 !important;
+            color: #12b5c8 !important; // Lighter teal/aqua secondary color
             &:hover {
-                color: #035fc7 !important;
+                color: #0fa3b0 !important; // Slightly darker teal/aqua for hover
             }
         }
 
         input[type="text"],
         input[type="password"] {
             background-color: #ffffff !important;
-            color: #24292e !important;
+            color: #2d3748 !important; // Dark slate gray text
             border: 1px solid #e1e4e8 !important;
         }
     }
@@ -72,8 +72,8 @@ body {
     display: inline-flex;
     align-items: center;
     padding: 10px 20px;
-    background-color: #2d3748;
-    border: 2px solid #e53e3e;
+    background-color: #1a5b92; // Deep blue primary color
+    border: 2px solid #ff8a2c; // Subtle orange accent color
     border-radius: 20px;
     color: #ffffff;
     cursor: pointer;
