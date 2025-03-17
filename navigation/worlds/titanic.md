@@ -206,27 +206,31 @@ permalink: /TitanicSimulator/
                 setTimeout(() => {
                     let message = '';
                     let resultHTML = '';
-                    
+                    let animationClass = '';
+
                     if (survivalOutcome) {
                         message = "<p>Congratulations! You have survived the Titanic disaster!</p>";
                         resultHTML = `
-                            <div class="prediction survived">
+                            <div class="prediction survived survive-animation">
                                 <h4>SURVIVED</h4>
                                 <p>Survival Probability: ${survivalChance}%</p>
                             </div>
                         `;
+                        animationClass = 'survive-animation';
                     } else {
                         message = "<p>Unfortunately, you did not survive the Titanic disaster.</p>";
                         resultHTML = `
-                            <div class="prediction perished">
+                            <div class="prediction perished perish-animation">
                                 <h4>PERISHED</h4>
                                 <p>Survival Probability: ${survivalChance}%</p>
                             </div>
                         `;
+                        animationClass = 'perish-animation';
                     }
                     
                     gameMessage.innerHTML = message;
                     predictionResult.innerHTML = resultHTML;
+                    predictionResult.classList.add(animationClass);
                 }, 1500);
                 
             } else {
@@ -384,7 +388,7 @@ permalink: /TitanicSimulator/
     </div>
 </div>
 
-</style>
+<style>
     .popup {
         display: none;
         position: fixed;
@@ -460,3 +464,25 @@ permalink: /TitanicSimulator/
 
     .left-column, .right-column {
         flex: 1;
+    }
+
+    /* Existing styles... */
+
+    @keyframes surviveAnimation {
+        from { opacity: 0; transform: scale(0.5); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes perishAnimation {
+        from { opacity: 0; transform: scale(1.5); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .survive-animation {
+        animation: surviveAnimation 1s ease-out;
+    }
+
+    .perish-animation {
+        animation: perishAnimation 1s ease-out;
+    }
+</style>
