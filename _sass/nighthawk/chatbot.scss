@@ -13,7 +13,7 @@ $spacing-unit:      2rem;
 @mixin chatButton($bg-color, $hover-color) { // $bg-color and $hover-color are variables that are passed in as parameters to the mixin
     margin-top: auto;
     padding: 10px;
-    color: white;
+    color: rgb(0, 0, 0);
     border: none;
     border-radius: 6px;
     font-size: 16px;

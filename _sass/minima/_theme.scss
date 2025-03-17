@@ -1,52 +1,46 @@
 // Theme variables
-$primary-color: #1a5b92;
-$secondary-color: #12b5c8;
-$background-color: #f7f9fb;
-$text-color: #2d3748;
-$accent-color: #ff8a2c;
-$header-color: #f8f9fa;
-$nav-color: #2d3748;
+$light-background: #ffffff;
+$light-text: #333333;
+$light-container: #f5f5f5;
+$light-accent: #e53e3e;
+$light-header: #f8f9fa;
+$light-nav: #24292e;
 
 // Base theme styles
 body {
     transition: background-color 0.3s ease, color 0.3s ease;
     
     &[data-theme="light"] {
-        background-color: $background-color !important;
-        color: $text-color !important;
+        background-color: $light-background !important;
+        color: $light-text !important;
 
         .site-header, header, nav {
-            background-color: $header-color !important;
+            background-color: $light-header !important;
         }
 
         .site-nav {
-            background-color: $header-color !important;
+            background-color: $light-header !important;
             
             .page-link {
-                color: $nav-color !important;
+                color: $light-nav !important;
             }
         }
 
         .site-title {
-            color: $nav-color !important;
+            color: $light-nav !important;
         }
 
         .page-content {
-            background-color: $background-color !important;
+            background-color: $light-background !important;
         }
 
         .post-content {
-            color: $text-color !important;
+            color: $light-text !important;
         }
 
         .card, .section, .container {
-            background-color: $background-color !important;
-            color: $text-color !important;
-        }
-
-        .btn, .highlight {
-            background-color: $accent-color !important;
-            color: $background-color !important;
+            background-color: $light-container !important;
+            color: $light-text !important;
         }
     }
-}
+} 

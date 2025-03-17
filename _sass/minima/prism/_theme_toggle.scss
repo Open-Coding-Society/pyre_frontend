@@ -1,15 +1,14 @@
 // Light theme colors
-$light-background: #f7f9fb;
-$light-text: #2d3748;
-$light-heading: #2d3748;
-$light-link: #1a5b92;
+$light-background: #ffffff;
+$light-text: #333333;
+$light-heading: #222222;
+$light-link: #0366d6;
 $light-border: #e1e4e8;
 $light-code-bg: #f6f8fa;
-$light-header-bg: #ffffff;
-$light-nav-text: #2d3748;
-$light-accent: #ff8a2c;
+$light-header-bg: #f8f9fa;
+$light-nav-text: #24292e;
 
-// Dark theme colors
+// Dark theme colors (matching your current theme)
 $dark-background: #282a36;
 $dark-text: #f8f8f2;
 $dark-heading: #ff5555;
@@ -18,7 +17,6 @@ $dark-border: #44475a;
 $dark-code-bg: #44475a;
 $dark-header-bg: #1a1a1a;
 $dark-nav-text: #ffffff;
-$dark-accent: #ff8a2c;
 
 // Theme switching styles
 body {
