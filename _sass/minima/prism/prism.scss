@@ -1,6 +1,13 @@
 // ==========================================================================
-// PRISM COMPLETE STYLESHEET
-// Dark & Red Theme
+// NaviQ COMPLETE STYLESHEET
+
+// Primary: A deep blue (#1a5b92) - This represents trust, technology, and intelligence
+// Secondary: A lighter teal or aqua (#12b5c8) - Adds a modern touch while complementing the blue
+// Background: Light gray (#f7f9fb) - Clean, professional, and easy on the eyes
+// Text: Dark slate gray (#2d3748) - Better readability than pure black
+// Accent: A subtle orange (#ff8a2c) - For call-to-action buttons and highlights
+
+// Keep the overall design minimalist with plenty of white space to emphasize the data and functionality of the application.
 // ==========================================================================
 
 // Import fonts
@@ -9,10 +16,10 @@
 // Color Theme
 $primary-color: #1a5b92;     // Deep Blue
 $secondary-color: #12b5c8;   // Teal/Aqua
-$background-dark: #f7f9fb;   // Light Gray background
-$container-bg: #ffffff;      // White container
-$card-bg: #ffffff;           // Card/Section background
-$input-bg: #ffffff;          // Input background
+$background-dark: #000000;   // Light Gray background
+$container-bg: #000000;      // White container
+$card-bg: #000000;           // Card/Section background
+$input-bg: #000000;          // Input background
 $text-light: #2d3748;        // Dark Slate Gray text
 $text-muted: #718096;        // Muted text
 $border-color: #e2e8f0;      // Light Gray border
