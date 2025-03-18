@@ -4,7 +4,6 @@ title: Titanic Survival Simulator
 search_exclude: true
 permalink: /TitanicSimulator/
 ---
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
