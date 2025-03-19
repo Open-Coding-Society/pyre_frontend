@@ -2,8 +2,8 @@ title: NaviQ; Smart Streets
 description : "A platform that evolves around your connections and creativity."
 owner_name: Pranav Santhosh
 github_username: SanPranav
-github_repo: "QcommVNE_frontend" 
-baseurl: "/QcommVNE_frontend"
+github_repo: "QcommVNE_Frontend" 
+baseurl: "/QcommVNE_Frontend"
 future: true
 remote_theme: jekyll/minima
 minima:
