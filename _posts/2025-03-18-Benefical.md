@@ -141,7 +141,15 @@ def responsible_innovation():
 
 > **IOC-1.A.5**: Advances in computing have generated and increased creativity in other fields, such as medicine, engineering, communications, and the arts.
 
----
+## Classwork
+
+### Questions
+
+1. **Explain how the same computing innovation can have both beneficial and harmful effects depending on the context and user perspective. Provide an example to support your answer.**
+
+2. **Identify an example of a computing innovation that had unintended consequences. Explain what the intended use was and how the unintended effects emerged.**
+
+3. **How can programmers anticipate and mitigate the harmful effects of computing innovations? List at least three strategies based on the principles of responsible innovation.**
 
 ## Practice Assessments
 
