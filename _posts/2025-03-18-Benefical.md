@@ -254,7 +254,7 @@ Choose a computing innovation not discussed in class and:
 5. Identify at least one unintended use or consequence
 6. Propose measures to maximize benefits and minimize harms
 
-<span style="color: blue; font-weight: bold;">**Due date: [Date]**</span>
+<span style="color: blue; font-weight: bold;">**Due date: [3/23]**</span>
 
 ---
 
