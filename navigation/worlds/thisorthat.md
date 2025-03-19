@@ -203,14 +203,14 @@ permalink: /thisorthat/
         document.getElementById('game-container').style.display = 'none';
         document.getElementById('result').style.display = 'block';
 
-        if (score >= 6) {
+        if (score >= 9) {
             document.getElementById('result').innerHTML = `
                 Game Over! Your score: ${score}/${shuffledQuestions.length} ✅ You passed!<br>
                 <button onclick="restartGame()" style="margin-top: 20px;">Play Again</button>
             `;
         } else {
             document.getElementById('result').innerHTML = `
-                Game Over! Your score: ${score}/${shuffledQuestions.length} ❌ You must score at least 6/12 to pass.<br>
+                Game Over! Your score: ${score}/${shuffledQuestions.length} ❌ You must score at least 9/12 to pass.<br>
                 <button onclick="restartGame()" style="margin-top: 20px;">Try Again</button>
             `;
         }
