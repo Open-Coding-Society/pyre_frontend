@@ -12,5 +12,6 @@ The table below is temporary. The website is still underdevelopment.
         <td><a href="{{site.baseurl}}/TitanicSimulator">Titanic</a></td>
         <td><a href="{{site.baseurl}}/thisorthat">Benefical/Harmful Game</a></td>
         <td><a href="{{site.baseurl}}/BinaryGame">Binary Logic Gates Game</a></td>
+        <td><a href="{{site.baseurl}}/digitalDivideActivity">Digital Divide Activity</a></td>
     </tr>
 </table>
