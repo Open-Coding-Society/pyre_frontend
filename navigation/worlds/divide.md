@@ -342,144 +342,795 @@ permalink: /digitalDivideActivity/
   // Digital divide dataset
   const digitalDivideData = {
     "United States": {
-      internetPenetration: 92,
-      mobileAccess: 96,
-      averageSpeed: 224.5,
-      digitalLiteracy: 86,
-      barriers: ["Affordability in rural areas", "Infrastructure gaps", "Senior digital literacy"]
+        internetPenetration: 92,
+        mobileAccess: 96,
+        averageSpeed: 224.5,
+        digitalLiteracy: 86,
+        barriers: ["Affordability in rural areas", "Infrastructure gaps", "Senior digital literacy"]
     },
     "Canada": {
-      internetPenetration: 94,
-      mobileAccess: 95,
-      averageSpeed: 167.4,
-      digitalLiteracy: 83,
-      barriers: ["Rural connectivity", "Indigenous community access", "Affordability"]
+        internetPenetration: 94,
+        mobileAccess: 95,
+        averageSpeed: 167.4,
+        digitalLiteracy: 83,
+        barriers: ["Rural connectivity", "Indigenous community access", "Affordability"]
     },
     "United Kingdom": {
-      internetPenetration: 95,
-      mobileAccess: 97,
-      averageSpeed: 95.5,
-      digitalLiteracy: 87,
-      barriers: ["Rural broadband quality", "Age-related digital exclusion", "Income inequality"]
+        internetPenetration: 95,
+        mobileAccess: 97,
+        averageSpeed: 95.5,
+        digitalLiteracy: 87,
+        barriers: ["Rural broadband quality", "Age-related digital exclusion", "Income inequality"]
     },
     "Germany": {
-      internetPenetration: 92,
-      mobileAccess: 95,
-      averageSpeed: 107.8,
-      digitalLiteracy: 80,
-      barriers: ["Rural internet quality", "Digital skills gap among seniors", "Infrastructure development"]
+        internetPenetration: 92,
+        mobileAccess: 95,
+        averageSpeed: 107.8,
+        digitalLiteracy: 80,
+        barriers: ["Rural internet quality", "Digital skills gap among seniors", "Infrastructure development"]
     },
     "France": {
-      internetPenetration: 91,
-      mobileAccess: 94,
-      averageSpeed: 183.7,
-      digitalLiteracy: 78,
-      barriers: ["Rural-urban divide", "Age-related digital gaps", "Economic barriers"]
+        internetPenetration: 91,
+        mobileAccess: 94,
+        averageSpeed: 183.7,
+        digitalLiteracy: 78,
+        barriers: ["Rural-urban divide", "Age-related digital gaps", "Economic barriers"]
     },
     "Japan": {
-      internetPenetration: 93,
-      mobileAccess: 98,
-      averageSpeed: 205.6,
-      digitalLiteracy: 85,
-      barriers: ["Aging population adoption", "Rural connectivity", "Traditional business practices"]
+        internetPenetration: 93,
+        mobileAccess: 98,
+        averageSpeed: 205.6,
+        digitalLiteracy: 85,
+        barriers: ["Aging population adoption", "Rural connectivity", "Traditional business practices"]
     },
     "South Korea": {
-      internetPenetration: 97,
-      mobileAccess: 99,
-      averageSpeed: 254.7,
-      digitalLiteracy: 90,
-      barriers: ["Elderly digital exclusion", "Digital addiction concerns", "Rural-urban gaps"]
+        internetPenetration: 97,
+        mobileAccess: 99,
+        averageSpeed: 254.7,
+        digitalLiteracy: 90,
+        barriers: ["Elderly digital exclusion", "Digital addiction concerns", "Rural-urban gaps"]
     },
     "China": {
-      internetPenetration: 70,
-      mobileAccess: 83,
-      averageSpeed: 169.3,
-      digitalLiteracy: 64,
-      barriers: ["Rural-urban divide", "Content restrictions", "Language barriers", "Income inequality"]
+        internetPenetration: 70,
+        mobileAccess: 83,
+        averageSpeed: 169.3,
+        digitalLiteracy: 64,
+        barriers: ["Rural-urban divide", "Content restrictions", "Language barriers", "Income inequality"]
     },
     "India": {
-      internetPenetration: 47,
-      mobileAccess: 78,
-      averageSpeed: 76.6,
-      digitalLiteracy: 43,
-      barriers: ["Infrastructure limitations", "Affordability", "Language barriers", "Digital literacy", "Gender gap"]
+        internetPenetration: 47,
+        mobileAccess: 78,
+        averageSpeed: 76.6,
+        digitalLiteracy: 43,
+        barriers: ["Infrastructure limitations", "Affordability", "Language barriers", "Digital literacy", "Gender gap"]
     },
     "Brazil": {
-      internetPenetration: 75,
-      mobileAccess: 85,
-      averageSpeed: 91.8,
-      digitalLiteracy: 56,
-      barriers: ["Income inequality", "Rural connectivity", "Infrastructure costs", "Education barriers"]
+        internetPenetration: 75,
+        mobileAccess: 85,
+        averageSpeed: 91.8,
+        digitalLiteracy: 56,
+        barriers: ["Income inequality", "Rural connectivity", "Infrastructure costs", "Education barriers"]
     },
     "Mexico": {
-      internetPenetration: 72,
-      mobileAccess: 79,
-      averageSpeed: 52.3,
-      digitalLiteracy: 52,
-      barriers: ["Rural access", "Income disparity", "Infrastructure limitations", "Education gaps"]
+        internetPenetration: 72,
+        mobileAccess: 79,
+        averageSpeed: 52.3,
+        digitalLiteracy: 52,
+        barriers: ["Rural access", "Income disparity", "Infrastructure limitations", "Education gaps"]
     },
     "South Africa": {
-      internetPenetration: 68,
-      mobileAccess: 82,
-      averageSpeed: 44.5,
-      digitalLiteracy: 48,
-      barriers: ["Cost of data", "Infrastructure gaps", "Income inequality", "Urban-rural divide"]
+        internetPenetration: 68,
+        mobileAccess: 82,
+        averageSpeed: 44.5,
+        digitalLiteracy: 48,
+        barriers: ["Cost of data", "Infrastructure gaps", "Income inequality", "Urban-rural divide"]
     },
     "Nigeria": {
-      internetPenetration: 42,
-      mobileAccess: 73,
-      averageSpeed: 22.2,
-      digitalLiteracy: 32,
-      barriers: ["Electricity access", "Cost barriers", "Infrastructure limitations", "Digital skills gap"]
+        internetPenetration: 42,
+        mobileAccess: 73,
+        averageSpeed: 22.2,
+        digitalLiteracy: 32,
+        barriers: ["Electricity access", "Cost barriers", "Infrastructure limitations", "Digital skills gap"]
     },
     "Kenya": {
-      internetPenetration: 40,
-      mobileAccess: 82,
-      averageSpeed: 19.2,
-      digitalLiteracy: 35,
-      barriers: ["Infrastructure limitations", "Cost of internet", "Digital literacy", "Electricity access"]
+        internetPenetration: 40,
+        mobileAccess: 82,
+        averageSpeed: 19.2,
+        digitalLiteracy: 35,
+        barriers: ["Infrastructure limitations", "Cost of internet", "Digital literacy", "Electricity access"]
     },
     "Egypt": {
-      internetPenetration: 57,
-      mobileAccess: 76,
-      averageSpeed: 35.7,
-      digitalLiteracy: 45,
-      barriers: ["Infrastructure quality", "Cost barriers", "Digital literacy", "Gender gap"]
+        internetPenetration: 57,
+        mobileAccess: 76,
+        averageSpeed: 35.7,
+        digitalLiteracy: 45,
+        barriers: ["Infrastructure quality", "Cost barriers", "Digital literacy", "Gender gap"]
     },
     "Australia": {
-      internetPenetration: 90,
-      mobileAccess: 93,
-      averageSpeed: 95.4,
-      digitalLiteracy: 82,
-      barriers: ["Remote area connectivity", "Indigenous community access", "Affordability in outback"]
+        internetPenetration: 90,
+        mobileAccess: 93,
+        averageSpeed: 95.4,
+        digitalLiteracy: 82,
+        barriers: ["Remote area connectivity", "Indigenous community access", "Affordability in outback"]
     },
     "Russia": {
-      internetPenetration: 85,
-      mobileAccess: 89,
-      averageSpeed: 73.9,
-      digitalLiteracy: 68,
-      barriers: ["Remote region connectivity", "Infrastructure limitations", "Digital skills gap"]
+        internetPenetration: 85,
+        mobileAccess: 89,
+        averageSpeed: 73.9,
+        digitalLiteracy: 68,
+        barriers: ["Remote region connectivity", "Infrastructure limitations", "Digital skills gap"]
     },
     "Saudi Arabia": {
-      internetPenetration: 98,
-      mobileAccess: 97,
-      averageSpeed: 109.2,
-      digitalLiteracy: 72,
-      barriers: ["Gender gap", "Digital skills disparity", "Content restrictions"]
+        internetPenetration: 98,
+        mobileAccess: 97,
+        averageSpeed: 109.2,
+        digitalLiteracy: 72,
+        barriers: ["Gender gap", "Digital skills disparity", "Content restrictions"]
     },
     "Pakistan": {
-      internetPenetration: 36,
-      mobileAccess: 65,
-      averageSpeed: 18.5,
-      digitalLiteracy: 30,
-      barriers: ["Literacy barriers", "Infrastructure gaps", "Affordability", "Gender disparity", "Electricity access"]
+        internetPenetration: 36,
+        mobileAccess: 65,
+        averageSpeed: 18.5,
+        digitalLiteracy: 30,
+        barriers: ["Literacy barriers", "Infrastructure gaps", "Affordability", "Gender disparity", "Electricity access"]
     },
     "Indonesia": {
-      internetPenetration: 62,
-      mobileAccess: 81,
-      averageSpeed: 41.3,
-      digitalLiteracy: 47,
-      barriers: ["Geographic isolation", "Infrastructure challenges", "Affordability", "Digital literacy"]
+        internetPenetration: 62,
+        mobileAccess: 81,
+        averageSpeed: 41.3,
+        digitalLiteracy: 47,
+        barriers: ["Geographic isolation", "Infrastructure challenges", "Affordability", "Digital literacy"]
+    },
+    "Argentina": {
+        internetPenetration: 81,
+        mobileAccess: 89,
+        averageSpeed: 56.7,
+        digitalLiteracy: 62,
+        barriers: ["Economic volatility", "Rural connectivity", "Infrastructure maintenance", "Affordability"]
+    },
+    "Chile": {
+        internetPenetration: 87,
+        mobileAccess: 92,
+        averageSpeed: 171.2,
+        digitalLiteracy: 67,
+        barriers: ["Geographic disparities", "Indigenous access", "Income inequality", "Education gaps"]
+    },
+    "Vietnam": {
+        internetPenetration: 73,
+        mobileAccess: 92,
+        averageSpeed: 78.4,
+        digitalLiteracy: 53,
+        barriers: ["Rural-urban divide", "Language barriers", "Digital skills", "Content restrictions"]
+    },
+    "Thailand": {
+        internetPenetration: 78,
+        mobileAccess: 93,
+        averageSpeed: 225.2,
+        digitalLiteracy: 58,
+        barriers: ["Rural connectivity", "Language barriers", "Senior adoption", "Income disparity"]
+    },
+    "Malaysia": {
+        internetPenetration: 89,
+        mobileAccess: 94,
+        averageSpeed: 112.7,
+        digitalLiteracy: 65,
+        barriers: ["Rural infrastructure", "Indigenous community access", "Digital skills gap"]
+    },
+    "Philippines": {
+        internetPenetration: 67,
+        mobileAccess: 89,
+        averageSpeed: 58.7,
+        digitalLiteracy: 49,
+        barriers: ["Geographic challenges", "Infrastructure limitations", "Affordability", "Natural disasters"]
+    },
+    "Bangladesh": {
+        internetPenetration: 33,
+        mobileAccess: 63,
+        averageSpeed: 39.6,
+        digitalLiteracy: 29,
+        barriers: ["Literacy barriers", "Gender gap", "Infrastructure limitations", "Affordability", "Electricity access"]
+    },
+    "Ethiopia": {
+        internetPenetration: 24,
+        mobileAccess: 45,
+        averageSpeed: 11.9,
+        digitalLiteracy: 20,
+        barriers: ["Infrastructure deficits", "Electricity access", "Affordability", "Literacy barriers", "Language barriers"]
+    },
+    "Ghana": {
+        internetPenetration: 53,
+        mobileAccess: 81,
+        averageSpeed: 31.7,
+        digitalLiteracy: 39,
+        barriers: ["Infrastructure limitations", "Cost barriers", "Electricity access", "Digital skills gap"]
+    },
+    "Morocco": {
+        internetPenetration: 74,
+        mobileAccess: 87,
+        averageSpeed: 27.8,
+        digitalLiteracy: 51,
+        barriers: ["Rural connectivity", "Affordability", "Digital skills gap", "Gender disparity"]
+    },
+    "Israel": {
+        internetPenetration: 91,
+        mobileAccess: 94,
+        averageSpeed: 122.3,
+        digitalLiteracy: 85,
+        barriers: ["Ultra-Orthodox community access", "Minority groups gap", "Affordability"]
+    },
+    "Poland": {
+        internetPenetration: 87,
+        mobileAccess: 93,
+        averageSpeed: 90.5,
+        digitalLiteracy: 73,
+        barriers: ["Rural-urban divide", "Age-related gaps", "Digital skills among seniors"]
+    },
+    "Sweden": {
+        internetPenetration: 98,
+        mobileAccess: 99,
+        averageSpeed: 166.9,
+        digitalLiteracy: 93,
+        barriers: ["Senior technology adoption", "Remote northern regions", "Refugee integration"]
+    },
+    "Turkey": {
+        internetPenetration: 78,
+        mobileAccess: 91,
+        averageSpeed: 68.2,
+        digitalLiteracy: 59,
+        barriers: ["Rural connectivity", "Content restrictions", "Income disparity", "Education gaps"]
+    },
+    "Colombia": {
+        internetPenetration: 68,
+        mobileAccess: 83,
+        averageSpeed: 63.4,
+        digitalLiteracy: 54,
+        barriers: ["Geography challenges", "Infrastructure limitations", "Armed conflict areas", "Economic barriers"]
+    },
+    "Peru": {
+        internetPenetration: 65,
+        mobileAccess: 79,
+        averageSpeed: 46.8,
+        digitalLiteracy: 48,
+        barriers: ["Geographic isolation", "Indigenous access", "Infrastructure challenges", "Altitude challenges"]
+    },
+    "New Zealand": {
+        internetPenetration: 93,
+        mobileAccess: 96,
+        averageSpeed: 144.2,
+        digitalLiteracy: 84,
+        barriers: ["Rural connectivity", "Māori community access", "Senior adoption"]
+    },
+    "Singapore": {
+        internetPenetration: 99,
+        mobileAccess: 99,
+        averageSpeed: 269.3,
+        digitalLiteracy: 92,
+        barriers: ["Elderly adoption", "Income inequality", "Digital skills among seniors"]
+    },
+    "Spain": {
+        internetPenetration: 89,
+        mobileAccess: 94,
+        averageSpeed: 183.9,
+        digitalLiteracy: 75,
+        barriers: ["Rural connectivity", "Age-related gaps", "Economic barriers", "Language barriers"]
+    },
+    "Rwanda": {
+        internetPenetration: 26,
+        mobileAccess: 54,
+        averageSpeed: 11.4,
+        digitalLiteracy: 28,
+        barriers: ["Infrastructure limitations", "Affordability", "Literacy barriers", "Electricity access"]
+    },
+    "Italy": {
+        internetPenetration: 84,
+        mobileAccess: 92,
+        averageSpeed: 93.6,
+        digitalLiteracy: 67,
+        barriers: ["Aging population", "Rural connectivity", "Digital skills gap", "Bureaucratic barriers"]
+    },
+    "Netherlands": {
+        internetPenetration: 96,
+        mobileAccess: 98,
+        averageSpeed: 156.8,
+        digitalLiteracy: 90,
+        barriers: ["Senior digital literacy", "Immigration integration", "Socioeconomic divide"]
+    },
+    "Norway": {
+        internetPenetration: 99,
+        mobileAccess: 99,
+        averageSpeed: 194.7,
+        digitalLiteracy: 95,
+        barriers: ["Remote Arctic communities", "Senior adoption", "Integration of new immigrants"]
+    },
+    "Denmark": {
+        internetPenetration: 98,
+        mobileAccess: 99,
+        averageSpeed: 221.3,
+        digitalLiteracy: 94,
+        barriers: ["Age-related digital gaps", "Integration of immigrants", "Rural islands connectivity"]
+    },
+    "Finland": {
+        internetPenetration: 97,
+        mobileAccess: 99,
+        averageSpeed: 173.5,
+        digitalLiteracy: 93,
+        barriers: ["Rural Arctic connectivity", "Senior adoption", "Language barriers for immigrants"]
+    },
+    "Switzerland": {
+        internetPenetration: 97,
+        mobileAccess: 98,
+        averageSpeed: 192.3,
+        digitalLiteracy: 91,
+        barriers: ["Mountain region connectivity", "Senior digital literacy", "High service costs"]
+    },
+    "Portugal": {
+        internetPenetration: 85,
+        mobileAccess: 91,
+        averageSpeed: 121.6,
+        digitalLiteracy: 69,
+        barriers: ["Rural access", "Senior digital literacy", "Income inequality", "Island connectivity"]
+    },
+    "Greece": {
+        internetPenetration: 76,
+        mobileAccess: 87,
+        averageSpeed: 63.2,
+        digitalLiteracy: 63,
+        barriers: ["Island connectivity", "Economic constraints", "Senior adoption", "Rural infrastructure"]
+    },
+    "Austria": {
+        internetPenetration: 90,
+        mobileAccess: 95,
+        averageSpeed: 111.9,
+        digitalLiteracy: 82,
+        barriers: ["Alpine region connectivity", "Senior digital literacy", "Rural-urban divide"]
+    },
+    "Czech Republic": {
+        internetPenetration: 89,
+        mobileAccess: 94,
+        averageSpeed: 87.2,
+        digitalLiteracy: 74,
+        barriers: ["Rural connectivity", "Senior digital literacy", "Income disparity"]
+    },
+    "Hungary": {
+        internetPenetration: 83,
+        mobileAccess: 91,
+        averageSpeed: 175.2,
+        digitalLiteracy: 65,
+        barriers: ["Rural-urban divide", "Roma community access", "Socioeconomic barriers", "Senior adoption"]
+    },
+    "Belgium": {
+        internetPenetration: 92,
+        mobileAccess: 96,
+        averageSpeed: 109.5,
+        digitalLiteracy: 81,
+        barriers: ["Regional disparities", "Senior digital literacy", "Socioeconomic divide"]
+    },
+    "Ireland": {
+        internetPenetration: 91,
+        mobileAccess: 96,
+        averageSpeed: 123.7,
+        digitalLiteracy: 84,
+        barriers: ["Rural broadband quality", "Island connectivity", "Senior adoption"]
+    },
+    "United Arab Emirates": {
+        internetPenetration: 99,
+        mobileAccess: 99,
+        averageSpeed: 233.5,
+        digitalLiteracy: 87,
+        barriers: ["Expatriate disparities", "Regulatory restrictions", "Cost barriers for lower income workers"]
+    },
+    "Qatar": {
+        internetPenetration: 100,
+        mobileAccess: 100,
+        averageSpeed: 186.6,
+        digitalLiteracy: 84,
+        barriers: ["Migrant worker access", "Content restrictions", "Digital skills gaps for certain populations"]
+    },
+    "Kuwait": {
+        internetPenetration: 99,
+        mobileAccess: 98,
+        averageSpeed: 141.8,
+        digitalLiteracy: 78,
+        barriers: ["Migrant worker disparities", "Content restrictions", "Digital skills gaps"]
+    },
+    "Ukraine": {
+        internetPenetration: 75,
+        mobileAccess: 86,
+        averageSpeed: 81.3,
+        digitalLiteracy: 58,
+        barriers: ["War-affected infrastructure", "Rural connectivity", "Economic challenges", "Aging population"]
+    },
+    "Belarus": {
+        internetPenetration: 86,
+        mobileAccess: 92,
+        averageSpeed: 65.4,
+        digitalLiteracy: 63,
+        barriers: ["Content restrictions", "Rural connectivity", "Government restrictions", "Economic factors"]
+    },
+    "Kazakhstan": {
+        internetPenetration: 81,
+        mobileAccess: 89,
+        averageSpeed: 54.8,
+        digitalLiteracy: 59,
+        barriers: ["Rural connectivity", "Language barriers", "Infrastructure limitations", "Content restrictions"]
+    },
+    "Algeria": {
+        internetPenetration: 65,
+        mobileAccess: 83,
+        averageSpeed: 25.7,
+        digitalLiteracy: 44,
+        barriers: ["Rural access", "Infrastructure quality", "Regulatory constraints", "Digital skills gap"]
+    },
+    "Tunisia": {
+        internetPenetration: 67,
+        mobileAccess: 84,
+        averageSpeed: 33.5,
+        digitalLiteracy: 48,
+        barriers: ["Rural connectivity", "Infrastructure quality", "Affordability", "Gender gap"]
+    },
+    "Lebanon": {
+        internetPenetration: 79,
+        mobileAccess: 89,
+        averageSpeed: 21.3,
+        digitalLiteracy: 54,
+        barriers: ["Infrastructure instability", "Electricity shortages", "Economic crisis", "Affordability"]
+    },
+    "Jordan": {
+        internetPenetration: 86,
+        mobileAccess: 92,
+        averageSpeed: 62.8,
+        digitalLiteracy: 60,
+        barriers: ["Refugee access", "Rural connectivity", "Gender gap", "Economic barriers"]
+    },
+    "Oman": {
+        internetPenetration: 92,
+        mobileAccess: 95,
+        averageSpeed: 89.6,
+        digitalLiteracy: 69,
+        barriers: ["Rural mountain access", "Gender gap in certain regions", "Migrant worker access"]
+    },
+    "Bolivia": {
+        internetPenetration: 54,
+        mobileAccess: 76,
+        averageSpeed: 27.3,
+        digitalLiteracy: 41,
+        barriers: ["Geographic challenges", "Indigenous access", "Altitude connectivity issues", "Affordability"]
+    },
+    "Ecuador": {
+        internetPenetration: 61,
+        mobileAccess: 79,
+        averageSpeed: 39.8,
+        digitalLiteracy: 46,
+        barriers: ["Geographic isolation", "Indigenous barriers", "Infrastructure costs", "Rural access"]
+    },
+    "Venezuela": {
+        internetPenetration: 53,
+        mobileAccess: 71,
+        averageSpeed: 9.7,
+        digitalLiteracy: 43,
+        barriers: ["Economic crisis", "Infrastructure deterioration", "Electricity shortages", "Affordability"]
+    },
+    "Paraguay": {
+        internetPenetration: 68,
+        mobileAccess: 83,
+        averageSpeed: 34.2,
+        digitalLiteracy: 44,
+        barriers: ["Rural connectivity", "Indigenous access", "Language barriers", "Economic constraints"]
+    },
+    "Uruguay": {
+        internetPenetration: 83,
+        mobileAccess: 92,
+        averageSpeed: 120.4,
+        digitalLiteracy: 65,
+        barriers: ["Rural-urban divide", "Economic barriers", "Age-related digital gaps"]
+    },
+    "Panama": {
+        internetPenetration: 72,
+        mobileAccess: 87,
+        averageSpeed: 136.3,
+        digitalLiteracy: 53,
+        barriers: ["Indigenous community access", "Geographic barriers", "Urban-rural divide", "Affordability"]
+    },
+    "Costa Rica": {
+        internetPenetration: 81,
+        mobileAccess: 90,
+        averageSpeed: 73.2,
+        digitalLiteracy: 61,
+        barriers: ["Rural connectivity", "Indigenous access", "Mountain infrastructure challenges"]
+    },
+    "Jamaica": {
+        internetPenetration: 64,
+        mobileAccess: 85,
+        averageSpeed: 48.9,
+        digitalLiteracy: 51,
+        barriers: ["Rural access", "Affordability", "Infrastructure limitations", "Natural disaster vulnerability"]
+    },
+    "Trinidad and Tobago": {
+        internetPenetration: 82,
+        mobileAccess: 90,
+        averageSpeed: 56.3,
+        digitalLiteracy: 63,
+        barriers: ["Rural connectivity", "Socioeconomic divide", "Digital skills gap", "Tobago island access"]
+    },
+    "Dominican Republic": {
+        internetPenetration: 68,
+        mobileAccess: 83,
+        averageSpeed: 41.2,
+        digitalLiteracy: 48,
+        barriers: ["Rural connectivity", "Infrastructure quality", "Affordability", "Natural disaster vulnerability"]
+    },
+    "Haiti": {
+        internetPenetration: 25,
+        mobileAccess: 54,
+        averageSpeed: 14.7,
+        digitalLiteracy: 22,
+        barriers: ["Infrastructure damage", "Electricity access", "Extreme poverty", "Natural disasters"]
+    },
+    "Tanzania": {
+        internetPenetration: 31,
+        mobileAccess: 59,
+        averageSpeed: 17.3,
+        digitalLiteracy: 26,
+        barriers: ["Rural connectivity", "Infrastructure limitations", "Affordability", "Digital literacy"]
+    },
+    "Uganda": {
+        internetPenetration: 27,
+        mobileAccess: 63,
+        averageSpeed: 15.8,
+        digitalLiteracy: 29,
+        barriers: ["Infrastructure gaps", "Electricity access", "Affordability", "Digital skills gap"]
+    },
+    "Mozambique": {
+        internetPenetration: 21,
+        mobileAccess: 50,
+        averageSpeed: 11.2,
+        digitalLiteracy: 18,
+        barriers: ["Infrastructure limitations", "Electricity access", "Affordability", "Literacy barriers"]
+    },
+    "Senegal": {
+        internetPenetration: 46,
+        mobileAccess: 74,
+        averageSpeed: 23.5,
+        digitalLiteracy: 33,
+        barriers: ["Rural connectivity", "Affordability", "Digital literacy", "Infrastructure quality"]
+    },
+    "Ivory Coast": {
+        internetPenetration: 36,
+        mobileAccess: 71,
+        averageSpeed: 19.4,
+        digitalLiteracy: 31,
+        barriers: ["Infrastructure gaps", "Affordability", "Literacy barriers", "Rural connectivity"]
+    },
+    "Botswana": {
+        internetPenetration: 53,
+        mobileAccess: 78,
+        averageSpeed: 38.6,
+        digitalLiteracy: 47,
+        barriers: ["Rural desert connectivity", "Cost barriers", "Infrastructure limitations", "Digital skills gap"]
+    },
+    "Namibia": {
+        internetPenetration: 51,
+        mobileAccess: 74,
+        averageSpeed: 25.3,
+        digitalLiteracy: 43,
+        barriers: ["Geography challenges", "Population dispersion", "Infrastructure costs", "Digital literacy"]
+    },
+    "Cameroon": {
+        internetPenetration: 28,
+        mobileAccess: 55,
+        averageSpeed: 16.5,
+        digitalLiteracy: 27,
+        barriers: ["Infrastructure limitations", "Affordability", "Rural access", "Literacy barriers"]
+    },
+    "Zambia": {
+        internetPenetration: 30,
+        mobileAccess: 58,
+        averageSpeed: 14.9,
+        digitalLiteracy: 25,
+        barriers: ["Rural connectivity", "Electricity access", "Affordability", "Digital skills gap"]
+    },
+    "Nepal": {
+        internetPenetration: 34,
+        mobileAccess: 62,
+        averageSpeed: 25.7,
+        digitalLiteracy: 28,
+        barriers: ["Mountain terrain", "Electricity access", "Affordability", "Digital literacy"]
+    },
+    "Sri Lanka": {
+        internetPenetration: 47,
+        mobileAccess: 76,
+        averageSpeed: 54.3,
+        digitalLiteracy: 43,
+        barriers: ["Rural connectivity", "Affordability", "Language barriers", "Digital skills gap"]
+    },
+    "Myanmar": {
+        internetPenetration: 41,
+        mobileAccess: 70,
+        averageSpeed: 32.7,
+        digitalLiteracy: 34,
+        barriers: ["Political restrictions", "Infrastructure gaps", "Affordability", "Rural access"]
+    },
+    "Cambodia": {
+        internetPenetration: 52,
+        mobileAccess: 85,
+        averageSpeed: 31.2,
+        digitalLiteracy: 38,
+        barriers: ["Rural connectivity", "Digital literacy", "Language barriers", "Infrastructure quality"]
+    },
+    "Laos": {
+        internetPenetration: 43,
+        mobileAccess: 65,
+        averageSpeed: 28.3,
+        digitalLiteracy: 34,
+        barriers: ["Mountainous terrain", "Infrastructure limitations", "Affordability", "Digital literacy"]
+    },
+    "Mongolia": {
+        internetPenetration: 62,
+        mobileAccess: 78,
+        averageSpeed: 42.3,
+        digitalLiteracy: 54,
+        barriers: ["Nomadic populations", "Extreme climate", "Geographic vastness", "Infrastructure costs"]
+    },
+    "Fiji": {
+        internetPenetration: 59,
+        mobileAccess: 74,
+        averageSpeed: 34.8,
+        digitalLiteracy: 48,
+        barriers: ["Island isolation", "Natural disaster vulnerability", "Infrastructure costs", "Rural access"]
+    },
+    "Papua New Guinea": {
+        internetPenetration: 15,
+        mobileAccess: 38,
+        averageSpeed: 13.2,
+        digitalLiteracy: 19,
+        barriers: ["Geography challenges", "Tribal isolation", "Infrastructure limitations", "Literacy barriers"]
+    },
+    "Iceland": {
+        internetPenetration: 99,
+        mobileAccess: 99,
+        averageSpeed: 203.4,
+        digitalLiteracy: 94,
+        barriers: ["Remote area connectivity", "Extreme weather challenges", "Volcanic effects on infrastructure"]
+    },
+    "Malta": {
+        internetPenetration: 91,
+        mobileAccess: 95,
+        averageSpeed: 138.5,
+        digitalLiteracy: 80,
+        barriers: ["Small market challenges", "Infrastructure maintenance", "Senior digital literacy"]
+    },
+    "Cyprus": {
+        internetPenetration: 87,
+        mobileAccess: 93,
+        averageSpeed: 104.6,
+        digitalLiteracy: 77,
+        barriers: ["Political division", "Rural connectivity", "Age-related digital gaps"]
+    },
+    "Luxembourg": {
+        internetPenetration: 99,
+        mobileAccess: 99,
+        averageSpeed: 187.3,
+        digitalLiteracy: 92,
+        barriers: ["Cross-border worker integration", "Multilingual barriers", "Digital skills training"]
+    },
+    "Estonia": {
+        internetPenetration: 93,
+        mobileAccess: 96,
+        averageSpeed: 103.7,
+        digitalLiteracy: 87,
+        barriers: ["Rural connectivity", "Aging population", "Russian-speaking community integration"]
+    },
+    "Serbia": {
+        internetPenetration: 79,
+        mobileAccess: 90,
+        averageSpeed: 74.8,
+        digitalLiteracy: 61,
+        barriers: ["Rural-urban divide", "Economic barriers", "Infrastructure quality", "Roma community access"]
+    },
+    "Croatia": {
+        internetPenetration: 81,
+        mobileAccess: 91,
+        averageSpeed: 80.5,
+        digitalLiteracy: 64,
+        barriers: ["Island connectivity", "Rural access", "Seasonal infrastructure load", "Senior digital literacy"]
+    },
+    "Slovenia": {
+        internetPenetration: 87,
+        mobileAccess: 93,
+        averageSpeed: 122.6,
+        digitalLiteracy: 73,
+        barriers: ["Mountain region connectivity", "Rural access", "Senior digital literacy"]
+    },
+    "Lithuania": {
+        internetPenetration: 85,
+        mobileAccess: 92,
+        averageSpeed: 142.9,
+        digitalLiteracy: 77,
+        barriers: ["Rural connectivity", "Aging population", "Socioeconomic divide"]
+    },
+    "Latvia": {
+        internetPenetration: 88,
+        mobileAccess: 94,
+        averageSpeed: 128.3,
+        digitalLiteracy: 75,
+        barriers: ["Rural-urban divide", "Aging population", "Economic barriers"]
+    },
+    "Afghanistan": {
+        internetPenetration: 18,
+        mobileAccess: 43,
+        averageSpeed: 7.5,
+        digitalLiteracy: 15,
+        barriers: ["Political instability", "Infrastructure destruction", "Extreme poverty", "Gender restrictions"]
+    },
+    "Yemen": {
+        internetPenetration: 29,
+        mobileAccess: 55,
+        averageSpeed: 11.7,
+        digitalLiteracy: 22,
+        barriers: ["Conflict damage", "Infrastructure destruction", "Economic crisis", "Electricity shortages"]
+    },
+    "Sudan": {
+        internetPenetration: 31,
+        mobileAccess: 57,
+        averageSpeed: 15.4,
+        digitalLiteracy: 26,
+        barriers: ["Political instability", "Infrastructure limitations", "Affordability", "Literacy barriers"]
+    },
+    "Cuba": {
+        internetPenetration: 58,
+        mobileAccess: 65,
+        averageSpeed: 16.8,
+        digitalLiteracy: 49,
+        barriers: ["Government restrictions", "Infrastructure limitations", "Affordability", "International connectivity"]
+    },
+    "North Korea": {
+        internetPenetration: 0.1,
+        mobileAccess: 10,
+        averageSpeed: 2.5,
+        digitalLiteracy: 15,
+        barriers: ["Government restrictions", "International isolation", "Limited infrastructure", "Access control"]
+    },
+    "Turkmenistan": {
+        internetPenetration: 25,
+        mobileAccess: 58,
+        averageSpeed: 13.2,
+        digitalLiteracy: 32,
+        barriers: ["Government restrictions", "Limited infrastructure", "Content filtering", "Affordability"]
+    },
+    "Uzbekistan": {
+        internetPenetration: 55,
+        mobileAccess: 73,
+        averageSpeed: 30.6,
+        digitalLiteracy: 41,
+        barriers: ["Content restrictions", "Infrastructure limitations", "Rural connectivity", "Digital literacy"]
+    },
+    "Kyrgyzstan": {
+        internetPenetration: 51,
+        mobileAccess: 72,
+        averageSpeed: 34.2,
+        digitalLiteracy: 44,
+        barriers: ["Mountain connectivity", "Rural access", "Affordability", "Infrastructure limitations"]
+    },
+    "Tajikistan": {
+        internetPenetration: 34,
+        mobileAccess: 62,
+        averageSpeed: 18.7,
+        digitalLiteracy: 32,
+        barriers: ["Mountain terrain", "Infrastructure limitations", "Affordability", "Digital literacy"]
+    },
+    "Bhutan": {
+        internetPenetration: 53,
+        mobileAccess: 78,
+        averageSpeed: 34.2,
+        digitalLiteracy: 42,
+        barriers: ["Mountain terrain", "Rural isolation", "Infrastructure costs", "Digital literacy"]
+    },
+    "Maldives": {
+        internetPenetration: 76,
+        mobileAccess: 89,
+        averageSpeed: 81.3,
+        digitalLiteracy: 58,
+        barriers: ["Island distribution", "Climate vulnerability", "Infrastructure costs", "Digital skills gap"]
     }
   };
 
@@ -706,26 +1357,119 @@ permalink: /digitalDivideActivity/
   function getCountryName(countryId) {
     // This is a simplified mapping of country IDs to names
     const countryMap = {
-      840: "United States",
-      124: "Canada",
-      826: "United Kingdom",
-      276: "Germany",
-      250: "France",
-      392: "Japan",
-      410: "South Korea",
-      156: "China",
-      356: "India",
-      76: "Brazil",
-      484: "Mexico",
-      710: "South Africa",
-      566: "Nigeria",
-      404: "Kenya",
-      818: "Egypt",
-      36: "Australia",
-      643: "Russia",
-      682: "Saudi Arabia",
-      586: "Pakistan",
-      360: "Indonesia"
+        840: "United States",
+        124: "Canada",
+        826: "United Kingdom",
+        276: "Germany",
+        250: "France",
+        392: "Japan",
+        410: "South Korea",
+        156: "China",
+        356: "India",
+        76: "Brazil",
+        484: "Mexico",
+        710: "South Africa",
+        566: "Nigeria",
+        404: "Kenya",
+        818: "Egypt",
+        36: "Australia",
+        643: "Russia",
+        682: "Saudi Arabia",
+        586: "Pakistan",
+        360: "Indonesia",
+        32: "Argentina",
+        152: "Chile",
+        704: "Vietnam",
+        764: "Thailand",
+        458: "Malaysia",
+        608: "Philippines",
+        50: "Bangladesh",
+        231: "Ethiopia",
+        288: "Ghana",
+        504: "Morocco",
+        376: "Israel",
+        616: "Poland",
+        752: "Sweden",
+        792: "Turkey",
+        170: "Colombia",
+        604: "Peru",
+        554: "New Zealand",
+        702: "Singapore",
+        724: "Spain",
+        646: "Rwanda",
+        380: "Italy",
+        528: "Netherlands",
+        578: "Norway",
+        208: "Denmark",
+        246: "Finland",
+        756: "Switzerland",
+        620: "Portugal",
+        300: "Greece",
+        40: "Austria",
+        203: "Czech Republic",
+        348: "Hungary",
+        56: "Belgium",
+        372: "Ireland",
+        784: "United Arab Emirates",
+        634: "Qatar",
+        414: "Kuwait",
+        804: "Ukraine",
+        112: "Belarus",
+        398: "Kazakhstan",
+        12: "Algeria",
+        788: "Tunisia",
+        422: "Lebanon",
+        400: "Jordan",
+        512: "Oman",
+        68: "Bolivia",
+        218: "Ecuador",
+        862: "Venezuela",
+        600: "Paraguay",
+        858: "Uruguay",
+        591: "Panama",
+        188: "Costa Rica",
+        388: "Jamaica",
+        780: "Trinidad and Tobago",
+        214: "Dominican Republic",
+        332: "Haiti",
+        834: "Tanzania",
+        800: "Uganda",
+        508: "Mozambique",
+        686: "Senegal",
+        384: "Ivory Coast",
+        72: "Botswana",
+        516: "Namibia",
+        120: "Cameroon",
+        894: "Zambia",
+        524: "Nepal",
+        144: "Sri Lanka",
+        104: "Myanmar",
+        116: "Cambodia",
+        418: "Laos",
+        496: "Mongolia",
+        242: "Fiji",
+        598: "Papua New Guinea",
+        352: "Iceland",
+        470: "Malta",
+        196: "Cyprus",
+        442: "Luxembourg",
+        233: "Estonia",
+        688: "Serbia",
+        191: "Croatia",
+        705: "Slovenia",
+        440: "Lithuania",
+        428: "Latvia",
+        4: "Afghanistan",
+        887: "Yemen",
+        729: "Sudan",
+        192: "Cuba",
+        408: "North Korea",
+        795: "Turkmenistan",
+        860: "Uzbekistan",
+        417: "Kyrgyzstan",
+        762: "Tajikistan",
+        64: "Bhutan",
+        462: "Maldives"
     };
     
     return countryMap[countryId] || "Unknown";
