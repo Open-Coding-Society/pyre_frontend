@@ -1,6 +1,6 @@
 ---
 layout: base
-title: Digital Divide Activity
+title: Digital Divide Map Activity
 search_exclude: true
 permalink: /digitalDivideActivity/
 ---
