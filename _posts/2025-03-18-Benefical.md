@@ -50,6 +50,7 @@ A critical understanding of computing innovations requires recognizing their dua
 | Environment     | Electric vehicles reduce carbon emissions and air pollution | Battery production and disposal create toxic waste |
 | Personal Safety | Smart home security cameras help monitor homes remotely | Data breaches can expose private security footage |
 
+---
 
 ### Case Study: Social Media Platforms
 [![](https://mermaid.ink/img/pako:eNptkcFuwjAMhl8lyhleoIdJgzLgUAmJnZZy8FKXWjROlDpIFeLdF8q0MTGfbOuz_cv_RVvfoC70MULo1HtZs_qOV7P3lqBXFTYEateDtD664aDm8xe1MAtkbGkiVm2LVobDw_AELc0GomvTf8RiIkqz7v1nXmE9cyboTDI-USuzTyH4KBlzLjEJ4fOuN7Plm0IQ8qyGDiLx8YFaTtTa7CKdwY63kxYjD0_IxlTIkkV1CL10ilyAv-Lv3NZUNNDjzRARmoOeaYe5R01-7OU2VWvp0GGti5w2EE-1rvmaOUji9yNbXUhMONPRp2Onixb6IVcpNCBYEmR33E83AH94_1tne8TH6u7jZOf1C0TSk5k?type=png)](https://mermaid.live/edit#pako:eNptkcFuwjAMhl8lyhleoIdJgzLgUAmJnZZy8FKXWjROlDpIFeLdF8q0MTGfbOuz_cv_RVvfoC70MULo1HtZs_qOV7P3lqBXFTYEateDtD664aDm8xe1MAtkbGkiVm2LVobDw_AELc0GomvTf8RiIkqz7v1nXmE9cyboTDI-USuzTyH4KBlzLjEJ4fOuN7Plm0IQ8qyGDiLx8YFaTtTa7CKdwY63kxYjD0_IxlTIkkV1CL10ilyAv-Lv3NZUNNDjzRARmoOeaYe5R01-7OU2VWvp0GGti5w2EE-1rvmaOUji9yNbXUhMONPRp2Onixb6IVcpNCBYEmR33E83AH94_1tne8TH6u7jZOf1C0TSk5k)
@@ -143,6 +144,18 @@ def responsible_innovation():
 
 ---
 
+## Classwork
+
+### Questions
+
+1. **Explain how the same computing innovation can have both beneficial and harmful effects depending on the context and user perspective. Provide an example to support your answer.**
+
+2. **Identify an example of a computing innovation that had unintended consequences. Explain what the intended use was and how the unintended effects emerged.**
+
+3. **How can programmers anticipate and mitigate the harmful effects of computing innovations? List at least three strategies based on the principles of responsible innovation.**
+
+---
+
 ## Practice Assessments
 
 ### Multiple Choice Questions
@@ -173,6 +186,7 @@ def responsible_innovation():
 <span style="color: green; font-weight: bold;">Correct Answer: C</span>
 </details>
 
+---
 
 ### Free Response Question
 
@@ -209,6 +223,7 @@ def responsible_innovation():
 
 ### Kahoot
 
+---
 
 ### Innovation Design Challenge
 
@@ -274,3 +289,5 @@ Choose a computing innovation not discussed in class and:
 | **IOC-1.B.3**| Responsible programmers try to consider unintended uses and effects          |
 | **IOC-1.B.4**| It is not possible for a programmer to consider all ways a computing innovation can be used |
 | **IOC-1.B.6**| Rapid sharing with many users can result in significant impacts beyond the programmer's control |
+
+---
