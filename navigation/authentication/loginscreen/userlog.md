@@ -7,7 +7,7 @@ show_reading_time: false
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NaviQ - Loading</title>
+    <title>Captain - Loading</title>
     <style>
         body, html {
             margin: 0;
@@ -157,7 +157,7 @@ show_reading_time: false
 
     <script>
         // Typing animation for the welcome message
-        const text = "Welcome to NaviQ";
+        const text = "Welcome to Qualcomm Captain";
         let index = 0;
         const speed = 80; 
 

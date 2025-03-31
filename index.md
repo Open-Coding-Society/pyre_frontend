@@ -7,7 +7,7 @@ show_reading_time: false
 
 <header class="hero">
   <div class="hero-content">
-    <h1>NaviQ: Smart Streets</h1>
+    <h1>Qualcomm Captain</h1>
     <p>Enhancing autonomous vehicle navigation using Poway's transport data</p>
     <button class="cta-button" onclick="scrollToExplore()">Explore Our Solution</button>
   </div>
@@ -73,7 +73,7 @@ show_reading_time: false
 <section id="contact" class="section">
     <div class="container">
         <h2>Get Involved</h2>
-        <p>Interested in learning more about NaviQ or partnering with us?</p>
+        <p>Interested in learning more about Qualcomm Captain or partnering with us?</p>
         <a href="mailto:placeholder@gmail.com" class="contact-button">Contact Us</a>
     </div>
 </section>

@@ -2,7 +2,7 @@
 layout: post 
 search_exclude: false
 show_reading_time: false
-permalink: /prism/aws
+permalink: /Captain/aws
 title: AWS Deployment Blog
 author: Mihir B, Manas G, Adi K, Yash P, Pranav S, Anvay V
 categories: [1Documentation]
@@ -24,9 +24,9 @@ Ensure that we have a working frontend-to-backend test server. If it does not wo
 Setup DNS endpoint through AWS Route 53.
 
 ```yml
-Server: https://prism.stu.nighthawkcodingsociety.com/
+Server: https://Captain.stu.nighthawkcodingsociety.com/
 Domain: stu.nighthawkcodingsociety.com
-Subdomain: prism
+Subdomain: Captain
 ```
 
 ### Port (Backend)
@@ -62,7 +62,7 @@ Select a unique port for the application. Update all locations:
   version: '3.12.3'
   services:
       web:
-          image: prism
+          image: Captain
           build: .
           env_file:
               - .env
@@ -79,7 +79,7 @@ Select a unique port for the application. Update all locations:
   server {
       listen 80;
       listen [::]:80;
-      server_name prism.nighthawkcodingsociety.com;
+      server_name Captain.nighthawkcodingsociety.com;
       location / {
           proxy_pass http://localhost:8505; (MINE)
           if ($request_method = OPTIONS) {
@@ -105,7 +105,7 @@ Prepare the frontend to access our domain and ports to match our localhost, port
   if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
       pythonURI = "http://localhost:8505";
   } else {
-      pythonURI = "https://prism.stu.nighthawkcodingsociety.com";
+      pythonURI = "https://Captain.stu.nighthawkcodingsociety.com";
   }
   ```
 
@@ -133,8 +133,8 @@ Password hint is 3 Musketeers
 
 ## Server Setup
 
-1. **Clone backend repo**: `git clone https://github.com/illuminati1618/prism_backend.git`
-2. **Navigate to repo**: `cd prism_backend`
+1. **Clone backend repo**: `git clone https://github.com/SanPranav/QcommVNE_backend.git`
+2. **Navigate to repo**: `cd QcommVNE_backend`
 3. **Build site**: `docker-compose up -d --build`
 4. **Test site**: `curl localhost:8505`
 
@@ -153,7 +153,7 @@ Go to AWS Route 53 and setup DNS subdomain for backend server.
 
 ### Pulling Changes into AWS EC2 deployment
 
-1. **Navigate to repo**: `cd ~/prism_backend`
+1. **Navigate to repo**: `cd ~/QcommVNE_backend`
 2. **docker-compose down**
 3. **git pull**
 4. **Rebuild docker container**: `docker-compose up -d --build`
@@ -248,7 +248,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
 
     ```bash
     cd /etc/nginx/sites-available
-    sudo nano prism.stu
+    sudo nano Captain.stu
     
     ```
 
@@ -257,7 +257,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
     ```nginx
         server {
 
-            server_name prism.stu.nighthawkcodingsociety.com;
+            server_name Captain.stu.nighthawkcodingsociety.com;
             location / {
                 proxy_pass http://localhost:8505;
                 if ($request_method = OPTIONS) {
@@ -273,22 +273,22 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
 
             listen [::]:443 ssl; # managed by Certbot
             listen 443 ssl; # managed by Certbot
-            ssl_certificate /etc/letsencrypt/live/prism.stu.nighthawkcodingsociety.com/fullchain.pem; # managed by Certbot
-            ssl_certificate_key /etc/letsencrypt/live/prism.stu.nighthawkcodingsociety.com/privkey.pem; # managed by Certbot
+            ssl_certificate /etc/letsencrypt/live/Captain.stu.nighthawkcodingsociety.com/fullchain.pem; # managed by Certbot
+            ssl_certificate_key /etc/letsencrypt/live/Captain.stu.nighthawkcodingsociety.com/privkey.pem; # managed by Certbot
             include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
             ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
 
         }
         server {
-            if ($host = prism.stu.nighthawkcodingsociety.com) {
+            if ($host = Captain.stu.nighthawkcodingsociety.com) {
                 return 301 https://$host$request_uri;
             } # managed by Certbot
 
 
             listen 80;
             listen [::]:80;
-            server_name prism.stu.nighthawkcodingsociety.com;
+            server_name Captain.stu.nighthawkcodingsociety.com;
             return 404; # managed by Certbot
 
         }    
@@ -300,7 +300,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
 
     ```bash
     cd /etc/nginx/sites-enabled
-    sudo ln -s /etc/nginx/sites-available/prism /etc/nginx/sites-enabled
+    sudo ln -s /etc/nginx/sites-available/Captain /etc/nginx/sites-enabled
     
     ```
 
@@ -313,7 +313,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
     ```
 
 6. **Test if Nginx is serving requests**:  
-    Open **[http://prism.stu.nighthawkcodingsociety.com](http://prism.stu.nighthawkcodingsociety.com/)** in our browser.
+    Open **[http://Captain.stu.nighthawkcodingsociety.com](http://Captain.stu.nighthawkcodingsociety.com/)** in our browser.
 
 ----------
 
@@ -334,7 +334,7 @@ Here are all the steps we will follow to install Certbot to deploy our site
     ```
 
 3. **Follow the prompts**:
-    - Select `prism.stu.nighthawkcodingsociety.com` from the list.
+    - Select `Captain.stu.nighthawkcodingsociety.com` from the list.
     - Choose option `2` because it will redirect us from HTTP to HTTPS, which is more secure.
 4. **Restart Nginx**:
 
@@ -343,7 +343,7 @@ Here are all the steps we will follow to install Certbot to deploy our site
     ```
 
 5. **Test HTTPS access**:  
-    Open **[https://prism.stu.nighthawkcodingsociety.com](https://prism.stu.nighthawkcodingsociety.com/)** in our browser.
+    Open **[https://Captain.stu.nighthawkcodingsociety.com](https://Captain.stu.nighthawkcodingsociety.com/)** in our browser.
 
 ----------
 
@@ -365,7 +365,7 @@ Steps:
 1. **Navigate to repo**:
 
     ```bash
-    cd ~/prism_2025
+    cd ~/QcommVNE_2025
     ```
 
 2. **Stop running containers**:
@@ -422,13 +422,13 @@ The network layer of the TCP/IP protocol is responsible for accepting and delive
 
 ### DNS & Routing
 
-- Our group handled this part to find our **route, type, alias, and IP address** to locate our Prism service.
+- Our group handled this part to find our **route, type, alias, and IP address** to locate our Captain service.
 - **IP address** is a way to register our address.
 - Right now, we are on an **intranet**.
   - **Intranet** = local to campus.
   - **Internet** = external/global.
 - The **DNS** is set up by registering the domain in AWS Route 53
-- We should have a **subdomain**: `prism`.
+- We should have a **subdomain**: `Captain`.
 - **Make sure the IP address is the exact same.**
 - **DNS maps record names to computers.**
 
@@ -448,7 +448,7 @@ The network layer of the TCP/IP protocol is responsible for accepting and delive
 
 - `docker ps`: lists docker containers on machine
 - Pipe operator, `|`, is used to feed output one command into another
-- Use the template that mort gave us, but modify it to our needs for prism.
+- Use the template that mort gave us, but modify it to our needs for Captain.
 - Copy the nginx_file template that we modified to the /etc/niginx/sites_available/
 - Follow naming conventions using `mv <old_path> <new_path>`
 - Make symbolic link that points to sites-available in sites-enabled using the `ln -s` command
@@ -469,16 +469,16 @@ The network layer of the TCP/IP protocol is responsible for accepting and delive
   - Crontab is a task scheduler that runs scripts at scheduled intervals.
   - We can use crontab to run `db_backup` at scheduled intervals using the following steps:
   - Run `crontab -e` to edit your user's crontab file
-  - `0 1 * * * bash /home/ubuntu/prism_backend/scripts/prsim_backup_sequence.sh` - This command runs a script every day at 1 AM.
-- Using the `RUN` command in the Dockerfile in prism_backend to run db_init, restore, and backup
+  - `0 1 * * * bash /home/ubuntu/QcommVNE_backend/scripts/prsim_backup_sequence.sh` - This command runs a script every day at 1 AM.
+- Using the `RUN` command in the Dockerfile in QcommVNE_backend to run db_init, restore, and backup
 
 
-Contents of `/home/ubuntu/prism_backend/scripts/prsim_backup_sequence`:
+Contents of `/home/ubuntu/QcommVNE_backend/scripts/prsim_backup_sequence`:
 
 ```sh
     #!/bin/bash
 
-    cd /home/ubuntu/prism_backend
+    cd /home/ubuntu/QcommVNE_backend
 
     # Verify the installation and check the Python version
     python --version
@@ -494,5 +494,5 @@ Contents of `/home/ubuntu/prism_backend/scripts/prsim_backup_sequence`:
     # Install the required Python packages
     pip install -r requirements.txt
 
-    cd /home/ubuntu/prism_backend
+    cd /home/ubuntu/QcommVNE_backend
 ```
