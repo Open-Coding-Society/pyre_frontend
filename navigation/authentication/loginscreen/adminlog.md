@@ -8,7 +8,7 @@ show_reading_time: false
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Captain - Loading</title>
+    <title>Pyre - Loading</title>
     <style>
         body, html {
             margin: 0;
@@ -158,7 +158,7 @@ show_reading_time: false
 
     <script>
         // Typing animation for the welcome message
-        const text = "Welcome to Qualcomm Captain";
+        const text = "Welcome to Pyre";
         let index = 0;
         const speed = 80; 
 
