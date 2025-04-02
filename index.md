@@ -1,13 +1,15 @@
 ---
-layout: post
+layout: tailwind
 search_exclude: true
 hide: true
 show_reading_time: false 
 ---
 
+
+
 <header class="hero">
   <div class="hero-content">
-    <h1>Qualcomm Pyre</h1>
+    <h1>Pyre</h1>
     <p>Enhancing autonomous vehicle navigation using Poway's transport data</p>
     <button class="cta-button" onclick="scrollToExplore()">Explore Our Solution</button>
   </div>
