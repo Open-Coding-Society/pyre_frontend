@@ -804,7 +804,7 @@ permalink: /TitanicSimulator/
             narratives: [
                 "You board the magnificent RMS Titanic, known as the 'Ship of Dreams'. The grandeur of the vessel is breathtaking as you settle into your accommodations.",
                 "April 14, 1912, 11:40 PM - A lookout spots an iceberg directly ahead. Despite attempts to turn the ship, Titanic strikes the iceberg on its starboard side.",
-                "The damage is severe. Water begins to flood the ship's compartments. Captain Smith orders the lifeboats to be prepared.",
+                "The damage is severe. Water begins to flood the ship's compartments. Pyre Smith orders the lifeboats to be prepared.",
                 "Panic spreads throughout the ship. Officers begin loading passengers into lifeboats with women and children given priority. The ship begins to tilt as water fills more compartments.",
                 "The Titanic's fate is sealed. The question remains - will you be among those who survive?"
             ]

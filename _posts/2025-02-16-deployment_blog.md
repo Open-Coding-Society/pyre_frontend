@@ -2,7 +2,7 @@
 layout: post 
 search_exclude: false
 show_reading_time: false
-permalink: /Captain/aws
+permalink: /Pyre/aws
 title: AWS Deployment Blog
 author: Mihir B, Manas G, Adi K, Yash P, Pranav S, Anvay V
 categories: [1Documentation]
@@ -24,9 +24,9 @@ Ensure that we have a working frontend-to-backend test server. If it does not wo
 Setup DNS endpoint through AWS Route 53.
 
 ```yml
-Server: https://Captain.stu.nighthawkcodingsociety.com/
+Server: https://Pyre.stu.nighthawkcodingsociety.com/
 Domain: stu.nighthawkcodingsociety.com
-Subdomain: Captain
+Subdomain: Pyre
 ```
 
 ### Port (Backend)
@@ -62,7 +62,7 @@ Select a unique port for the application. Update all locations:
   version: '3.12.3'
   services:
       web:
-          image: Captain
+          image: Pyre
           build: .
           env_file:
               - .env
@@ -79,7 +79,7 @@ Select a unique port for the application. Update all locations:
   server {
       listen 80;
       listen [::]:80;
-      server_name Captain.nighthawkcodingsociety.com;
+      server_name Pyre.nighthawkcodingsociety.com;
       location / {
           proxy_pass http://localhost:8505; (MINE)
           if ($request_method = OPTIONS) {
@@ -105,7 +105,7 @@ Prepare the frontend to access our domain and ports to match our localhost, port
   if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
       pythonURI = "http://localhost:8505";
   } else {
-      pythonURI = "https://Captain.stu.nighthawkcodingsociety.com";
+      pythonURI = "https://Pyre.stu.nighthawkcodingsociety.com";
   }
   ```
 
@@ -248,7 +248,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
 
     ```bash
     cd /etc/nginx/sites-available
-    sudo nano Captain.stu
+    sudo nano Pyre.stu
     
     ```
 
@@ -257,7 +257,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
     ```nginx
         server {
 
-            server_name Captain.stu.nighthawkcodingsociety.com;
+            server_name Pyre.stu.nighthawkcodingsociety.com;
             location / {
                 proxy_pass http://localhost:8505;
                 if ($request_method = OPTIONS) {
@@ -273,22 +273,22 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
 
             listen [::]:443 ssl; # managed by Certbot
             listen 443 ssl; # managed by Certbot
-            ssl_certificate /etc/letsencrypt/live/Captain.stu.nighthawkcodingsociety.com/fullchain.pem; # managed by Certbot
-            ssl_certificate_key /etc/letsencrypt/live/Captain.stu.nighthawkcodingsociety.com/privkey.pem; # managed by Certbot
+            ssl_certificate /etc/letsencrypt/live/Pyre.stu.nighthawkcodingsociety.com/fullchain.pem; # managed by Certbot
+            ssl_certificate_key /etc/letsencrypt/live/Pyre.stu.nighthawkcodingsociety.com/privkey.pem; # managed by Certbot
             include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
             ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
 
         }
         server {
-            if ($host = Captain.stu.nighthawkcodingsociety.com) {
+            if ($host = Pyre.stu.nighthawkcodingsociety.com) {
                 return 301 https://$host$request_uri;
             } # managed by Certbot
 
 
             listen 80;
             listen [::]:80;
-            server_name Captain.stu.nighthawkcodingsociety.com;
+            server_name Pyre.stu.nighthawkcodingsociety.com;
             return 404; # managed by Certbot
 
         }    
@@ -300,7 +300,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
 
     ```bash
     cd /etc/nginx/sites-enabled
-    sudo ln -s /etc/nginx/sites-available/Captain /etc/nginx/sites-enabled
+    sudo ln -s /etc/nginx/sites-available/Pyre /etc/nginx/sites-enabled
     
     ```
 
@@ -313,7 +313,7 @@ Go to AWS Route 53 and set up a DNS subdomain for the backend server.
     ```
 
 6. **Test if Nginx is serving requests**:  
-    Open **[http://Captain.stu.nighthawkcodingsociety.com](http://Captain.stu.nighthawkcodingsociety.com/)** in our browser.
+    Open **[http://Pyre.stu.nighthawkcodingsociety.com](http://Pyre.stu.nighthawkcodingsociety.com/)** in our browser.
 
 ----------
 
@@ -334,7 +334,7 @@ Here are all the steps we will follow to install Certbot to deploy our site
     ```
 
 3. **Follow the prompts**:
-    - Select `Captain.stu.nighthawkcodingsociety.com` from the list.
+    - Select `Pyre.stu.nighthawkcodingsociety.com` from the list.
     - Choose option `2` because it will redirect us from HTTP to HTTPS, which is more secure.
 4. **Restart Nginx**:
 
@@ -343,7 +343,7 @@ Here are all the steps we will follow to install Certbot to deploy our site
     ```
 
 5. **Test HTTPS access**:  
-    Open **[https://Captain.stu.nighthawkcodingsociety.com](https://Captain.stu.nighthawkcodingsociety.com/)** in our browser.
+    Open **[https://Pyre.stu.nighthawkcodingsociety.com](https://Pyre.stu.nighthawkcodingsociety.com/)** in our browser.
 
 ----------
 
@@ -422,13 +422,13 @@ The network layer of the TCP/IP protocol is responsible for accepting and delive
 
 ### DNS & Routing
 
-- Our group handled this part to find our **route, type, alias, and IP address** to locate our Captain service.
+- Our group handled this part to find our **route, type, alias, and IP address** to locate our Pyre service.
 - **IP address** is a way to register our address.
 - Right now, we are on an **intranet**.
   - **Intranet** = local to campus.
   - **Internet** = external/global.
 - The **DNS** is set up by registering the domain in AWS Route 53
-- We should have a **subdomain**: `Captain`.
+- We should have a **subdomain**: `Pyre`.
 - **Make sure the IP address is the exact same.**
 - **DNS maps record names to computers.**
 
@@ -448,7 +448,7 @@ The network layer of the TCP/IP protocol is responsible for accepting and delive
 
 - `docker ps`: lists docker containers on machine
 - Pipe operator, `|`, is used to feed output one command into another
-- Use the template that mort gave us, but modify it to our needs for Captain.
+- Use the template that mort gave us, but modify it to our needs for Pyre.
 - Copy the nginx_file template that we modified to the /etc/niginx/sites_available/
 - Follow naming conventions using `mv <old_path> <new_path>`
 - Make symbolic link that points to sites-available in sites-enabled using the `ln -s` command

@@ -311,7 +311,7 @@ show_reading_time: false
 </style>
 
 <header class="heading">
-    <h1>Captain</h1>
+    <h1>Pyre</h1>
     <p>You can control your settings from here!</p>
 </header>
 
