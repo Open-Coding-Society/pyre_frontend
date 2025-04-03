@@ -3,7 +3,7 @@ layout: tailwind
 search_exclude: true
 hide: true
 show_reading_time: false
-permalink: /login/
+permalink: /signin/
 ---
 
 <div class="min-h-screen w-full flex flex-col items-center justify-between bg-black bg-opacity-95 bg-[url('https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80')] bg-cover bg-center bg-blend-overlay">
