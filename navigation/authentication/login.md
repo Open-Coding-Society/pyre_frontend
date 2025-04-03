@@ -1,13 +1,70 @@
 ---
-layout: login 
+layout: tailwind
 title: Login
 permalink: /login
 search_exclude: true
-show_reading_time: false 
+show_reading_time: false
 ---
 
-<div class="login-container">
+<div class="min-h-screen w-full flex flex-col items-center justify-center bg-black bg-opacity-95 bg-[url('/api/placeholder/1920/1080')] bg-cover bg-center bg-blend-overlay py-12 px-4">
+  <br>
+  <br>
+  <div class="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
     <!-- Python Login Form -->
+    <div class="w-full md:w-1/2 bg-gray-900 bg-opacity-80 rounded-lg shadow-xl p-8 backdrop-blur">
+      <h2 class="text-2xl font-bold text-white mb-6" id="pythonTitle">User Login (Python/Flask)</h2>
+      <form class="space-y-4" id="pythonForm" onsubmit="pythonLogin(); return false;">
+        <div>
+          <label class="block text-gray-400 text-sm mb-2">GitHub ID:</label>
+          <input type="text" id="uid" name="uid" required class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-gray-400 text-sm mb-2">Password:</label>
+          <input type="password" id="password" name="password" required class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:outline-none">
+        </div>
+        <div class="pt-2">
+          <button type="submit" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded shadow transition duration-300">
+            Login
+          </button>
+        </div>
+        <div id="message" class="text-red-500 text-sm"></div>
+      </form>
+    </div>
+    <!-- Sign Up Form -->
+    <div class="w-full md:w-1/2 bg-gray-900 bg-opacity-80 rounded-lg shadow-xl p-8 backdrop-blur">
+      <h2 class="text-2xl font-bold text-white mb-6" id="signupTitle">Sign Up</h2>
+      <form class="space-y-4" id="signupForm" onsubmit="signup(); return false;">
+        <div>
+          <label class="block text-gray-400 text-sm mb-2">Name:</label>
+          <input type="text" id="name" name="name" required class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-gray-400 text-sm mb-2">GitHub ID:</label>
+          <input type="text" id="signupUid" name="signupUid" required class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-gray-400 text-sm mb-2">Password:</label>
+          <input type="password" id="signupPassword" name="signupPassword" required class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-gray-400 text-sm mb-2">Interests:</label>
+          <input type="text" id="interests" name="interests" placeholder="e.g., Soccer, Pool, Computer Science" required class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:outline-none">
+        </div>
+        <div class="pt-2">
+          <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-medium rounded shadow transition duration-300">
+            Sign Up
+          </button>
+        </div>
+        <div id="signupMessage" class="text-green-500 text-sm"></div>
+      </form>
+    </div>
+  </div>
+  <footer class="w-full py-6 text-center mt-8">
+    <div class="text-gray-500 text-sm">© 2025 Pyre. All rights reserved.</div>
+  </footer>
+</div>
+
+<!-- <div class="login-container">
     <div class="login-card">
         <h1 id="pythonTitle">User Login (Python/Flask)</h1>
         <form id="pythonForm" onsubmit="pythonLogin(); return false;">
@@ -62,7 +119,7 @@ show_reading_time: false
             <p id="signupMessage" style="color: green;"></p>
         </form>
     </div>
-</div>
+</div> -->
 
 <script type="module">
     import { login, pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';

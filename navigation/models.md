@@ -6,9 +6,8 @@ show_reading_time: false
 permalink: /models/
 ---
 
-<br>
-
 <div class="min-h-screen bg-black text-white">
+  <br>
   <!-- Header -->
   <header class="text-center py-16">
     <h1 class="text-4xl font-bold mb-2">Data Sources</h1>
