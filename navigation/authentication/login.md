@@ -50,7 +50,7 @@ show_reading_time: false
           <label class="block text-gray-400 text-sm mb-2">Interests:</label>
           <input type="text" id="interests" name="interests" placeholder="e.g., Soccer, Pool, Computer Science" required class="w-full px-4 py-3 rounded bg-gray-800 text-white border border-gray-700 focus:border-orange-500 focus:outline-none">
         </div>
-        <div class="pt-2">
+        <div class="pt-2 signup-card">
           <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-medium rounded shadow transition duration-300">
             Sign Up
           </button>
