@@ -5,7 +5,7 @@ permalink: /adminlog
 search_exclude: true
 show_reading_time: false
 ---
-<!DOCTYPE html>
+
 <html>
 <head>
     <title>Pyre - Loading</title>
@@ -33,8 +33,8 @@ show_reading_time: false
             left: 0;
             z-index: 9999;
             background-color: #000000;
-            border: 2px solid #ff8a2c;
-            box-shadow: 0 0 20px rgba(255, 138, 44, 0.5);
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
         }
 
         .cutscene {
@@ -49,8 +49,8 @@ show_reading_time: false
             width: 100%;
             text-align: center;
             font-size: 4rem;
-            color: #12b5c8;
-            text-shadow: 0 0 10px rgba(18, 181, 200, 0.7);
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
             font-weight: bold;
         }
 
@@ -73,7 +73,7 @@ show_reading_time: false
             width: 50px;
             height: 50px;
             background-color: transparent;
-            border: 3px solid #12b5c8;
+            border: 3px solid #ff0000;
             border-radius: 50%;
             animation: rotate 4s linear infinite, pulse 2s ease-in-out infinite;
         }
@@ -82,7 +82,7 @@ show_reading_time: false
             width: 50px;
             height: 43.3px;
             background-color: transparent;
-            border: 3px solid #ff8a2c;
+            border: 3px solid #ffffff;
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
             animation: rotate 4s linear infinite reverse, pulse 2s ease-in-out infinite 0.5s;
         }
@@ -91,7 +91,7 @@ show_reading_time: false
             width: 50px;
             height: 50px;
             background-color: transparent;
-            border: 3px solid #ffffff;
+            border: 3px solid #ff0000;
             animation: rotate 4s linear infinite, pulse 2s ease-in-out infinite 1s;
         }
 
@@ -109,7 +109,7 @@ show_reading_time: false
         .loading-bar {
             height: 100%;
             width: 0%;
-            background-color: #12b5c8;
+            background-color: #ff0000;
             border-radius: 2px;
             transition: width 3s linear;
         }
