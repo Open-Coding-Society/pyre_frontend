@@ -180,7 +180,7 @@ show_reading_time: false
 
         // Redirect to index.md after the cutscene plays
         setTimeout(() => {
-            window.location.href = "{{site.baseurl}}/index";
+            window.location.href = "{{site.baseurl}}/";
         }, 3000); // 3 second cutscene duration
     </script>
 </body>
