@@ -317,7 +317,7 @@ show_reading_time: false
                     clearInterval(interval);
                     setTimeout(() => {
                         // Redirect to index.md after completion
-                        window.location.href = "{{site.baseurl}}/index";
+                        window.location.href = "{{site.baseurl}}/";
                     }, 500);
                 } else {
                     // Calculate a realistic loading curve
