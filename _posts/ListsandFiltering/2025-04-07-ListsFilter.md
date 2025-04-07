@@ -7,7 +7,26 @@ title: Lists and Filtering
 categories: [ListsandFiltering]
 ---
 
-## 1. Basic Python List and Pandas Structures
+# Lists and Searching Algorithms with Pandas
+
+## Learning Objectives
+
+By the end of this lesson, students will be able to:
+
+- Understand fundamental list operations using both Python lists and Pandas Series/DataFrames
+- Implement list procedures using proper syntax
+- Apply traversal techniques (complete and partial) to both native lists and Pandas structures
+- Use iteration statements to process data collections
+- Implement common algorithms including:
+  - Finding minimum/maximum values
+  - Computing sums and averages
+  - Performing searches and filters on datasets
+
+---
+
+## What Are Lists in Python and Pandas?
+
+Lists in Python are ordered collections of items that allow us to store multiple related values under a single variable name. In data analysis, Pandas provides similar but more powerful structures called Series and DataFrames.
 
 ```python
 # Example of a list in Python
@@ -25,15 +44,32 @@ student_data = pd.DataFrame({
 })
 ```
 
-Breakdown:
-- Line 1-2: Creates a standard Python list called `student_scores` with 5 integers representing test scores
-- Line 4-5: Imports the pandas library and creates a Series (pandas' 1D array) with the same data, plus a name attribute "Scores"
-- Line 7-11: Creates a DataFrame (pandas' 2D table) with 3 columns:
-  - 'Name': A list of 5 student names as strings
-  - 'Score': The same list of scores from before
-  - 'Grade': A list of letter grades corresponding to each student
+> **AAP-2.N.1**: The exam reference sheet provides basic operations on lists.
 
-## 2. Complete Traversal Functions
+---
+
+## Basic Operations
+
+| Operation   | Python List                     | Pandas Series/DataFrame               |
+|-------------|---------------------------------|---------------------------------------|
+| **Create**  | `numbers = [1, 2, 3, 4, 5]`    | `series = pd.Series([1, 2, 3, 4, 5])` |
+| **Access**  | `first = numbers[0]`           | `first = series[0]` or `df.iloc[0]`   |
+| **Insert**  | `numbers.append(6)`            | `series = pd.concat([series, pd.Series([6])])` |
+| **Remove**  | `numbers.remove(3)`            | `series = series[series != 3]`        |
+| **Update**  | `numbers[1] = 10`              | `series[1] = 10` or `df.loc[1, 'column'] = 10` |
+| **Length**  | `size = len(numbers)`          | `size = len(series)` or `df.shape[0]` |
+
+> **AAP-2.N.2**: List procedures are implemented in accordance with the syntax rules of the programming language.
+
+---
+
+## Traversal with Python Lists and Pandas
+
+Traversal is the process of accessing each element in a collection to perform operations.
+
+> **AAP-2.O.1**: Traversing a list can be a complete traversal, where all elements are accessed, or a partial traversal, where only a portion of elements are accessed.
+
+### Complete Traversal
 
 ```python
 # Python List complete traversal
@@ -52,12 +88,7 @@ def print_all_df_elements(df, column):
         print(item)
 ```
 
-Breakdown:
-- Line 1-4: Defines a function that takes a list as input and uses a simple for loop to print each element
-- Line 6-9: Defines a function that works similarly but takes a pandas Series as input
-- Line 11-14: Defines a function that takes a DataFrame and column name as inputs, then prints each value in that specific column
-
-## 3. Partial Traversal Functions
+### Partial Traversal
 
 ```python
 # Python List partial traversal (first half only)
@@ -79,17 +110,13 @@ def print_first_half_df(df, column):
         print(df[column].iloc[i])
 ```
 
-Breakdown:
-- Line 1-5: Defines a function that:
-  - Calculates the midpoint of the list using integer division (`//`)
-  - Uses a for loop with `range(midpoint)` to iterate through only the first half of indices
-  - Prints each element in the first half
-- Line 7-11: Similar function for pandas Series, using `.iloc[i]` to access elements by integer position
-- Line 13-17: Function for DataFrame columns that:
-  - Calculates midpoint based on DataFrame length
-  - Uses `df[column].iloc[i]` to access specific elements in the specified column
+> **AAP-2.O.2**: Iteration statements can be used to traverse data collections.
 
-## 4. For Loop Traversal Examples
+---
+
+## Iteration Techniques
+
+### For Loop Traversal
 
 ```python
 # Python List: Using index-based for loop
@@ -107,20 +134,7 @@ for index, row in student_data.iterrows():
     print(f"Student {index+1}: {row['Name']} got {row['Score']}")
 ```
 
-Breakdown:
-- Line 1-4: Demonstrates index-based traversal of a list:
-  - Creates a list of scores
-  - Loops through indices using `range(len(scores))`
-  - Prints each score with a formatted string showing student number (index+1)
-- Line 6-9: Similar approach with a pandas Series:
-  - Creates a Series with the same data
-  - Uses `.iloc[i]` to access elements by integer position
-- Line 11-13: Shows DataFrame traversal using `.iterrows()`:
-  - This method returns both the index and the entire row as a Series
-  - The loop unpacks these into `index` and `row` variables
-  - Accesses specific columns of each row using dictionary-style notation `row['Name']`
-
-## 5. While Loop Traversal Examples
+### While Loop Traversal
 
 ```python
 # Python List with while loop
@@ -136,18 +150,15 @@ while i < len(scores_series):
     i += 1
 ```
 
-Breakdown:
-- Line 1-5: Shows while loop traversal for a list:
-  - Initializes a counter `i` to 0
-  - Loop continues as long as `i` is less than the list length
-  - Prints each score with its corresponding student number
-  - Increments `i` to move to the next element
-- Line 7-11: Same approach with a pandas Series:
-  - Uses the same counter and condition
-  - Uses `.iloc[i]` to access elements by position
-  - Remember to increment `i` each iteration to avoid infinite loops
+> **AAP-2.O.3**: The exam reference sheet provides pseudocode for loops.
 
-## 6. Finding Min/Max Values
+---
+
+## Common Algorithms with Python Lists and Pandas
+
+> **AAP-2.O.4**: Knowledge of existing algorithms that use iteration can help in constructing new algorithms.
+
+### Finding Minimum/Maximum Values
 
 ```python
 # Python List approach
@@ -184,20 +195,7 @@ max_score = student_data['Score'].max()
 print(f"Min: {min_score}, Max: {max_score}")
 ```
 
-Breakdown:
-- Line 1-12: Defines a function to find min/max values in a list:
-  - First checks if the list is empty and returns None values if so
-  - Initializes both minimum and maximum to the first element
-  - Traverses the list, updating minimum or maximum whenever a smaller/larger value is found
-  - Returns both values as a tuple
-- Line 14-18: Simplified pandas version that:
-  - Checks for empty Series
-  - Uses built-in `.min()` and `.max()` methods
-- Line 20-24: Example using the list approach with sample data
-- Line 26-28: Same example using the pandas approach
-- Line 30-33: Shows how to find min/max directly on a DataFrame column
-
-## 7. Computing Sum and Average
+### Computing Sum and Average
 
 ```python
 # Python List approach
@@ -223,19 +221,13 @@ avg_score = student_data['Score'].mean()
 print(f"Total: {total_score}, Average: {avg_score}")
 ```
 
-Breakdown:
-- Line 1-10: Defines a function to calculate sum and average of a list:
-  - Handles empty list case
-  - Initializes total to 0
-  - Loops through each number, adding it to the total
-  - Calculates average by dividing total by list length
-  - Returns both values as a tuple
-- Line 12-16: Pandas version using built-in methods:
-  - Handles empty Series case
-  - Uses `.sum()` and `.mean()` methods
-- Line 18-21: Example showing how to calculate directly on a DataFrame column
+---
 
-## 8. Linear Search in Python Lists
+## Searching Algorithms
+
+### Linear Search in Python Lists
+
+> **AAP-2.O.5**: Linear or sequential search algorithms check each element of a list, in order, until the desired value is found or all elements in the list have been checked.
 
 ```python
 def linear_search(values, target):
@@ -245,15 +237,7 @@ def linear_search(values, target):
     return -1  # Return -1 if target not found
 ```
 
-Breakdown:
-- Line 1-5: Defines a linear search function that:
-  - Takes a list of values and a target value to search for
-  - Iterates through each index of the list
-  - Compares each element with the target
-  - Returns the index immediately when a match is found
-  - Returns -1 if no match is found after checking all elements
-
-## 9. Searching in Pandas
+### Searching in Pandas
 
 ```python
 # Finding exact matches in a Series
@@ -286,19 +270,11 @@ high_scorers = student_data[student_data['Score'] > 90]
 print(high_scorers)
 ```
 
-Breakdown:
-- Line 1-6: Defines a function to find matches in a Series:
-  - Uses boolean indexing `series[series == value]` to filter
-  - Returns a list of indices for the matching values
-- Line 8-13: Similar function for DataFrames:
-  - Takes a DataFrame, column name, and value
-  - Uses boolean indexing `df[df[column] == value]` to filter
-  - Returns a list of indices for rows with matching values
-- Line 15-20: Creates sample student data
-- Line 22-24: Example using boolean indexing to find students with grade 'A'
-- Line 26-28: Example using comparison operator to find students with scores above 90
+---
 
-## 10. Filtering Data
+## Working with Data - Step by Step
+
+### Pattern: Filtering Data
 
 ```python
 # Python List approach
@@ -318,17 +294,7 @@ passing_students = student_data[student_data['Score'] >= 70]
 print(passing_students)
 ```
 
-Breakdown:
-- Line 1-7: Defines a function to filter passing scores from a list:
-  - Creates an empty list to store passing scores
-  - Loops through each score
-  - Appends to the result list only if the score meets the threshold
-- Line 9-11: Pandas version using boolean indexing:
-  - Uses the comparison operator to create a boolean mask
-  - Returns only the values that meet the condition
-- Line 13-15: Example showing how to filter a DataFrame by a threshold value
-
-## 11. Transforming Data
+### Pattern: Transforming Data
 
 ```python
 # Python List approach
@@ -347,20 +313,7 @@ student_data['Curved Score'] = student_data['Score'].apply(lambda x: min(100, x 
 print(student_data)
 ```
 
-Breakdown:
-- Line 1-6: Defines a function to apply a curve to scores in a list:
-  - Creates an empty list for curved scores
-  - Loops through each score, adding the curve value
-  - Uses `min(100, score + curve)` to cap scores at 100
-  - Appends each curved score to the result list
-- Line 8-10: Pandas version using `.apply()`:
-  - Takes a lambda function that adds the curve and caps at 100
-  - Applies this function to each element of the Series
-- Line 12-14: Example of adding a new column to a DataFrame:
-  - Creates 'Curved Score' column using `.apply()` with a lambda function
-  - Prints the updated DataFrame
-
-## 12. Grouping and Aggregating
+### Pattern: Grouping and Aggregating
 
 ```python
 # Grouping by grade and calculating average score
@@ -368,18 +321,49 @@ grade_stats = student_data.groupby('Grade')['Score'].agg(['mean', 'min', 'max', 
 print(grade_stats)
 ```
 
-Breakdown:
-- Line 1-3: Demonstrates grouping and aggregation in pandas:
-  - Uses `.groupby('Grade')` to group the data by the 'Grade' column
-  - Selects the 'Score' column from each group
-  - Calls `.agg()` with a list of functions to compute:
-    - 'mean': average score
-    - 'min': minimum score
-    - 'max': maximum score
-    - 'count': number of students
-  - The result is a DataFrame with grades as index and each statistic as a column
+---
 
-## 13. SQL with SQLite3 and Pandas
+## PopCorn Hacks (In-Class Exercises)
+
+### PopCorn Hack 1: Find Students with Scores in a Range
+
+```python
+# Complete the function to find all students with scores between min_score and max_score
+def find_students_in_range(df, min_score, max_score):
+    # Your code here
+    pass
+
+# Test with: find_students_in_range(student_data, 80, 90)
+```
+
+### PopCorn Hack 2: Calculate Letter Grades
+
+```python
+# Complete the function to add a 'Letter' column based on numerical scores
+def add_letter_grades(df):
+    # Your code here
+    # A: 90-100, B: 80-89, C: 70-79, D: 60-69, F: below 60
+    pass
+
+# Test with: add_letter_grades(student_data)
+```
+
+### PopCorn Hack 3: Find the Mode in a Series
+
+```python
+# Complete the function to find the most common value in a series
+def find_mode(series):
+    # Your code here
+    pass
+
+# Test with: find_mode(pd.Series([1, 2, 2, 3, 4, 2, 5]))
+```
+
+---
+
+## SQL with SQLite3 and Pandas
+
+Pandas can also interact with SQL databases, which is another way to work with structured data:
 
 ```python
 import sqlite3
@@ -407,20 +391,60 @@ grade_stats = pd.read_sql_query(query, conn)
 print(grade_stats)
 ```
 
-Breakdown:
-- Line 1-2: Imports sqlite3 for database operations and pandas
-- Line 4-5: Creates an in-memory SQLite database connection
-- Line 7-8: Converts the student_data DataFrame to an SQL table called 'students'
-- Line 10-13: Executes a simple SQL query to find students with scores > 80:
-  - Uses `pd.read_sql_query()` to run the query and get results as a DataFrame
-- Line 15-22: Demonstrates a more complex SQL query:
-  - Uses multi-line string for better readability
-  - Groups by Grade
-  - Calculates average score and count for each grade
-  - Orders results by average score in descending order
-  - Returns results as a DataFrame
+---
 
-## 14. Data Visualization Examples
+## Homework Assignment: Data Analysis
+
+For this homework, you'll work with a dataset of student performance and implement various list algorithms using both Python lists and Pandas.
+
+**Dataset**: A CSV file related to your Pilot City project. For example, our project is Fire Predictions using satellite data, so we would find a satellite reading CSV file and use Pandas to process it. CSV is the most compatible with Pandas and is therefore the most recommended. Others will also work.
+
+**Tasks**:
+
+1. Load the data using Pandas:
+   ```python
+   import pandas as pd
+   datas = pd.read_csv('data_title.csv')
+   ```
+
+2. Implement the following algorithms:  
+   - Find fire incidents with the highest and lowest overall average temperature recorded.  
+   - Calculate the difference between the maximum and minimum temperatures for each fire incident.  
+   - Identify all fire incidents where the temperature exceeded the average temperature across all incidents.  
+   - Group fire incidents by vegetation type and weather conditions, then calculate the average temperature and wind speed for each group.  
+
+3. Answer the following analytical questions:
+   - **Is there a correlation between vegetation type and fire intensity?**  
+     Use Pandas to calculate the correlation between vegetation type and fire intensity. Visualize the results using a bar chart or scatter plot.
+
+   - **Which weather condition is associated with the highest average fire intensity?**  
+     Compute the average fire intensity for each weather condition and identify the condition with the highest average.
+
+   - **What percentage of fire incidents recorded temperatures above 100°F?**  
+     Filter the dataset to find fire incidents with temperatures above 100°F, then calculate the percentage of such incidents relative to the total.
+
+4. Create a SQLite database:
+   - **Store the fire incident data in a table**  
+     Use SQLite to create a database and store the fire incident data in a table named `fire_incidents`.
+
+   - **Write SQL queries to extract insights about fire incidents**  
+     Examples:
+     - Find the average temperature and wind speed for each vegetation type.
+     - Identify fire incidents where the temperature exceeded 120°F and wind speed was above 15 mph.
+     - Group fire incidents by weather condition and calculate the average fire intensity for each group.
+
+   - **Compare the SQL approach with the direct Pandas approach**  
+     Discuss the advantages and disadvantages of using SQL versus Pandas for data analysis, focusing on performance, readability, and ease of use.
+
+**Submission Format**: Jupyter Notebook with code, explanations, and visualizations.
+
+<span style="color:red; font-size: 1.5em;">**DUE DATE**: **[ONE DAY FROM TODAY WEDNESDAY 10:00 PM]**</span>
+
+---
+
+## Extension: Data Visualization (0.02 Extra Credit Using Seaborn or matplotlib)
+
+After analyzing the fire data, visualize your findings:
 
 ```python
 import matplotlib.pyplot as plt
@@ -430,34 +454,115 @@ import seaborn as sns
 plt.style.use('ggplot')
 sns.set_palette("pastel")
 
-# Example: Score distribution by subject
+# Example: Temperature distribution by vegetation type
 plt.figure(figsize=(12, 6))
-sns.boxplot(data=student_data[['Math Score', 'Reading Score', 'Writing Score']])
-plt.title('Score Distribution by Subject')
-plt.ylabel('Score')
+sns.boxplot(x='Vegetation Type', y='Temperature', data=fire_data)
+plt.title('Temperature Distribution by Vegetation Type')
+plt.ylabel('Temperature (°F)')
+plt.xlabel('Vegetation Type')
+plt.xticks(rotation=45)
 plt.show()
 
-# Example: Average score by test preparation status
-prep_effect = student_data.groupby('Test Preparation')['Average Score'].mean().reset_index()
-sns.barplot(x='Test Preparation', y='Average Score', data=prep_effect)
-plt.title('Effect of Test Preparation on Average Score')
+# Example: Average fire intensity by weather condition
+weather_effect = fire_data.groupby('Weather Condition')['Fire Intensity'].mean().reset_index()
+sns.barplot(x='Weather Condition', y='Fire Intensity', data=weather_effect)
+plt.title('Effect of Weather Condition on Fire Intensity')
+plt.ylabel('Average Fire Intensity')
+plt.xlabel('Weather Condition')
+plt.xticks(rotation=45)
 plt.show()
 ```
+---
 
-Breakdown:
-- Line 1-2: Imports visualization libraries matplotlib and seaborn
-- Line 4-6: Sets up plotting style:
-  - Uses 'ggplot' style from matplotlib
-  - Sets a "pastel" color palette from seaborn
-- Line 8-13: Creates a boxplot visualization:
-  - Sets figure size to 12x6 inches
-  - Creates a boxplot showing distribution of scores across three subjects
-  - Adds title and y-axis label
-  - Displays the plot
-- Line 15-19: Creates a bar chart visualization:
-  - Groups data by 'Test Preparation' and calculates mean 'Average Score'
-  - Uses `.reset_index()` to convert groupby result to regular DataFrame
-  - Creates a bar plot comparing average scores between preparation groups
-  - Adds a title and displays the plot
+## Dataset Design and Issue Reference
 
-These code snippets demonstrate a progression from basic Python lists to more powerful pandas data structures, along with various techniques for data manipulation, analysis, and visualization.
+Before diving into data analysis, it's crucial to ensure that your datasets are well-structured and designed for the intended operations. Poorly designed datasets can lead to inefficiencies, errors, and difficulties in testing.
+
+For example, the following issue highlights problems with improperly designed columns in a dataset:  
+[GitHub Issue #34: Example Results - Dataset Design Problems](https://github.com/SanPranav/QcommVNE_Frontend/issues/34)
+
+We **highly recommend** reviewing and refining your datasets before creating a final cumulative set for testing. This step ensures that your data is clean, consistent, and optimized for analysis, reducing the risk of encountering issues during testing and implementation.
+
+### Example: Filtered Dataset
+
+Below is an example of a filtered dataset based on the criteria mentioned in the issue above. This dataset excludes problematic columns, removes unrealistic fire sizes, and focuses on meaningful attributes for analysis. This filtered dataset can now be used for further analysis, such as identifying trends in fire occurrences, calculating average fire sizes, or visualizing fire locations on a map. For more details, refer to the issue linked above.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+file_path = "/home/pranav/nighthawk/Pranav_2025/Pranav_2025/assets/data/National_USFS_Fire_Occurrence_Point_(Feature_Layer).csv"
+df = pd.read_csv(file_path, low_memory=False)
+
+# Drop problematic columns (hardcoded column names due to dtype warning)
+drop_columns = ['column_name_5', 'column_name_11', 'column_name_12', 'column_name_13', 'column_name_18', 'column_name_19']
+df = df.drop(columns=[col for col in drop_columns if col in df.columns])
+
+# Rename columns for clarity
+df.rename(columns={'TOTALACRES': 'fire_size'}, inplace=True)
+
+# Remove unrealistic fire sizes (e.g., negative values, extreme outliers)
+if 'fire_size' in df.columns:
+    df = df[df['fire_size'] > 0]  # Remove negative or zero fire sizes
+    df = df[df['fire_size'] < df['fire_size'].quantile(0.99)]  # Remove extreme outliers
+
+# Convert FIREYEAR to integer
+df['FIREYEAR'] = df['FIREYEAR'].fillna(0).astype(int)
+
+# Create a summary DataFrame
+summary_df = df.groupby('FIREYEAR')['fire_size'].agg(['count', 'mean', 'sum']).reset_index()
+summary_df.columns = ['Year', 'Fire Count', 'Avg Fire Size', 'Total Burned Area']
+
+# Display the first few rows
+summary_df.head()
+
+# Plot Fire Count Over Years
+plt.figure(figsize=(12, 6))
+sns.barplot(x=summary_df['Year'], y=summary_df['Fire Count'], palette='viridis')
+plt.title("Total Fire Occurrences Per Year")
+plt.xlabel("Year")
+plt.ylabel("Number of Fires")
+plt.xticks(rotation=45)
+plt.show()
+
+# Plot Total Burned Area Over Years
+plt.figure(figsize=(12, 6))
+sns.lineplot(x=summary_df['Year'], y=summary_df['Total Burned Area'], marker='o', color='red')
+plt.title("Total Burned Area Per Year")
+plt.xlabel("Year")
+plt.ylabel("Acres Burned")
+plt.grid()
+plt.show()
+
+# Fire Size Distribution Boxplot
+plt.figure(figsize=(10, 6))
+sns.boxplot(x=df['fire_size'], showfliers=False, color='blue')
+plt.title("Fire Size Distribution")
+plt.xlabel("Fire Size (Acres)")
+plt.show()
+```
+---
+
+## College Board Connections
+
+| Code         | Description                                                                 |
+|--------------|-----------------------------------------------------------------------------|
+| **AAP-2.N.1** | The exam reference sheet provides basic operations on lists.               |
+| **AAP-2.N.2** | List procedures are implemented in accordance with the syntax rules.       |
+| **AAP-2.O.1** | Traversing a list can be a complete traversal or a partial traversal.      |
+| **AAP-2.O.2** | Iteration statements can be used to traverse a list.                       |
+| **AAP-2.O.3** | The exam reference sheet provides pseudocode for loops.                   |
+| **AAP-2.O.4** | Knowledge of existing algorithms that use iteration can help in constructing new algorithms. |
+| **AAP-2.O.5** | Linear or sequential search algorithms check each element until the desired value is found or all elements have been checked. |
+
+---
+
+## Additional Resources
+
+- [Pandas Documentation](https://pandas.pydata.org/docs/)
+- [SQLite with Python Tutorial](https://docs.python.org/3/library/sqlite3.html)
+- [Kaggle: Student Performance Dataset](https://www.kaggle.com/datasets/spscientist/students-performance-in-exams)
+- [DataCamp: Pandas Cheat Sheet](https://www.datacamp.com/community/blog/python-pandas-cheat-sheet)
+- [W3Schools: Python Pandas Tutorial](https://www.w3schools.com/python/pandas/default.asp)
