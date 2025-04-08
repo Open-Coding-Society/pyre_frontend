@@ -544,6 +544,41 @@ plt.xlabel("Fire Size (Acres)")
 plt.show()
 ```
 ---
+## Multiple Choice
+
+1. **What is the primary difference between a Python list and a Pandas Series?**  
+    A. Lists can only store numbers, while Series can store strings  
+    B. Pandas Series have labeled indices, while lists use integer positions  
+    C. Lists use loops, Series use if statements  
+    D. Pandas Series cannot be modified after creation  
+    :white_check_mark: **Correct Answer**: B  
+    **Explanation**: Lists use integer-based indices, while Pandas Series support labeled indexing with more functionality.
+
+2. **Which of the following creates a DataFrame in Pandas?**  
+    A. `df = pd.Series({'Name': 'Alice', 'Score': 95})`  
+    B. `df = pd.List({'Name': 'Alice', 'Score': 95})`  
+    C. `df = pd.DataFrame({'Name': ['Alice'], 'Score': [95]})`  
+    D. `df = pd.Table({'Alice': 95})`  
+    :white_check_mark: **Correct Answer**: C  
+    **Explanation**: Pandas DataFrames are created using `pd.DataFrame()` with dictionary values as lists.
+
+3. **What will `df.shape[0]` return when `df` is a DataFrame?**  
+    A. Number of columns  
+    B. Number of rows  
+    C. Total number of cells  
+    D. First value of the DataFrame  
+    :white_check_mark: **Correct Answer**: B  
+    **Explanation**: `df.shape` returns a tuple `(rows, columns)`, so `df.shape[0]` gives the row count.
+
+4. **Which operation would you use to remove the value 3 from a Pandas Series?**  
+    A. `series.remove(3)`  
+    B. `series = series[series != 3]`  
+    C. `series.pop(3)`  
+    D. `del series[3]`  
+    :white_check_mark: **Correct Answer**: B  
+    **Explanation**: Filtering with `series[series != 3]` returns a new Series without the value 3.
+
+![Image](https://github.com/user-attachments/assets/2d3a8e26-f6b5-4ccd-89d4-6748b178f046)
 
 ## College Board Connections
 
