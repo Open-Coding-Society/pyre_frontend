@@ -647,7 +647,8 @@ plt.show()
     :white_check_mark: **Correct Answer**: B  
     **Explanation**: Filtering with `series[series != 3]` returns a new Series without the value 3.
 
-![Image](https://github.com/user-attachments/assets/2d3a8e26-f6b5-4ccd-89d4-6748b178f046)
+![Image](https://github.com/user-attachments/assets/d43dc36e-4519-4b7a-83b8-4c1e221b33cf)
+![Image](https://github.com/user-attachments/assets/f4d002c4-9c3b-48b1-901b-b9357fb7293a)
 
 ## College Board Connections
 
