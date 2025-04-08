@@ -392,6 +392,75 @@ print(grade_stats)
 ```
 
 ---
+## MCQ Questions1. Which of the following is the correct way to create a Pandas Series from a list?
+A. series = pd.DataFrame([1, 2, 3])
+B. series = pd.Series([1, 2, 3])
+C. series = [1, 2, 3]
+D. series = pd.Series({1, 2, 3})
+<details> <summary>💡 Answer</summary> B. `series = pd.Series([1, 2, 3])` </details>
+2. What is the purpose of a traversal in the context of lists and Pandas structures?
+A. To delete all elements in a collection
+B. To access each element in a collection
+C. To sort the collection alphabetically
+D. To filter out duplicate values
+<details> <summary>💡 Answer</summary> B. To access each element in a collection </details>
+3. What Python keyword is most commonly used in a complete traversal of a list?
+A. map
+B. def
+C. for
+D. try
+<details> <summary>💡 Answer</summary> C. `for` </details>
+4. How can you find all rows in a DataFrame where the value in the "Score" column is greater than 90?
+A. df[Score > 90]
+B. df['Score'] > 90
+C. df[df['Score'] > 90]
+D. df.where('Score' > 90)
+<details> <summary>💡 Answer</summary> C. `df[df['Score'] > 90]` </details>
+5. Which of the following is the correct method to find the average of a Pandas Series?
+A. series.mean()
+B. mean(series)
+C. average(series)
+D. series.avg()
+<details> <summary>💡 Answer</summary> A. `series.mean()` </details>
+6. In a DataFrame, what does df.iloc[0] return?
+A. The first column of the DataFrame
+B. The first row of the DataFrame
+C. The column names
+D. All rows except the first one
+<details> <summary>💡 Answer</summary> B. The first row of the DataFrame </details>
+7. What does the following code return if the value is not found?
+def linear_search(values, target):
+    for i in range(len(values)):
+        if values[i] == target:
+            return i
+    return -1
+A. It returns 0
+B. It raises an error
+C. It returns -1
+D. It returns None
+<details> <summary>💡 Answer</summary> C. It returns -1 </details>
+8. Which Pandas method allows you to add a new column to a DataFrame by transforming an existing one?
+A. .add()
+B. .transform()
+C. .apply()
+D. .insert()
+<details> <summary>💡 Answer</summary> C. `.apply()` </details>
+9. What is the result of this code?
+numbers = [1, 2, 3]
+numbers.append(4)
+print(numbers)
+A. [1, 2, 3]
+B. [1, 2, 3, 4]
+C. 1, 2, 3, 4
+D. [4, 1, 2, 3]
+<details> <summary>💡 Answer</summary> B. `[1, 2, 3, 4]` </details>
+10. What is a benefit of using Pandas DataFrames over native Python lists?
+A. They execute faster than lists
+B. They allow heterogeneous types within the same column
+C. They provide tabular data structures with built-in methods for filtering, aggregation, and transformation
+D. They use less memory
+<details> <summary>💡 Answer</summary> C. They provide tabular data structures with built-in methods for filtering, aggregation, and transformation </details>
+
 
 ## Homework Assignment: Data Analysis
 
