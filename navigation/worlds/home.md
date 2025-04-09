@@ -5,12 +5,14 @@ search_exclude: true
 permalink: /home/
 ---
 
-<br>
-<br>
 
-<div class="min-h-screen bg-black text-gray-200" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js'); background-size: cover;">
+<!-- NOTE: I removed the below part from the class part of the overall div, when switching to the base layout -->
+<!-- style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js'); background-size: cover;" -->
+<div class="min-h-screen bg-black text-gray-200">
   <!-- Background pattern -->
-  <div class="absolute inset-0 bg-black bg-opacity-90 z-0" style="background-image: radial-gradient(circle, rgba(255, 100, 50, 0.1) 1px, transparent 1px); background-size: 30px 30px;"></div>
+  <!-- <div class="absolute inset-0 bg-black bg-opacity-90 z-0" style="background-image: radial-gradient(circle, rgba(255, 100, 50, 0.1) 1px, transparent 1px); background-size: 30px 30px;"></div> -->
+  <br>
+  <br>
 
   <!-- Main Content -->
   <div class="relative z-10 container mx-auto px-4 py-12">

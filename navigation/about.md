@@ -5,9 +5,11 @@ hide: true
 show_reading_time: false
 permalink: /about/
 ---
-<div class="min-h-screen bg-black text-gray-200" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js'); background-size: cover;">
-  <!-- Background pattern -->
-  <div class="absolute inset-0 bg-black bg-opacity-90 z-0" style="background-image: radial-gradient(circle, rgba(255, 100, 50, 0.1) 1px, transparent 1px); background-size: 30px 30px;"></div>
+
+<!-- NOTE: I removed that part from the class part of the overall div, when switching to the base layout -->
+<!-- style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js'); background-size: cover;" -->
+<div class="min-h-screen bg-black text-gray-200">
+  <!-- <div class="absolute inset-0 bg-black bg-opacity-90 z-0" style="background-image: radial-gradient(circle, rgba(255, 100, 50, 0.1) 1px, transparent 1px); background-size: 30px 30px;"></div> -->
 
   <br>
   <br>
