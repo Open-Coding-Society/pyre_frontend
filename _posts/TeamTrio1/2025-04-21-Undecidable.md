@@ -3,7 +3,7 @@ layout: post
 search_exclude: true
 show_reading_time: false
 permalink: /UndH
-title: Undecideable Problems, Graphs + Heuristics
+title: Undecidable Problems, Graphs + Heuristics
 categories: [TeamTeachTrio1]
 ---
 # Undecidable Problems, Graphs + Heuristics
