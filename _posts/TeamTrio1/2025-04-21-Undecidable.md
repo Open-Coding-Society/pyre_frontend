@@ -175,7 +175,94 @@ Graphs are mathematical structures used to model relationships between objects.
    - In directed graphs, edges have a direction
    - In undirected graphs, edges have no direction
 
-   ![Directed vs Undirected](https://media.geeksforgeeks.org/wp-content/uploads/20200630111809/graph18.jpg)
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="800" height="400" fill="#f9f9f9" rx="10" ry="10" />
+  
+  <!-- Title -->
+  <text x="400" y="40" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" font-weight="bold">Directed vs. Undirected Graphs</text>
+  
+  <!-- Undirected Graph Section -->
+  <g transform="translate(0, 0)">
+    <!-- Section Title -->
+    <text x="200" y="80" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" font-weight="bold">Undirected Graph</text>
+    
+    <!-- Nodes -->
+    <circle cx="100" cy="150" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="100" y="155" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">A</text>
+    
+    <circle cx="200" cy="120" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="200" y="125" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">B</text>
+    
+    <circle cx="300" cy="150" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="300" y="155" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">C</text>
+    
+    <circle cx="200" cy="230" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="200" y="235" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">D</text>
+    
+    <!-- Edges (no arrows) -->
+    <line x1="122" y1="139" x2="178" y2="126" stroke="#ff6b6b" stroke-width="3" />
+    <line x1="223" y1="130" x2="277" y2="140" stroke="#ff6b6b" stroke-width="3" />
+    <line x1="280" y1="170" x2="223" y2="217" stroke="#ff6b6b" stroke-width="3" />
+    <line x1="180" y1="217" x2="120" y2="170" stroke="#ff6b6b" stroke-width="3" />
+    
+    <!-- Description -->
+    <text x="200" y="300" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">Edges have no direction</text>
+    <text x="200" y="320" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">(bidirectional connections)</text>
+  </g>
+  
+  <!-- Directed Graph Section -->
+  <g transform="translate(400, 0)">
+    <!-- Section Title -->
+    <text x="200" y="80" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" font-weight="bold">Directed Graph</text>
+    
+    <!-- Nodes -->
+    <circle cx="100" cy="150" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="100" y="155" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">A</text>
+    
+    <circle cx="200" cy="120" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="200" y="125" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">B</text>
+    
+    <circle cx="300" cy="150" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="300" y="155" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">C</text>
+    
+    <circle cx="200" cy="230" r="25" fill="#4f86f7" stroke="#2a4b8d" stroke-width="3" />
+    <text x="200" y="235" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="white" font-weight="bold">D</text>
+    
+
+    <!-- Edges with arrows using markers -->
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#ff6b6b" />
+      </marker>
+    </defs>
+    
+    <!-- A to B -->
+    <line x1="122" y1="139" x2="178" y2="126" stroke="#ff6b6b" stroke-width="3" marker-end="url(#arrowhead)" />
+    
+    <!-- B to C -->
+    <line x1="223" y1="130" x2="277" y2="140" stroke="#ff6b6b" stroke-width="3" marker-end="url(#arrowhead)" />
+    
+    <!-- C to D -->
+    <line x1="280" y1="170" x2="223" y2="217" stroke="#ff6b6b" stroke-width="3" marker-end="url(#arrowhead)" />
+    
+    <!-- D to A (completing the cycle) -->
+    <line x1="180" y1="217" x2="120" y2="170" stroke="#ff6b6b" stroke-width="3" marker-end="url(#arrowhead)" />
+
+    <!-- Description -->
+    <text x="200" y="300" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">Edges have direction (arrows)</text>
+    <text x="200" y="320" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">(one-way connections)</text>
+  </g>
+  
+  <!-- Dividing Line -->
+  <line x1="400" y1="70" x2="400" y2="340" stroke="#ccc" stroke-width="2" stroke-dasharray="5,5" />
+  
+  <!-- Footer -->
+  <rect x="150" y="350" width="500" height="30" rx="5" ry="5" fill="#eee" stroke="#ccc" />
+  <text x="400" y="370" font-family="Arial, sans-serif" font-size="14" text-anchor="middle">
+    In directed graphs, relationship A→B doesn't imply B→A
+  </text>
+</svg>
 
 2. **Weighted vs. Unweighted**
    - In weighted graphs, edges have values (weights)
