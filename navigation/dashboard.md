@@ -69,10 +69,10 @@ permalink: /dashboard/
       <!-- Active fires widget -->
       <div class="mb-6">
         <div class="text-sm text-gray-400 mb-1">Active Fires</div>
-        <div class="text-4xl font-bold">24</div>
+        <div id="active-fires-count" class="text-4xl font-bold">0</div>
         <div class="mt-2">
           <div class="text-sm text-gray-400 mb-1">Risk Level</div>
-          <div class="text-xl font-medium text-red-500">High</div>
+          <div id="highest-risk-level" class="text-xl font-medium text-red-500">N/A</div>
         </div>
       </div>
       
@@ -265,94 +265,57 @@ permalink: /dashboard/
         position: 'topright'
       }).addTo(map);
       
-      // Sample fire data
-      const fireData = [
-        { id: 1, position: [32.8328, -117.2713], name: "Torrey Pines", risk: "high", containment: "35%" },
-        { id: 2, position: [32.7336, -117.1831], name: "Balboa Park", risk: "medium", containment: "70%" },
-        { id: 3, position: [32.7638, -117.2273], name: "Mission Bay", risk: "medium", containment: "55%" },
-        { id: 4, position: [32.5967, -117.1139], name: "Chula Vista", risk: "low", containment: "90%" },
-        { id: 5, position: [33.1192, -117.0864], name: "Escondido", risk: "high", containment: "20%" },
-        { id: 6, position: [32.7953, -116.9422], name: "El Cajon", risk: "medium", containment: "45%" },
-        { id: 7, position: [32.8328, -116.7764], name: "Alpine", risk: "high", containment: "15%" },
-        { id: 8, position: [33.0169, -116.9678], name: "Poway", risk: "low", containment: "85%" }
-      ];
-      
-      // Custom fire icon function
-      function createFireIcon(risk) {
-        const className = risk === 'high' ? 'map-marker bg-red-600' : 
-                          risk === 'medium' ? 'map-marker bg-orange-500' : 
-                          'map-marker bg-yellow-500';
-        
-        const icon = L.divIcon({
-          className: className,
-          html: `<span>🔥</span>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15]
-        });
-        
-        return icon;
-      }
-      
-      // Add fire markers to map
-      fireData.forEach(fire => {
-        const marker = L.marker(fire.position, {
-          icon: createFireIcon(fire.risk)
-        }).addTo(map);
-        
-        const riskClass = fire.risk === 'high' ? 'risk-high' : 
-                         fire.risk === 'medium' ? 'risk-medium' : 
-                         'risk-low';
-        
-        // Custom popup content
-        const popupContent = `
-          <div class="fire-details">
-            <h3 class="font-bold text-lg">${fire.name}</h3>
-            <div class="mt-2">
-              <p>Risk Level: <span class="${riskClass} font-medium">${fire.risk.toUpperCase()}</span></p>
-              <p>Containment: ${fire.containment}</p>
-              <div class="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div class="h-full bg-orange-500 rounded-full" style="width: ${fire.containment}"></div>
-              </div>
-            </div>
-          </div>
-        `;
+      // Fetch fire data from the API
+      fetch('/api/fire_incidents')
+        .then(response => response.json())
+        .then(data => {
+          // Update active fires count and highest risk level
+          const activeFiresCount = data.length;
+          const highestRiskLevel = data.reduce((highest, fire) => {
+            if (fire.risk === 'high') return 'High';
+            if (fire.risk === 'medium' && highest !== 'High') return 'Medium';
+            if (fire.risk === 'low' && highest === 'N/A') return 'Low';
+            return highest;
+          }, 'N/A');
           
-        marker.bindPopup(popupContent, {
-          className: 'fire-popup',
-          maxWidth: 200
-        });
-      });
-      
-      // Draw a fire risk heatmap overlay
-      // For a real implementation, you'd use a proper heatmap plugin
-      // This is just a simple polygon to demonstrate the concept
-      const riskArea = L.polygon([
-        [32.8428, -117.2813],
-        [32.8528, -117.2513],
-        [32.8228, -117.2513],
-        [32.8128, -117.2813]
-      ], {
-        color: '#ef4444',
-        fillColor: '#ef4444',
-        fillOpacity: 0.3
-      }).addTo(map);
-      
-      // Add event handlers for map controls in your existing UI
-      const layersButton = document.querySelector('button:contains("Layers")');
-      const markersButton = document.querySelector('button:contains("Markers")');
-      
-      if (layersButton) {
-        layersButton.addEventListener('click', function() {
-          // In a real app, this would toggle different map layers
-          alert('Layer controls would appear here');
-        });
-      }
-      
-      if (markersButton) {
-        markersButton.addEventListener('click', function() {
-          // In a real app, this would toggle marker visibility
-          alert('Marker controls would appear here');
-        });
-      }
+          document.getElementById('active-fires-count').textContent = activeFiresCount;
+          document.getElementById('highest-risk-level').textContent = highestRiskLevel;
+          
+          // Add fire markers to the map
+          data.forEach(fire => {
+            const marker = L.marker([fire.latitude, fire.longitude], {
+              icon: L.divIcon({
+                className: `map-marker ${fire.risk === 'high' ? 'bg-red-600' : fire.risk === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'}`,
+                html: `<span>🔥</span>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+              })
+            }).addTo(map);
+            
+            const riskClass = fire.risk === 'high' ? 'risk-high' : 
+                             fire.risk === 'medium' ? 'risk-medium' : 
+                             'risk-low';
+            
+            // Custom popup content
+            const popupContent = `
+              <div class="fire-details">
+                <h3 class="font-bold text-lg">${fire.name}</h3>
+                <div class="mt-2">
+                  <p>Risk Level: <span class="${riskClass} font-medium">${fire.risk.toUpperCase()}</span></p>
+                  <p>Containment: ${fire.containment}</p>
+                  <div class="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-orange-500 rounded-full" style="width: ${fire.containment}"></div>
+                  </div>
+                </div>
+              </div>
+            `;
+            
+            marker.bindPopup(popupContent, {
+              className: 'fire-popup',
+              maxWidth: 200
+            });
+          });
+        })
+        .catch(error => console.error('Error fetching fire data:', error));
     });
 </script>
