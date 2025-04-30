@@ -364,53 +364,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Function to provide mock data when API is not available
-  function getMockWeatherData(lat, lng) {
-    // Generate some realistic but random data
-    const temp_f = Math.round(60 + Math.random() * 20); // 60-80°F
-    const temp_c = Math.round((temp_f - 32) * 5/9);
-    const humidity = Math.round(40 + Math.random() * 40); // 40-80%
-    const wind_kph = Math.round(5 + Math.random() * 20); // 5-25 kph
-    
-    // Possible weather conditions
-    const conditions = ['Sunny', 'Partly cloudy', 'Cloudy', 'Overcast', 'Light rain'];
-    const condition = conditions[Math.floor(Math.random() * conditions.length)];
-    
-    return {
-      location: `Near ${lat.toFixed(2)}, ${lng.toFixed(2)}`,
-      temperature_f: temp_f,
-      temperature_c: temp_c,
-      condition: condition,
-      wind_kph: wind_kph,
-      humidity: humidity,
-      feelslike_f: temp_f - Math.round(Math.random() * 3), // Slightly lower than actual temp
-      feelslike_c: temp_c - Math.round(Math.random() * 2),
-      last_updated: new Date().toLocaleTimeString()
-    };
-  }
-  
   // Function to fetch weather data for specific coordinates
   async function fetchWeatherForCoordinates(lat, lng) {
     try {
       if (weatherLoading) weatherLoading.style.display = 'block';
       if (weatherContent) weatherContent.style.opacity = '0.5';
       
-      let data;
+      // Use the PUBLIC endpoint instead of authenticated endpoint
+      const response = await fetch(`/api/weather/public/at?lat=${lat}&lng=${lng}`);
       
-      try {
-        // Use the public endpoint that doesn't require authentication
-        const response = await fetch(`/api/weather/public/at?lat=${lat}&lng=${lng}`);
-        
-        if (!response.ok) {
-          throw new Error('API unavailable');
-        }
-        
-        data = await response.json();
-      } catch (err) {
-        console.warn('Using mock weather data:', err);
-        // Fall back to mock data if API is unavailable
-        data = getMockWeatherData(lat, lng);
+      if (!response.ok) {
+        throw new Error('API request failed with status: ' + response.status);
       }
+      
+      const data = await response.json();
       
       // Update the hover panel
       const hoverLocation = document.getElementById('hover-location');
@@ -476,32 +443,27 @@ document.addEventListener('DOMContentLoaded', function() {
   // Update fetchInitialWeatherData to use the public endpoint
   async function fetchInitialWeatherData() {
     try {
-      let data;
+      // Use the PUBLIC endpoint instead of authenticated endpoint
+      const response = await fetch('/api/weather/public/current');
       
-      try {
-        // Use the public endpoint that doesn't require authentication
-        const response = await fetch('/api/weather/public/current');
-        
-        if (!response.ok) {
-          throw new Error('API unavailable');
-        }
-        
-        data = await response.json();
-      } catch (err) {
-        console.warn('Using mock data for initial weather:', err);
-        // Fall back to mock data if API is unavailable
-        data = {
-          location: "San Diego, California",
-          temperature_f: 72,
-          temperature_c: 22,
-          condition: "Sunny",
-          humidity: 65,
-          wind_kph: 12,
-          feelslike_f: 70,
-          feelslike_c: 21,
-          last_updated: new Date().toLocaleString()
-        };
+      if (!response.ok) {
+        throw new Error('API request failed with status: ' + response.status);
       }
+      
+      const data = await response.json();
+      
+      // Handle null or undefined values by providing defaults
+      const safeData = {
+        condition: data.condition || 'Unknown',
+        feelslike_c: data.feelslike_c !== undefined ? data.feelslike_c : '--',
+        feelslike_f: data.feelslike_f !== undefined ? data.feelslike_f : '--',
+        humidity: data.humidity !== undefined ? data.humidity : '--',
+        last_updated: data.last_updated || 'Unknown',
+        location: data.location || 'Unknown',
+        temperature_c: data.temperature_c !== undefined ? data.temperature_c : '--',
+        temperature_f: data.temperature_f !== undefined ? data.temperature_f : '--',
+        wind_kph: data.wind_kph !== undefined ? data.wind_kph : '--'
+      };
       
       // Update the UI with the weather data - safely check if elements exist
       const currentTemperature = document.getElementById('current-temperature');
@@ -517,25 +479,28 @@ document.addEventListener('DOMContentLoaded', function() {
       const lastUpdatedText = document.getElementById('last-updated-text');
       
       // Update UI elements if they exist
-      if (currentTemperature) currentTemperature.textContent = `${data.temperature_f}°F`;
-      if (currentCondition) currentCondition.textContent = data.condition || 'Unknown';
-      if (currentWindSpeed) currentWindSpeed.textContent = `${data.wind_kph} kph`;
-      if (currentHumidity) currentHumidity.textContent = `${data.humidity}%`;
-      if (currentFeelsLike) currentFeelsLike.textContent = `${data.feelslike_f}°F`;
+      if (currentTemperature) currentTemperature.textContent = `${safeData.temperature_f}°F`;
+      if (currentCondition) currentCondition.textContent = safeData.condition;
+      if (currentWindSpeed) currentWindSpeed.textContent = `${safeData.wind_kph} kph`;
+      if (currentHumidity) currentHumidity.textContent = `${safeData.humidity}%`;
+      if (currentFeelsLike) currentFeelsLike.textContent = `${safeData.feelslike_f}°F`;
       
       // Update right sidebar details
-      if (detailLocation) detailLocation.textContent = data.location;
-      if (detailTemperature) detailTemperature.textContent = `${data.temperature_f}°F`;
-      if (detailFeelsLike) detailFeelsLike.textContent = `${data.feelslike_f}°F`;
-      if (detailWindSpeed) detailWindSpeed.textContent = `${data.wind_kph} kph`;
-      if (detailHumidity) detailHumidity.textContent = `${data.humidity}%`;
+      if (detailLocation) detailLocation.textContent = safeData.location;
+      if (detailTemperature) detailTemperature.textContent = `${safeData.temperature_f}°F`;
+      if (detailFeelsLike) detailFeelsLike.textContent = `${safeData.feelslike_f}°F`;
+      if (detailWindSpeed) detailWindSpeed.textContent = `${safeData.wind_kph} kph`;
+      if (detailHumidity) detailHumidity.textContent = `${safeData.humidity}%`;
       
       // Update last updated text
-      if (lastUpdatedText) lastUpdatedText.textContent = `Last updated: ${data.last_updated}`;
+      if (lastUpdatedText) lastUpdatedText.textContent = `Last updated: ${safeData.last_updated}`;
+      
+      console.log('Weather data received:', data);
       
     } catch (error) {
       console.error('Error fetching initial weather data:', error);
-      // Set fallback values if everything fails
+      
+      // Show error in UI
       const currentTemperature = document.getElementById('current-temperature');
       const currentCondition = document.getElementById('current-condition');
       const currentWindSpeed = document.getElementById('current-wind-speed');
@@ -543,12 +508,12 @@ document.addEventListener('DOMContentLoaded', function() {
       const currentFeelsLike = document.getElementById('current-feels-like');
       const lastUpdatedText = document.getElementById('last-updated-text');
       
-      if (currentTemperature) currentTemperature.textContent = `72°F`;
-      if (currentCondition) currentCondition.textContent = 'Unknown';
-      if (currentWindSpeed) currentWindSpeed.textContent = `10 kph`;
-      if (currentHumidity) currentHumidity.textContent = `65%`;
-      if (currentFeelsLike) currentFeelsLike.textContent = `70°F`;
-      if (lastUpdatedText) lastUpdatedText.textContent = `Last updated: Unable to fetch`;
+      if (currentTemperature) currentTemperature.textContent = '--';
+      if (currentCondition) currentCondition.textContent = 'Error loading data';
+      if (currentWindSpeed) currentWindSpeed.textContent = '--';
+      if (currentHumidity) currentHumidity.textContent = '--';
+      if (currentFeelsLike) currentFeelsLike.textContent = '--';
+      if (lastUpdatedText) lastUpdatedText.textContent = `Last updated: Error fetching data`;
     }
   }
   
@@ -582,17 +547,124 @@ document.addEventListener('DOMContentLoaded', function() {
     else riskClass = 'risk-low';
     
     const popupContent = `
-      <div>
-        <h3 class="font-medium text-base mb-1">${incident.name}</h3>
-        <div>Risk Level: <span class="${riskClass}">${incident.risk.toUpperCase()}</span></div>
-        <div class="text-sm text-gray-300 mt-1">Coordinates: ${incident.lat.toFixed(4)}, ${incident.lng.toFixed(4)}</div>
+      <div class="p-2">
+        <h3 class="font-medium mb-1">${incident.name}</h3>
+        <div class="mb-1">
+          <span class="text-gray-300">Risk Level:</span>
+          <span class="${riskClass} font-medium">${incident.risk.toUpperCase()}</span>
+        </div>
+        <div class="mb-1">
+          <span class="text-gray-300">Coordinates:</span>
+          <span>${incident.lat.toFixed(4)}, ${incident.lng.toFixed(4)}</span>
+        </div>
+        <div class="mt-2">
+          <button class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white px-2 py-1 rounded text-xs">
+            View Details
+          </button>
+        </div>
       </div>
     `;
     
-    marker.bindPopup(popupContent, {
+    const popup = L.popup({
       className: 'fire-popup',
-      maxWidth: 200
+      closeButton: true,
+      autoClose: true,
+      closeOnEscapeKey: true,
+      closeOnClick: true
+    }).setContent(popupContent);
+    
+    marker.bindPopup(popup);
+  });
+  
+  // Set up a regular interval to update weather data every 5 minutes
+  setInterval(fetchInitialWeatherData, 300000);
+  
+  // Add event listener for export report button
+  const exportButton = document.querySelector('.bg-gradient-to-r.from-orange-600.to-red-600.hover\\:from-orange-500.hover\\:to-red-500.text-white.px-3.py-1.rounded.flex.items-center.text-sm');
+  if (exportButton) {
+    exportButton.addEventListener('click', function() {
+      alert('Exporting report... This would generate a PDF or CSV in a real application.');
     });
+  }
+  
+  // Add event listener for layers button
+  const layersButton = document.querySelector('button.bg-gray-200.bg-opacity-20.backdrop-blur-sm.rounded-md.px-3.py-1.text-sm.text-gray-200.flex.items-center.hover\\:bg-opacity-30');
+  if (layersButton) {
+    layersButton.addEventListener('click', function() {
+      alert('This would open a layer control panel in a real application.');
+    });
+  }
+  
+  // Add heat map layer for demonstration
+  const heatData = [];
+  for (let i = 0; i < 100; i++) {
+    // Create random points around San Diego
+    const lat = 32.7157 + (Math.random() - 0.5) * 0.1;
+    const lng = -117.1611 + (Math.random() - 0.5) * 0.1;
+    const intensity = Math.random() * 0.5; // Random intensity between 0 and 0.5
+    heatData.push([lat, lng, intensity]);
+  }
+  
+  // Check if the heat map library is available and add heat map
+  if (typeof L.heatLayer === 'function') {
+    const heat = L.heatLayer(heatData, {
+      radius: 25,
+      blur: 15,
+      maxZoom: 17,
+      gradient: {0.4: 'blue', 0.65: 'lime', 0.85: 'yellow', 1: 'red'}
+    }).addTo(map);
+  } else {
+    console.warn('Heat map plugin not available. Include leaflet-heat.js to enable this feature.');
+  }
+  
+  // Add a geolocation button
+  const locateControl = L.control({position: 'topright'});
+  locateControl.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+    div.innerHTML = `
+      <a href="#" title="Show my location" style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; background-color: white; color: #333;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+          <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+        </svg>
+      </a>
+    `;
+    
+    div.querySelector('a').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (navigator.geolocation) {
+        map.locate({setView: true, maxZoom: 16});
+      } else {
+        alert('Geolocation is not supported by your browser');
+      }
+    });
+    
+    return div;
+  };
+  locateControl.addTo(map);
+  
+  // Handle location found event
+  map.on('locationfound', function(e) {
+    const radius = e.accuracy / 2;
+    
+    // Create location marker
+    L.marker(e.latlng).addTo(map)
+      .bindPopup(`You are within ${radius} meters from this point`).openPopup();
+    
+    // Draw accuracy circle
+    L.circle(e.latlng, radius).addTo(map);
+    
+    // Update detail coordinates
+    const detailCoordinates = document.getElementById('detail-coordinates');
+    if (detailCoordinates) {
+      detailCoordinates.textContent = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+    }
+    
+    // Fetch weather for current location
+    fetchWeatherForCoordinates(e.latlng.lat, e.latlng.lng);
+  });
+  
+  // Handle location error
+  map.on('locationerror', function(e) {
+    alert('Error finding your location: ' + e.message);
   });
 });
-</script>
