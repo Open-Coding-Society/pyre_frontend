@@ -55,6 +55,39 @@ permalink: /dashboard/
     .risk-low {
       color: #eab308;
     }
+    .weather-info-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background-color: rgba(17, 24, 39, 0.85);
+      border: 1px solid #374151;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      color: white;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+      transition: opacity 0.3s ease;
+    }
+    .weather-info-loading {
+      opacity: 0.7;
+    }
+    .loader {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid #fff;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 </style>
 
 <div class="min-h-screen bg-gray-950 text-gray-200">
@@ -66,13 +99,13 @@ permalink: /dashboard/
     <div class="w-72 bg-gray-900/50 border-r border-gray-800 p-4 overflow-y-auto">
       <h2 class="text-lg font-medium mb-4">Analytics Overview</h2>
       
-      <!-- Active fires widget -->
+      <!-- Temperature widget -->
       <div class="mb-6">
-        <div class="text-sm text-gray-400 mb-1">Active Fires</div>
-        <div id="active-fires-count" class="text-4xl font-bold">0</div>
+        <div class="text-sm text-gray-400 mb-1">Current Temperature</div>
+        <div id="current-temperature" class="text-4xl font-bold">--°F</div>
         <div class="mt-2">
-          <div class="text-sm text-gray-400 mb-1">Risk Level</div>
-          <div id="highest-risk-level" class="text-xl font-medium text-red-500">N/A</div>
+          <div class="text-sm text-gray-400 mb-1">Condition</div>
+          <div id="current-condition" class="text-xl font-medium">--</div>
         </div>
       </div>
       
@@ -102,22 +135,18 @@ permalink: /dashboard/
       <!-- Wind widget -->
       <div class="mb-6">
         <h3 class="text-sm text-gray-400 mb-3">Wind Analysis</h3>
-        <div class="bg-gray-900/70 rounded-lg p-3 h-40">
-          <!-- Wind chart -->
-          <div class="h-full w-full rounded flex items-end space-x-1">
-            <div class="h-2/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-3/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-1/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-2/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-1/4 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-3/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-4/5 w-6 bg-orange-600 rounded-t"></div>
+        <div class="bg-gray-900/70 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm">Current Wind Speed</div>
+            <div id="current-wind-speed" class="font-medium">-- kph</div>
           </div>
-          <div class="flex justify-between text-xs text-gray-500 mt-2">
-            <div>Mon</div>
-            <div>Wed</div>
-            <div>Fri</div>
-            <div>Sun</div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm">Humidity</div>
+            <div id="current-humidity" class="font-medium">--%</div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="text-sm">Feels Like</div>
+            <div id="current-feels-like" class="font-medium">--°F</div>
           </div>
         </div>
       </div>
@@ -131,6 +160,37 @@ permalink: /dashboard/
           <!-- Map placeholder -->
           <div class="w-full h-full bg-gray-800/50"></div>
           
+          <!-- Weather info panel (initially hidden) -->
+          <div id="weather-info-panel" class="weather-info-panel" style="display: none;">
+            <h3 class="font-medium text-lg mb-2">Climate Data</h3>
+            <div id="weather-loading" style="display: none;">
+              <span class="loader"></span>
+              <span>Loading climate data...</span>
+            </div>
+            <div id="weather-content">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-300">Location:</span>
+                <span id="hover-location" class="font-medium">--</span>
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-300">Temperature:</span>
+                <span id="hover-temperature" class="font-medium">--</span>
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-300">Condition:</span>
+                <span id="hover-condition" class="font-medium">--</span>
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-300">Wind:</span>
+                <span id="hover-wind" class="font-medium">--</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-300">Humidity:</span>
+                <span id="hover-humidity" class="font-medium">--</span>
+              </div>
+            </div>
+          </div>
+          
           <!-- Map controls -->
           <div class="absolute top-4 right-4 flex space-x-2">
             <button class="bg-gray-200 bg-opacity-20 backdrop-blur-sm rounded-md px-3 py-1 text-sm text-gray-200 flex items-center hover:bg-opacity-30">
@@ -139,11 +199,11 @@ permalink: /dashboard/
               </svg>
               Layers
             </button>
-            <button class="bg-gray-200 bg-opacity-20 backdrop-blur-sm rounded-md px-3 py-1 text-sm text-gray-200 flex items-center hover:bg-opacity-30">
+            <button id="toggle-climate-data" class="bg-gray-200 bg-opacity-20 backdrop-blur-sm rounded-md px-3 py-1 text-sm text-gray-200 flex items-center hover:bg-opacity-30">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
               </svg>
-              Markers
+              Toggle Climate Data
             </button>
           </div>
         </div>
@@ -157,19 +217,19 @@ permalink: /dashboard/
               <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
               <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
             </svg>
-            Predictive Models
+            Weather Forecast
           </button>
           <button class="flex items-center text-gray-400 hover:text-white">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
               <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
             </svg>
-            Communications
+            Alerts
           </button>
         </div>
         
         <div class="flex items-center space-x-4">
-          <div class="text-sm text-gray-400">Last updated: 2 min ago</div>
+          <div id="last-updated-text" class="text-sm text-gray-400">Last updated: --</div>
           <button class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white px-3 py-1 rounded flex items-center text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -183,53 +243,54 @@ permalink: /dashboard/
     <!-- Right sidebar -->
     <div class="w-72 bg-gray-900/50 border-l border-gray-800 p-4 overflow-y-auto">
       <div class="mb-6">
-        <h2 class="text-lg font-medium mb-4">Region Statistics</h2>
+        <h2 class="text-lg font-medium mb-4">Location Details</h2>
         
         <div class="space-y-4">
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-gray-400">Northern Region</span>
-              <span class="font-medium">12 active</span>
-            </div>
-            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-              <div class="h-full bg-orange-500 rounded-full" style="width: 75%"></div>
+              <span class="text-gray-400">Current Location</span>
+              <span id="detail-location" class="font-medium">San Diego, CA</span>
             </div>
           </div>
           
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-gray-400">Southern Region</span>
-              <span class="font-medium">8 active</span>
-            </div>
-            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-              <div class="h-full bg-orange-500 rounded-full" style="width: 45%"></div>
+              <span class="text-gray-400">Coordinates</span>
+              <span id="detail-coordinates" class="font-medium">32.7157, -117.1611</span>
             </div>
           </div>
         </div>
       </div>
       
       <div>
-        <h2 class="text-lg font-medium mb-4">Resource Status</h2>
+        <h2 class="text-lg font-medium mb-4">Climate Status</h2>
         
         <div class="space-y-4">
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-gray-400">Fire Trucks</span>
-              <span class="font-medium">18/24 deployed</span>
+              <span class="text-gray-400">Temperature</span>
+              <span id="detail-temperature" class="font-medium">--°F</span>
             </div>
           </div>
           
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-gray-400">Helicopters</span>
-              <span class="font-medium">4/6 active</span>
+              <span class="text-gray-400">Feels Like</span>
+              <span id="detail-feels-like" class="font-medium">--°F</span>
             </div>
           </div>
           
           <div>
             <div class="flex justify-between mb-1">
-              <span class="text-gray-400">Personnel</span>
-              <span class="font-medium">156 on field</span>
+              <span class="text-gray-400">Wind Speed</span>
+              <span id="detail-wind-speed" class="font-medium">-- kph</span>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-gray-400">Humidity</span>
+              <span id="detail-humidity" class="font-medium">--%</span>
             </div>
           </div>
         </div>
@@ -244,7 +305,7 @@ permalink: /dashboard/
       const mapContainer = document.querySelector('.bg-gray-900\\/50.rounded-lg.overflow-hidden.h-full.relative.border.border-gray-800');
       
       // Clear placeholder content
-      mapContainer.innerHTML = '<div id="map"></div>';
+      mapContainer.innerHTML = '<div id="map"></div><div id="weather-info-panel" class="weather-info-panel" style="display: none;"><h3 class="font-medium text-lg mb-2">Climate Data</h3><div id="weather-loading" style="display: none;"><span class="loader"></span><span>Loading climate data...</span></div><div id="weather-content"><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Location:</span><span id="hover-location" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Temperature:</span><span id="hover-temperature" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Condition:</span><span id="hover-condition" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Wind:</span><span id="hover-wind" class="font-medium">--</span></div><div class="flex items-center justify-between"><span class="text-gray-300">Humidity:</span><span id="hover-humidity" class="font-medium">--</span></div></div></div>';
       
       // Initialize the map centered on San Diego
       const map = L.map('map', {
@@ -265,57 +326,466 @@ permalink: /dashboard/
         position: 'topright'
       }).addTo(map);
       
-      // Fetch fire data from the API
-      fetch('/api/fire_incidents')
-        .then(response => response.json())
-        .then(data => {
-          // Update active fires count and highest risk level
-          const activeFiresCount = data.length;
-          const highestRiskLevel = data.reduce((highest, fire) => {
-            if (fire.risk === 'high') return 'High';
-            if (fire.risk === 'medium' && highest !== 'High') return 'Medium';
-            if (fire.risk === 'low' && highest === 'N/A') return 'Low';
-            return highest;
-          }, 'N/A');
+      // Variables for throttling API calls
+      let lastFetchTime = 0;
+      let lastPosition = null;
+      let weatherPanel = document.getElementById('weather-info-panel');
+      let weatherLoading = document.getElementById('weather-loading');
+      let weatherContent = document.getElementById('weather-content');
+      let climateDataEnabled = false;
+      
+      // Throttle function to limit API calls
+      function throttle(callback, delay) {
+        let lastCall = 0;
+        return function(...args) {
+          const now = new Date().getTime();
+          if (now - lastCall < delay) {
+            return;
+          }
+          lastCall = now;
+          return callback(...args);
+        };
+      }
+      
+      // Toggle climate data button
+      document.getElementById('toggle-climate-data').addEventListener('click', function() {
+        climateDataEnabled = !climateDataEnabled;
+        if (climateDataEnabled) {
+          weatherPanel.style.display = 'block';
+          this.classList.add('bg-gradient-to-r', 'from-orange-600', 'to-red-600');
+          this.classList.remove('bg-gray-200', 'bg-opacity-20');
+        } else {
+          weatherPanel.style.display = 'none';
+          this.classList.remove('bg-gradient-to-r', 'from-orange-600', 'to-red-600');
+          this.classList.add('bg-gray-200', 'bg-opacity-20');
+        }
+      });
+      
+      // Function to provide mock data when API is not available
+      function getMockWeatherData(lat, lng) {
+        // Generate some realistic but random data
+        const temp_f = Math.round(60 + Math.random() * 20); // 60-80°F
+        const temp_c = Math.round((temp_f - 32) * 5/9);
+        const humidity = Math.round(40 + Math.random() * 40); // 40-80%
+        const wind_kph = Math.round(5 + Math.random() * 20); // 5-25 kph
+        
+        // Possible weather conditions
+        const conditions = ['Sunny', 'Partly cloudy', 'Cloudy', 'Overcast', 'Light rain'];
+        const condition = conditions[Math.floor(Math.random() * conditions.length)];
+        
+        return {
+          location: `Near ${lat.toFixed(2)}, ${lng.toFixed(2)}`,
+          temperature_f: temp_f,
+          temperature_c: temp_c,
+          condition: condition,
+          wind_kph: wind_kph,
+          humidity: humidity,
+          feelslike_f: temp_f - Math.round(Math.random() * 3), // Slightly lower than actual temp
+          feelslike_c: temp_c - Math.round(Math.random() * 2),
+          last_updated: new Date().toLocaleTimeString()
+        };
+      }
+      
+      // Function to fetch weather data for specific coordinates
+      async function fetchWeatherForCoordinates(lat, lng) {
+        try {
+          weatherLoading.style.display = 'block';
+          weatherContent.style.opacity = '0.5';
           
-          document.getElementById('active-fires-count').textContent = activeFiresCount;
-          document.getElementById('highest-risk-level').textContent = highestRiskLevel;
+          let data;
           
-          // Add fire markers to the map
-          data.forEach(fire => {
-            const marker = L.marker([fire.latitude, fire.longitude], {
-              icon: L.divIcon({
-                className: `map-marker ${fire.risk === 'high' ? 'bg-red-600' : fire.risk === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'}`,
-                html: `<span>🔥</span>`,
-                iconSize: [30, 30],
-                iconAnchor: [15, 15]
-              })
-            }).addTo(map);
+          try {
+            // Attempt to fetch real data from API
+            const response = await fetch(`/api/weather/at?lat=${lat}&lng=${lng}`);
             
-            const riskClass = fire.risk === 'high' ? 'risk-high' : 
-                             fire.risk === 'medium' ? 'risk-medium' : 
-                             'risk-low';
+            if (!response.ok) {
+              throw new Error('API unavailable');
+            }
             
-            // Custom popup content
-            const popupContent = `
-              <div class="fire-details">
-                <h3 class="font-bold text-lg">${fire.name}</h3>
-                <div class="mt-2">
-                  <p>Risk Level: <span class="${riskClass} font-medium">${fire.risk.toUpperCase()}</span></p>
-                  <p>Containment: ${fire.containment}</p>
-                  <div class="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
-                    <div class="h-full bg-orange-500 rounded-full" style="width: ${fire.containment}"></div>
-                  </div>
-                </div>
-              </div>
-            `;
+            data = await response.json();
+          } catch (err) {
+            console.warn('Using mock weather data:', err);
+            // Fall back to mock data if API is unavailable
+            data = getMockWeatherData(lat, lng);
+          }
+          
+          // Update the hover panel
+          document.getElementById('hover-location').textContent = data.location || 'Unknown';
+          document.getElementById('hover-temperature').textContent = `${data.temperature_f}°F (${data.temperature_c}°C)`;
+          document.getElementById('hover-condition').textContent = data.condition || 'Unknown';
+          document.getElementById('hover-wind').textContent = `${data.wind_kph} kph`;
+          document.getElementById('hover-humidity').textContent = `${data.humidity}%`;
+          
+          weatherLoading.style.display = 'none';
+          weatherContent.style.opacity = '1';
+          
+          return data;
+        } catch (error) {
+          console.error('Error fetching weather data:', error);
+          weatherLoading.style.display = 'none';
+          weatherContent.style.opacity = '1';
+          
+          // Show error in panel
+          document.getElementById('hover-location').textContent = 'Error fetching data';
+          document.getElementById('hover-temperature').textContent = '--';
+          document.getElementById('hover-condition').textContent = '--';
+          document.getElementById('hover-wind').textContent = '--';
+          document.getElementById('hover-humidity').textContent = '--';
+        }
+      }
+      
+      // Throttled version of fetchWeatherForCoordinates
+      const throttledFetchWeather = throttle(fetchWeatherForCoordinates, 1000);
+      
+      // Event handler for mouse movement on map
+      map.on('mousemove', function(e) {
+        if (!climateDataEnabled) return;
+        
+        const lat = e.latlng.lat.toFixed(4);
+        const lng = e.latlng.lng.toFixed(4);
+        
+        // Only fetch if position changed significantly
+        if (!lastPosition || 
+            Math.abs(lastPosition.lat - lat) > 0.01 || 
+            Math.abs(lastPosition.lng - lng) > 0.01) {
+          
+          lastPosition = { lat, lng };
+          document.getElementById('detail-coordinates').textContent = `${lat}, ${lng}`;
+          
+          // Fetch weather data for this location
+          throttledFetchWeather(lat, lng);
+        }
+      });
+      
+      // Fetch initial weather data for San Diego
+      fetchInitialWeatherData();
+      
+      async function fetchInitialWeatherData() {
+        try {
+          let data;
+          
+          try {
+            // Try to fetch from the API
+            const response = await fetch('/api/weather/current');
             
-            marker.bindPopup(popupContent, {
-              className: 'fire-popup',
-              maxWidth: 200
-            });
-          });
-        })
-        .catch(error => console.error('Error fetching fire data:', error));
+            if (!response.ok) {
+              throw new Error('API unavailable');
+            }
+            
+            data = await response.json();
+          } catch (err) {
+            console.warn('Using mock data for initial weather:', err);
+            // Fall back to mock data if API is unavailable
+            data = {
+              location: "San Diego, California",
+              temperature_f: 72,
+              temperature_c: 22,
+              condition: "Sunny",
+              humidity: 65,
+              wind_kph: 12,
+              feelslike_f: 70,
+              feelslike_c: 21,
+              last_updated: new Date().toLocaleString()
+            };
+          }
+          
+          // Update the UI with the weather data
+          document.getElementById('current-temperature').textContent = `${data.temperature_f}°F`;
+          document.getElementById('current-condition').textContent = data.condition || 'Unknown';
+          document.getElementById('current-wind-speed').textContent = `${data.wind_kph} kph`;
+          document.getElementById('current-humidity').textContent = `${data.humidity}%`;
+          document.getElementById('current-feels-like').textContent = `${data.feelslike_f}°F`;
+          
+          // Update right sidebar details
+          document.getElementById('detail-location').textContent = data.location;
+          document.getElementById('detail-temperature').textContent = `${data.temperature_f}°F`;
+          document.getElementById('detail-feels-like').textContent = `${data.feelslike_f}°F`;
+          document.getElementById('detail-wind-speed').textContent = `${data.wind_kph} kph`;
+          document.getElementById('detail-humidity').textContent = `${data.humidity}%`;
+          
+          // Update last updated text
+          document.getElementById('last-updated-text').textContent = `Last updated: ${data.last_updated}`;
+          
+        } catch (error) {
+          console.error('Error fetching initial weather data:', error);
+          // Set fallback values if everything fails
+          document.getElementById('current-temperature').textContent = `72°F`;
+          document.getElementById('current-condition').textContent = 'Unknown';
+          document.getElementById('current-wind-speed').textContent = `10 kph`;
+          document.getElementById('current-humidity').textContent = `65%`;
+          document.getElementById('current-feels-like').textContent = `70°F`;
+          document.getElementById('last-updated-text').textContent = `Last updated: Unable to fetch`;
+        }
+      }
+      
+      // Add some fire incident markers to the map for demonstration
+      const fireIncidents = [
+        { lat: 32.7353, lng: -117.1490, risk: 'high', name: 'North Park Fire' },
+        { lat: 32.7155, lng: -117.1902, risk: 'medium', name: 'Mission Hills Incident' },
+        { lat: 32.6859, lng: -117.1831, risk: 'low', name: 'Coronado Brush Fire' }
+      ];
+      
+      fireIncidents.forEach(incident => {
+        // Create custom marker
+        const markerHtml = `<div class="map-marker">${incident.risk.charAt(0).toUpperCase()}</div>`;
+        const icon = L.divIcon({
+          html: markerHtml,
+          className: '',
+          iconSize: [30, 30],
+          iconAnchor: [15, 15]
+        });
+        
+        // Add marker to map
+        const marker = L.marker([incident.lat, incident.lng], {icon: icon}).addTo(map);
+        
+        // Add popup
+        let riskClass = '';
+        if (incident.risk === 'high') riskClass = 'risk-high';
+        else if (incident.risk === 'medium') riskClass = 'risk-medium';
+        else riskClass = 'risk-low';
+        
+        const popupContent = `
+          <div>
+            <h3 class="font-medium text-base mb-1">${incident.name}</h3>
+            <div>Risk Level: <span class="${riskClass}">${incident.risk.toUpperCase()}</span></div>
+            <div class="text-sm text-gray-300 mt-1">Coordinates: ${incident.lat.toFixed(4)}, ${incident.lng.toFixed(4)}</div>
+          </div>
+        `;
+        
+        marker.bindPopup(popupContent, {
+          className: 'fire-popup',
+          maxWidth: 200
+        });
+      });
     });
+
+    // Update the fetch function to include authentication
+async function fetchWithAuth(url) {
+  // Get the auth token - this depends on how your auth system works
+  // You might store this in localStorage, sessionStorage, or a cookie
+  const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+  
+  const options = {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  };
+  
+  return fetch(url, options);
+}
+
+// Function to fetch weather data for specific coordinates
+async function fetchWeatherForCoordinates(lat, lng) {
+  try {
+    weatherLoading.style.display = 'block';
+    weatherContent.style.opacity = '0.5';
+    
+    let data;
+    
+    try {
+      // Use fetchWithAuth instead of fetch
+      const response = await fetchWithAuth(`/api/weather/at?lat=${lat}&lng=${lng}`);
+      
+      if (!response.ok) {
+        throw new Error('API unavailable or unauthorized');
+      }
+      
+      data = await response.json();
+    } catch (err) {
+      console.warn('Using mock weather data:', err);
+      // Fall back to mock data if API is unavailable
+      data = getMockWeatherData(lat, lng);
+    }
+    
+    // Update the hover panel
+    document.getElementById('hover-location').textContent = data.location || 'Unknown';
+    document.getElementById('hover-temperature').textContent = `${data.temperature_f}°F (${data.temperature_c}°C)`;
+    document.getElementById('hover-condition').textContent = data.condition || 'Unknown';
+    document.getElementById('hover-wind').textContent = `${data.wind_kph} kph`;
+    document.getElementById('hover-humidity').textContent = `${data.humidity}%`;
+    
+    weatherLoading.style.display = 'none';
+    weatherContent.style.opacity = '1';
+    
+    return data;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    weatherLoading.style.display = 'none';
+    weatherContent.style.opacity = '1';
+    
+    // Show error in panel
+    document.getElementById('hover-location').textContent = 'Error fetching data';
+    document.getElementById('hover-temperature').textContent = '--';
+    document.getElementById('hover-condition').textContent = '--';
+    document.getElementById('hover-wind').textContent = '--';
+    document.getElementById('hover-humidity').textContent = '--';
+  }
+}
+
+// Update fetchInitialWeatherData to use authentication as well
+async function fetchInitialWeatherData() {
+  try {
+    let data;
+    
+    try {
+      // Use fetchWithAuth instead of fetch
+      const response = await fetchWithAuth('/api/weather/current');
+      
+      if (!response.ok) {
+        throw new Error('API unavailable or unauthorized');
+      }
+      
+      data = await response.json();
+    } catch (err) {
+      console.warn('Using mock data for initial weather:', err);
+      // Fall back to mock data if API is unavailable
+      data = {
+        location: "San Diego, California",
+        temperature_f: 72,
+        temperature_c: 22,
+        condition: "Sunny",
+        humidity: 65,
+        wind_kph: 12,
+        feelslike_f: 70,
+        feelslike_c: 21,
+        last_updated: new Date().toLocaleString()
+      };
+    }
+    
+    // Update the UI with the weather data
+    document.getElementById('current-temperature').textContent = `${data.temperature_f}°F`;
+    document.getElementById('current-condition').textContent = data.condition || 'Unknown';
+    document.getElementById('current-wind-speed').textContent = `${data.wind_kph} kph`;
+    document.getElementById('current-humidity').textContent = `${data.humidity}%`;
+    document.getElementById('current-feels-like').textContent = `${data.feelslike_f}°F`;
+    
+    // Update right sidebar details
+    document.getElementById('detail-location').textContent = data.location;
+    document.getElementById('detail-temperature').textContent = `${data.temperature_f}°F`;
+    document.getElementById('detail-feels-like').textContent = `${data.feelslike_f}°F`;
+    document.getElementById('detail-wind-speed').textContent = `${data.wind_kph} kph`;
+    document.getElementById('detail-humidity').textContent = `${data.humidity}%`;
+    
+    // Update last updated text
+    document.getElementById('last-updated-text').textContent = `Last updated: ${data.last_updated}`;
+    
+  } catch (error) {
+    console.error('Error fetching initial weather data:', error);
+    // Set fallback values if everything fails
+    document.getElementById('current-temperature').textContent = `72°F`;
+    document.getElementById('current-condition').textContent = 'Unknown';
+    document.getElementById('current-wind-speed').textContent = `10 kph`;
+    document.getElementById('current-humidity').textContent = `65%`;
+    document.getElementById('current-feels-like').textContent = `70°F`;
+    document.getElementById('last-updated-text').textContent = `Last updated: Unable to fetch`;
+  }
+}
+
+// Function to fetch weather data for specific coordinates
+async function fetchWeatherForCoordinates(lat, lng) {
+  try {
+    weatherLoading.style.display = 'block';
+    weatherContent.style.opacity = '0.5';
+    
+    let data;
+    
+    try {
+      // Use the public endpoint that doesn't require authentication
+      const response = await fetch(`/api/weather/public/at?lat=${lat}&lng=${lng}`);
+      
+      if (!response.ok) {
+        throw new Error('API unavailable');
+      }
+      
+      data = await response.json();
+    } catch (err) {
+      console.warn('Using mock weather data:', err);
+      // Fall back to mock data if API is unavailable
+      data = getMockWeatherData(lat, lng);
+    }
+    
+    // Update the hover panel
+    document.getElementById('hover-location').textContent = data.location || 'Unknown';
+    document.getElementById('hover-temperature').textContent = `${data.temperature_f}°F (${data.temperature_c}°C)`;
+    document.getElementById('hover-condition').textContent = data.condition || 'Unknown';
+    document.getElementById('hover-wind').textContent = `${data.wind_kph} kph`;
+    document.getElementById('hover-humidity').textContent = `${data.humidity}%`;
+    
+    weatherLoading.style.display = 'none';
+    weatherContent.style.opacity = '1';
+    
+    return data;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    weatherLoading.style.display = 'none';
+    weatherContent.style.opacity = '1';
+    
+    // Show error in panel
+    document.getElementById('hover-location').textContent = 'Error fetching data';
+    document.getElementById('hover-temperature').textContent = '--';
+    document.getElementById('hover-condition').textContent = '--';
+    document.getElementById('hover-wind').textContent = '--';
+    document.getElementById('hover-humidity').textContent = '--';
+  }
+}
+
+// Update fetchInitialWeatherData to use the public endpoint
+async function fetchInitialWeatherData() {
+  try {
+    let data;
+    
+    try {
+      // Use the public endpoint that doesn't require authentication
+      const response = await fetch('/api/weather/public/current');
+      
+      if (!response.ok) {
+        throw new Error('API unavailable');
+      }
+      
+      data = await response.json();
+    } catch (err) {
+      console.warn('Using mock data for initial weather:', err);
+      // Fall back to mock data if API is unavailable
+      data = {
+        location: "San Diego, California",
+        temperature_f: 72,
+        temperature_c: 22,
+        condition: "Sunny",
+        humidity: 65,
+        wind_kph: 12,
+        feelslike_f: 70,
+        feelslike_c: 21,
+        last_updated: new Date().toLocaleString()
+      };
+    }
+    
+    // Update the UI with the weather data
+    document.getElementById('current-temperature').textContent = `${data.temperature_f}°F`;
+    document.getElementById('current-condition').textContent = data.condition || 'Unknown';
+    document.getElementById('current-wind-speed').textContent = `${data.wind_kph} kph`;
+    document.getElementById('current-humidity').textContent = `${data.humidity}%`;
+    document.getElementById('current-feels-like').textContent = `${data.feelslike_f}°F`;
+    
+    // Update right sidebar details
+    document.getElementById('detail-location').textContent = data.location;
+    document.getElementById('detail-temperature').textContent = `${data.temperature_f}°F`;
+    document.getElementById('detail-feels-like').textContent = `${data.feelslike_f}°F`;
+    document.getElementById('detail-wind-speed').textContent = `${data.wind_kph} kph`;
+    document.getElementById('detail-humidity').textContent = `${data.humidity}%`;
+    
+    // Update last updated text
+    document.getElementById('last-updated-text').textContent = `Last updated: ${data.last_updated}`;
+    
+  } catch (error) {
+    console.error('Error fetching initial weather data:', error);
+    // Set fallback values if everything fails
+    document.getElementById('current-temperature').textContent = `72°F`;
+    document.getElementById('current-condition').textContent = 'Unknown';
+    document.getElementById('current-wind-speed').textContent = `10 kph`;
+    document.getElementById('current-humidity').textContent = `65%`;
+    document.getElementById('current-feels-like').textContent = `70°F`;
+    document.getElementById('last-updated-text').textContent = `Last updated: Unable to fetch`;
+  }
+}
+
 </script>
