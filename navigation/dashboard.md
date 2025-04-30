@@ -300,492 +300,299 @@ permalink: /dashboard/
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Find the map container
-      const mapContainer = document.querySelector('.bg-gray-900\\/50.rounded-lg.overflow-hidden.h-full.relative.border.border-gray-800');
-      
-      // Clear placeholder content
-      mapContainer.innerHTML = '<div id="map"></div><div id="weather-info-panel" class="weather-info-panel" style="display: none;"><h3 class="font-medium text-lg mb-2">Climate Data</h3><div id="weather-loading" style="display: none;"><span class="loader"></span><span>Loading climate data...</span></div><div id="weather-content"><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Location:</span><span id="hover-location" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Temperature:</span><span id="hover-temperature" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Condition:</span><span id="hover-condition" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Wind:</span><span id="hover-wind" class="font-medium">--</span></div><div class="flex items-center justify-between"><span class="text-gray-300">Humidity:</span><span id="hover-humidity" class="font-medium">--</span></div></div></div>';
-      
-      // Initialize the map centered on San Diego
-      const map = L.map('map', {
-        center: [32.7157, -117.1611], // San Diego coordinates
-        zoom: 11,
-        zoomControl: false // We'll add custom controls
-      });
-      
-      // Add dark-themed map tiles
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
-      }).addTo(map);
-      
-      // Add zoom control to top-right
-      L.control.zoom({
-        position: 'topright'
-      }).addTo(map);
-      
-      // Variables for throttling API calls
-      let lastFetchTime = 0;
-      let lastPosition = null;
-      let weatherPanel = document.getElementById('weather-info-panel');
-      let weatherLoading = document.getElementById('weather-loading');
-      let weatherContent = document.getElementById('weather-content');
-      let climateDataEnabled = false;
-      
-      // Throttle function to limit API calls
-      function throttle(callback, delay) {
-        let lastCall = 0;
-        return function(...args) {
-          const now = new Date().getTime();
-          if (now - lastCall < delay) {
-            return;
-          }
-          lastCall = now;
-          return callback(...args);
-        };
+document.addEventListener('DOMContentLoaded', function() {
+  // Find the map container
+  const mapContainer = document.querySelector('.bg-gray-900\\/50.rounded-lg.overflow-hidden.h-full.relative.border.border-gray-800');
+  
+  // Clear placeholder content
+  mapContainer.innerHTML = '<div id="map"></div><div id="weather-info-panel" class="weather-info-panel" style="display: none;"><h3 class="font-medium text-lg mb-2">Climate Data</h3><div id="weather-loading" style="display: none;"><span class="loader"></span><span>Loading climate data...</span></div><div id="weather-content"><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Location:</span><span id="hover-location" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Temperature:</span><span id="hover-temperature" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Condition:</span><span id="hover-condition" class="font-medium">--</span></div><div class="flex items-center justify-between mb-2"><span class="text-gray-300">Wind:</span><span id="hover-wind" class="font-medium">--</span></div><div class="flex items-center justify-between"><span class="text-gray-300">Humidity:</span><span id="hover-humidity" class="font-medium">--</span></div></div></div>';
+  
+  // Initialize the map centered on San Diego
+  const map = L.map('map', {
+    center: [32.7157, -117.1611], // San Diego coordinates
+    zoom: 11,
+    zoomControl: false // We'll add custom controls
+  });
+  
+  // Add dark-themed map tiles
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+  
+  // Add zoom control to top-right
+  L.control.zoom({
+    position: 'topright'
+  }).addTo(map);
+  
+  // Variables for throttling API calls
+  let lastFetchTime = 0;
+  let lastPosition = null;
+  let weatherPanel = document.getElementById('weather-info-panel');
+  let weatherLoading = document.getElementById('weather-loading');
+  let weatherContent = document.getElementById('weather-content');
+  let climateDataEnabled = false;
+  
+  // Throttle function to limit API calls
+  function throttle(callback, delay) {
+    let lastCall = 0;
+    return function(...args) {
+      const now = new Date().getTime();
+      if (now - lastCall < delay) {
+        return;
       }
-      
-      // Toggle climate data button
-      document.getElementById('toggle-climate-data').addEventListener('click', function() {
-        climateDataEnabled = !climateDataEnabled;
-        if (climateDataEnabled) {
-          weatherPanel.style.display = 'block';
-          this.classList.add('bg-gradient-to-r', 'from-orange-600', 'to-red-600');
-          this.classList.remove('bg-gray-200', 'bg-opacity-20');
-        } else {
-          weatherPanel.style.display = 'none';
-          this.classList.remove('bg-gradient-to-r', 'from-orange-600', 'to-red-600');
-          this.classList.add('bg-gray-200', 'bg-opacity-20');
-        }
-      });
-      
-      // Function to provide mock data when API is not available
-      function getMockWeatherData(lat, lng) {
-        // Generate some realistic but random data
-        const temp_f = Math.round(60 + Math.random() * 20); // 60-80°F
-        const temp_c = Math.round((temp_f - 32) * 5/9);
-        const humidity = Math.round(40 + Math.random() * 40); // 40-80%
-        const wind_kph = Math.round(5 + Math.random() * 20); // 5-25 kph
-        
-        // Possible weather conditions
-        const conditions = ['Sunny', 'Partly cloudy', 'Cloudy', 'Overcast', 'Light rain'];
-        const condition = conditions[Math.floor(Math.random() * conditions.length)];
-        
-        return {
-          location: `Near ${lat.toFixed(2)}, ${lng.toFixed(2)}`,
-          temperature_f: temp_f,
-          temperature_c: temp_c,
-          condition: condition,
-          wind_kph: wind_kph,
-          humidity: humidity,
-          feelslike_f: temp_f - Math.round(Math.random() * 3), // Slightly lower than actual temp
-          feelslike_c: temp_c - Math.round(Math.random() * 2),
-          last_updated: new Date().toLocaleTimeString()
-        };
+      lastCall = now;
+      return callback(...args);
+    };
+  }
+  
+  // Toggle climate data button
+  const toggleButton = document.getElementById('toggle-climate-data');
+  if (toggleButton) {
+    toggleButton.addEventListener('click', function() {
+      climateDataEnabled = !climateDataEnabled;
+      if (climateDataEnabled) {
+        weatherPanel.style.display = 'block';
+        this.classList.add('bg-gradient-to-r', 'from-orange-600', 'to-red-600');
+        this.classList.remove('bg-gray-200', 'bg-opacity-20');
+      } else {
+        weatherPanel.style.display = 'none';
+        this.classList.remove('bg-gradient-to-r', 'from-orange-600', 'to-red-600');
+        this.classList.add('bg-gray-200', 'bg-opacity-20');
       }
-      
-      // Function to fetch weather data for specific coordinates
-      async function fetchWeatherForCoordinates(lat, lng) {
-        try {
-          weatherLoading.style.display = 'block';
-          weatherContent.style.opacity = '0.5';
-          
-          let data;
-          
-          try {
-            // Attempt to fetch real data from API
-            const response = await fetch(`/api/weather/at?lat=${lat}&lng=${lng}`);
-            
-            if (!response.ok) {
-              throw new Error('API unavailable');
-            }
-            
-            data = await response.json();
-          } catch (err) {
-            console.warn('Using mock weather data:', err);
-            // Fall back to mock data if API is unavailable
-            data = getMockWeatherData(lat, lng);
-          }
-          
-          // Update the hover panel
-          document.getElementById('hover-location').textContent = data.location || 'Unknown';
-          document.getElementById('hover-temperature').textContent = `${data.temperature_f}°F (${data.temperature_c}°C)`;
-          document.getElementById('hover-condition').textContent = data.condition || 'Unknown';
-          document.getElementById('hover-wind').textContent = `${data.wind_kph} kph`;
-          document.getElementById('hover-humidity').textContent = `${data.humidity}%`;
-          
-          weatherLoading.style.display = 'none';
-          weatherContent.style.opacity = '1';
-          
-          return data;
-        } catch (error) {
-          console.error('Error fetching weather data:', error);
-          weatherLoading.style.display = 'none';
-          weatherContent.style.opacity = '1';
-          
-          // Show error in panel
-          document.getElementById('hover-location').textContent = 'Error fetching data';
-          document.getElementById('hover-temperature').textContent = '--';
-          document.getElementById('hover-condition').textContent = '--';
-          document.getElementById('hover-wind').textContent = '--';
-          document.getElementById('hover-humidity').textContent = '--';
-        }
-      }
-      
-      // Throttled version of fetchWeatherForCoordinates
-      const throttledFetchWeather = throttle(fetchWeatherForCoordinates, 1000);
-      
-      // Event handler for mouse movement on map
-      map.on('mousemove', function(e) {
-        if (!climateDataEnabled) return;
-        
-        const lat = e.latlng.lat.toFixed(4);
-        const lng = e.latlng.lng.toFixed(4);
-        
-        // Only fetch if position changed significantly
-        if (!lastPosition || 
-            Math.abs(lastPosition.lat - lat) > 0.01 || 
-            Math.abs(lastPosition.lng - lng) > 0.01) {
-          
-          lastPosition = { lat, lng };
-          document.getElementById('detail-coordinates').textContent = `${lat}, ${lng}`;
-          
-          // Fetch weather data for this location
-          throttledFetchWeather(lat, lng);
-        }
-      });
-      
-      // Fetch initial weather data for San Diego
-      fetchInitialWeatherData();
-      
-      async function fetchInitialWeatherData() {
-        try {
-          let data;
-          
-          try {
-            // Try to fetch from the API
-            const response = await fetch('/api/weather/current');
-            
-            if (!response.ok) {
-              throw new Error('API unavailable');
-            }
-            
-            data = await response.json();
-          } catch (err) {
-            console.warn('Using mock data for initial weather:', err);
-            // Fall back to mock data if API is unavailable
-            data = {
-              location: "San Diego, California",
-              temperature_f: 72,
-              temperature_c: 22,
-              condition: "Sunny",
-              humidity: 65,
-              wind_kph: 12,
-              feelslike_f: 70,
-              feelslike_c: 21,
-              last_updated: new Date().toLocaleString()
-            };
-          }
-          
-          // Update the UI with the weather data
-          document.getElementById('current-temperature').textContent = `${data.temperature_f}°F`;
-          document.getElementById('current-condition').textContent = data.condition || 'Unknown';
-          document.getElementById('current-wind-speed').textContent = `${data.wind_kph} kph`;
-          document.getElementById('current-humidity').textContent = `${data.humidity}%`;
-          document.getElementById('current-feels-like').textContent = `${data.feelslike_f}°F`;
-          
-          // Update right sidebar details
-          document.getElementById('detail-location').textContent = data.location;
-          document.getElementById('detail-temperature').textContent = `${data.temperature_f}°F`;
-          document.getElementById('detail-feels-like').textContent = `${data.feelslike_f}°F`;
-          document.getElementById('detail-wind-speed').textContent = `${data.wind_kph} kph`;
-          document.getElementById('detail-humidity').textContent = `${data.humidity}%`;
-          
-          // Update last updated text
-          document.getElementById('last-updated-text').textContent = `Last updated: ${data.last_updated}`;
-          
-        } catch (error) {
-          console.error('Error fetching initial weather data:', error);
-          // Set fallback values if everything fails
-          document.getElementById('current-temperature').textContent = `72°F`;
-          document.getElementById('current-condition').textContent = 'Unknown';
-          document.getElementById('current-wind-speed').textContent = `10 kph`;
-          document.getElementById('current-humidity').textContent = `65%`;
-          document.getElementById('current-feels-like').textContent = `70°F`;
-          document.getElementById('last-updated-text').textContent = `Last updated: Unable to fetch`;
-        }
-      }
-      
-      // Add some fire incident markers to the map for demonstration
-      const fireIncidents = [
-        { lat: 32.7353, lng: -117.1490, risk: 'high', name: 'North Park Fire' },
-        { lat: 32.7155, lng: -117.1902, risk: 'medium', name: 'Mission Hills Incident' },
-        { lat: 32.6859, lng: -117.1831, risk: 'low', name: 'Coronado Brush Fire' }
-      ];
-      
-      fireIncidents.forEach(incident => {
-        // Create custom marker
-        const markerHtml = `<div class="map-marker">${incident.risk.charAt(0).toUpperCase()}</div>`;
-        const icon = L.divIcon({
-          html: markerHtml,
-          className: '',
-          iconSize: [30, 30],
-          iconAnchor: [15, 15]
-        });
-        
-        // Add marker to map
-        const marker = L.marker([incident.lat, incident.lng], {icon: icon}).addTo(map);
-        
-        // Add popup
-        let riskClass = '';
-        if (incident.risk === 'high') riskClass = 'risk-high';
-        else if (incident.risk === 'medium') riskClass = 'risk-medium';
-        else riskClass = 'risk-low';
-        
-        const popupContent = `
-          <div>
-            <h3 class="font-medium text-base mb-1">${incident.name}</h3>
-            <div>Risk Level: <span class="${riskClass}">${incident.risk.toUpperCase()}</span></div>
-            <div class="text-sm text-gray-300 mt-1">Coordinates: ${incident.lat.toFixed(4)}, ${incident.lng.toFixed(4)}</div>
-          </div>
-        `;
-        
-        marker.bindPopup(popupContent, {
-          className: 'fire-popup',
-          maxWidth: 200
-        });
-      });
     });
-
-    // Update the fetch function to include authentication
-async function fetchWithAuth(url) {
-  // Get the auth token - this depends on how your auth system works
-  // You might store this in localStorage, sessionStorage, or a cookie
-  const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+  }
   
-  const options = {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  };
+  // Function to provide mock data when API is not available
+  function getMockWeatherData(lat, lng) {
+    // Generate some realistic but random data
+    const temp_f = Math.round(60 + Math.random() * 20); // 60-80°F
+    const temp_c = Math.round((temp_f - 32) * 5/9);
+    const humidity = Math.round(40 + Math.random() * 40); // 40-80%
+    const wind_kph = Math.round(5 + Math.random() * 20); // 5-25 kph
+    
+    // Possible weather conditions
+    const conditions = ['Sunny', 'Partly cloudy', 'Cloudy', 'Overcast', 'Light rain'];
+    const condition = conditions[Math.floor(Math.random() * conditions.length)];
+    
+    return {
+      location: `Near ${lat.toFixed(2)}, ${lng.toFixed(2)}`,
+      temperature_f: temp_f,
+      temperature_c: temp_c,
+      condition: condition,
+      wind_kph: wind_kph,
+      humidity: humidity,
+      feelslike_f: temp_f - Math.round(Math.random() * 3), // Slightly lower than actual temp
+      feelslike_c: temp_c - Math.round(Math.random() * 2),
+      last_updated: new Date().toLocaleTimeString()
+    };
+  }
   
-  return fetch(url, options);
-}
-
-// Function to fetch weather data for specific coordinates
-async function fetchWeatherForCoordinates(lat, lng) {
-  try {
-    weatherLoading.style.display = 'block';
-    weatherContent.style.opacity = '0.5';
-    
-    let data;
-    
+  // Function to fetch weather data for specific coordinates
+  async function fetchWeatherForCoordinates(lat, lng) {
     try {
-      // Use fetchWithAuth instead of fetch
-      const response = await fetchWithAuth(`/api/weather/at?lat=${lat}&lng=${lng}`);
+      if (weatherLoading) weatherLoading.style.display = 'block';
+      if (weatherContent) weatherContent.style.opacity = '0.5';
       
-      if (!response.ok) {
-        throw new Error('API unavailable or unauthorized');
+      let data;
+      
+      try {
+        // Use the public endpoint that doesn't require authentication
+        const response = await fetch(`/api/weather/public/at?lat=${lat}&lng=${lng}`);
+        
+        if (!response.ok) {
+          throw new Error('API unavailable');
+        }
+        
+        data = await response.json();
+      } catch (err) {
+        console.warn('Using mock weather data:', err);
+        // Fall back to mock data if API is unavailable
+        data = getMockWeatherData(lat, lng);
       }
       
-      data = await response.json();
-    } catch (err) {
-      console.warn('Using mock weather data:', err);
-      // Fall back to mock data if API is unavailable
-      data = getMockWeatherData(lat, lng);
-    }
-    
-    // Update the hover panel
-    document.getElementById('hover-location').textContent = data.location || 'Unknown';
-    document.getElementById('hover-temperature').textContent = `${data.temperature_f}°F (${data.temperature_c}°C)`;
-    document.getElementById('hover-condition').textContent = data.condition || 'Unknown';
-    document.getElementById('hover-wind').textContent = `${data.wind_kph} kph`;
-    document.getElementById('hover-humidity').textContent = `${data.humidity}%`;
-    
-    weatherLoading.style.display = 'none';
-    weatherContent.style.opacity = '1';
-    
-    return data;
-  } catch (error) {
-    console.error('Error fetching weather data:', error);
-    weatherLoading.style.display = 'none';
-    weatherContent.style.opacity = '1';
-    
-    // Show error in panel
-    document.getElementById('hover-location').textContent = 'Error fetching data';
-    document.getElementById('hover-temperature').textContent = '--';
-    document.getElementById('hover-condition').textContent = '--';
-    document.getElementById('hover-wind').textContent = '--';
-    document.getElementById('hover-humidity').textContent = '--';
-  }
-}
-
-// Update fetchInitialWeatherData to use authentication as well
-async function fetchInitialWeatherData() {
-  try {
-    let data;
-    
-    try {
-      // Use fetchWithAuth instead of fetch
-      const response = await fetchWithAuth('/api/weather/current');
+      // Update the hover panel
+      const hoverLocation = document.getElementById('hover-location');
+      const hoverTemperature = document.getElementById('hover-temperature');
+      const hoverCondition = document.getElementById('hover-condition');
+      const hoverWind = document.getElementById('hover-wind');
+      const hoverHumidity = document.getElementById('hover-humidity');
       
-      if (!response.ok) {
-        throw new Error('API unavailable or unauthorized');
+      if (hoverLocation) hoverLocation.textContent = data.location || 'Unknown';
+      if (hoverTemperature) hoverTemperature.textContent = `${data.temperature_f}°F (${data.temperature_c}°C)`;
+      if (hoverCondition) hoverCondition.textContent = data.condition || 'Unknown';
+      if (hoverWind) hoverWind.textContent = `${data.wind_kph} kph`;
+      if (hoverHumidity) hoverHumidity.textContent = `${data.humidity}%`;
+      
+      if (weatherLoading) weatherLoading.style.display = 'none';
+      if (weatherContent) weatherContent.style.opacity = '1';
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+      if (weatherLoading) weatherLoading.style.display = 'none';
+      if (weatherContent) weatherContent.style.opacity = '1';
+      
+      // Show error in panel
+      const hoverLocation = document.getElementById('hover-location');
+      const hoverTemperature = document.getElementById('hover-temperature');
+      const hoverCondition = document.getElementById('hover-condition');
+      const hoverWind = document.getElementById('hover-wind');
+      const hoverHumidity = document.getElementById('hover-humidity');
+      
+      if (hoverLocation) hoverLocation.textContent = 'Error fetching data';
+      if (hoverTemperature) hoverTemperature.textContent = '--';
+      if (hoverCondition) hoverCondition.textContent = '--';
+      if (hoverWind) hoverWind.textContent = '--';
+      if (hoverHumidity) hoverHumidity.textContent = '--';
+    }
+  }
+  
+  // Throttled version of fetchWeatherForCoordinates
+  const throttledFetchWeather = throttle(fetchWeatherForCoordinates, 1000);
+  
+  // Event handler for mouse movement on map
+  map.on('mousemove', function(e) {
+    if (!climateDataEnabled) return;
+    
+    const lat = e.latlng.lat.toFixed(4);
+    const lng = e.latlng.lng.toFixed(4);
+    
+    // Only fetch if position changed significantly
+    if (!lastPosition || 
+        Math.abs(lastPosition.lat - lat) > 0.01 || 
+        Math.abs(lastPosition.lng - lng) > 0.01) {
+      
+      lastPosition = { lat, lng };
+      const detailCoordinates = document.getElementById('detail-coordinates');
+      if (detailCoordinates) detailCoordinates.textContent = `${lat}, ${lng}`;
+      
+      // Fetch weather data for this location
+      throttledFetchWeather(lat, lng);
+    }
+  });
+  
+  // Update fetchInitialWeatherData to use the public endpoint
+  async function fetchInitialWeatherData() {
+    try {
+      let data;
+      
+      try {
+        // Use the public endpoint that doesn't require authentication
+        const response = await fetch('/api/weather/public/current');
+        
+        if (!response.ok) {
+          throw new Error('API unavailable');
+        }
+        
+        data = await response.json();
+      } catch (err) {
+        console.warn('Using mock data for initial weather:', err);
+        // Fall back to mock data if API is unavailable
+        data = {
+          location: "San Diego, California",
+          temperature_f: 72,
+          temperature_c: 22,
+          condition: "Sunny",
+          humidity: 65,
+          wind_kph: 12,
+          feelslike_f: 70,
+          feelslike_c: 21,
+          last_updated: new Date().toLocaleString()
+        };
       }
       
-      data = await response.json();
-    } catch (err) {
-      console.warn('Using mock data for initial weather:', err);
-      // Fall back to mock data if API is unavailable
-      data = {
-        location: "San Diego, California",
-        temperature_f: 72,
-        temperature_c: 22,
-        condition: "Sunny",
-        humidity: 65,
-        wind_kph: 12,
-        feelslike_f: 70,
-        feelslike_c: 21,
-        last_updated: new Date().toLocaleString()
-      };
+      // Update the UI with the weather data - safely check if elements exist
+      const currentTemperature = document.getElementById('current-temperature');
+      const currentCondition = document.getElementById('current-condition');
+      const currentWindSpeed = document.getElementById('current-wind-speed');
+      const currentHumidity = document.getElementById('current-humidity');
+      const currentFeelsLike = document.getElementById('current-feels-like');
+      const detailLocation = document.getElementById('detail-location');
+      const detailTemperature = document.getElementById('detail-temperature');
+      const detailFeelsLike = document.getElementById('detail-feels-like');
+      const detailWindSpeed = document.getElementById('detail-wind-speed');
+      const detailHumidity = document.getElementById('detail-humidity');
+      const lastUpdatedText = document.getElementById('last-updated-text');
+      
+      // Update UI elements if they exist
+      if (currentTemperature) currentTemperature.textContent = `${data.temperature_f}°F`;
+      if (currentCondition) currentCondition.textContent = data.condition || 'Unknown';
+      if (currentWindSpeed) currentWindSpeed.textContent = `${data.wind_kph} kph`;
+      if (currentHumidity) currentHumidity.textContent = `${data.humidity}%`;
+      if (currentFeelsLike) currentFeelsLike.textContent = `${data.feelslike_f}°F`;
+      
+      // Update right sidebar details
+      if (detailLocation) detailLocation.textContent = data.location;
+      if (detailTemperature) detailTemperature.textContent = `${data.temperature_f}°F`;
+      if (detailFeelsLike) detailFeelsLike.textContent = `${data.feelslike_f}°F`;
+      if (detailWindSpeed) detailWindSpeed.textContent = `${data.wind_kph} kph`;
+      if (detailHumidity) detailHumidity.textContent = `${data.humidity}%`;
+      
+      // Update last updated text
+      if (lastUpdatedText) lastUpdatedText.textContent = `Last updated: ${data.last_updated}`;
+      
+    } catch (error) {
+      console.error('Error fetching initial weather data:', error);
+      // Set fallback values if everything fails
+      const currentTemperature = document.getElementById('current-temperature');
+      const currentCondition = document.getElementById('current-condition');
+      const currentWindSpeed = document.getElementById('current-wind-speed');
+      const currentHumidity = document.getElementById('current-humidity');
+      const currentFeelsLike = document.getElementById('current-feels-like');
+      const lastUpdatedText = document.getElementById('last-updated-text');
+      
+      if (currentTemperature) currentTemperature.textContent = `72°F`;
+      if (currentCondition) currentCondition.textContent = 'Unknown';
+      if (currentWindSpeed) currentWindSpeed.textContent = `10 kph`;
+      if (currentHumidity) currentHumidity.textContent = `65%`;
+      if (currentFeelsLike) currentFeelsLike.textContent = `70°F`;
+      if (lastUpdatedText) lastUpdatedText.textContent = `Last updated: Unable to fetch`;
     }
-    
-    // Update the UI with the weather data
-    document.getElementById('current-temperature').textContent = `${data.temperature_f}°F`;
-    document.getElementById('current-condition').textContent = data.condition || 'Unknown';
-    document.getElementById('current-wind-speed').textContent = `${data.wind_kph} kph`;
-    document.getElementById('current-humidity').textContent = `${data.humidity}%`;
-    document.getElementById('current-feels-like').textContent = `${data.feelslike_f}°F`;
-    
-    // Update right sidebar details
-    document.getElementById('detail-location').textContent = data.location;
-    document.getElementById('detail-temperature').textContent = `${data.temperature_f}°F`;
-    document.getElementById('detail-feels-like').textContent = `${data.feelslike_f}°F`;
-    document.getElementById('detail-wind-speed').textContent = `${data.wind_kph} kph`;
-    document.getElementById('detail-humidity').textContent = `${data.humidity}%`;
-    
-    // Update last updated text
-    document.getElementById('last-updated-text').textContent = `Last updated: ${data.last_updated}`;
-    
-  } catch (error) {
-    console.error('Error fetching initial weather data:', error);
-    // Set fallback values if everything fails
-    document.getElementById('current-temperature').textContent = `72°F`;
-    document.getElementById('current-condition').textContent = 'Unknown';
-    document.getElementById('current-wind-speed').textContent = `10 kph`;
-    document.getElementById('current-humidity').textContent = `65%`;
-    document.getElementById('current-feels-like').textContent = `70°F`;
-    document.getElementById('last-updated-text').textContent = `Last updated: Unable to fetch`;
   }
-}
-
-// Function to fetch weather data for specific coordinates
-async function fetchWeatherForCoordinates(lat, lng) {
-  try {
-    weatherLoading.style.display = 'block';
-    weatherContent.style.opacity = '0.5';
+  
+  // Fetch initial weather data
+  fetchInitialWeatherData();
+  
+  // Add some fire incident markers to the map for demonstration
+  const fireIncidents = [
+    { lat: 32.7353, lng: -117.1490, risk: 'high', name: 'North Park Fire' },
+    { lat: 32.7155, lng: -117.1902, risk: 'medium', name: 'Mission Hills Incident' },
+    { lat: 32.6859, lng: -117.1831, risk: 'low', name: 'Coronado Brush Fire' }
+  ];
+  
+  fireIncidents.forEach(incident => {
+    // Create custom marker
+    const markerHtml = `<div class="map-marker">${incident.risk.charAt(0).toUpperCase()}</div>`;
+    const icon = L.divIcon({
+      html: markerHtml,
+      className: '',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    });
     
-    let data;
+    // Add marker to map
+    const marker = L.marker([incident.lat, incident.lng], {icon: icon}).addTo(map);
     
-    try {
-      // Use the public endpoint that doesn't require authentication
-      const response = await fetch(`/api/weather/public/at?lat=${lat}&lng=${lng}`);
-      
-      if (!response.ok) {
-        throw new Error('API unavailable');
-      }
-      
-      data = await response.json();
-    } catch (err) {
-      console.warn('Using mock weather data:', err);
-      // Fall back to mock data if API is unavailable
-      data = getMockWeatherData(lat, lng);
-    }
+    // Add popup
+    let riskClass = '';
+    if (incident.risk === 'high') riskClass = 'risk-high';
+    else if (incident.risk === 'medium') riskClass = 'risk-medium';
+    else riskClass = 'risk-low';
     
-    // Update the hover panel
-    document.getElementById('hover-location').textContent = data.location || 'Unknown';
-    document.getElementById('hover-temperature').textContent = `${data.temperature_f}°F (${data.temperature_c}°C)`;
-    document.getElementById('hover-condition').textContent = data.condition || 'Unknown';
-    document.getElementById('hover-wind').textContent = `${data.wind_kph} kph`;
-    document.getElementById('hover-humidity').textContent = `${data.humidity}%`;
+    const popupContent = `
+      <div>
+        <h3 class="font-medium text-base mb-1">${incident.name}</h3>
+        <div>Risk Level: <span class="${riskClass}">${incident.risk.toUpperCase()}</span></div>
+        <div class="text-sm text-gray-300 mt-1">Coordinates: ${incident.lat.toFixed(4)}, ${incident.lng.toFixed(4)}</div>
+      </div>
+    `;
     
-    weatherLoading.style.display = 'none';
-    weatherContent.style.opacity = '1';
-    
-    return data;
-  } catch (error) {
-    console.error('Error fetching weather data:', error);
-    weatherLoading.style.display = 'none';
-    weatherContent.style.opacity = '1';
-    
-    // Show error in panel
-    document.getElementById('hover-location').textContent = 'Error fetching data';
-    document.getElementById('hover-temperature').textContent = '--';
-    document.getElementById('hover-condition').textContent = '--';
-    document.getElementById('hover-wind').textContent = '--';
-    document.getElementById('hover-humidity').textContent = '--';
-  }
-}
-
-// Update fetchInitialWeatherData to use the public endpoint
-async function fetchInitialWeatherData() {
-  try {
-    let data;
-    
-    try {
-      // Use the public endpoint that doesn't require authentication
-      const response = await fetch('/api/weather/public/current');
-      
-      if (!response.ok) {
-        throw new Error('API unavailable');
-      }
-      
-      data = await response.json();
-    } catch (err) {
-      console.warn('Using mock data for initial weather:', err);
-      // Fall back to mock data if API is unavailable
-      data = {
-        location: "San Diego, California",
-        temperature_f: 72,
-        temperature_c: 22,
-        condition: "Sunny",
-        humidity: 65,
-        wind_kph: 12,
-        feelslike_f: 70,
-        feelslike_c: 21,
-        last_updated: new Date().toLocaleString()
-      };
-    }
-    
-    // Update the UI with the weather data
-    document.getElementById('current-temperature').textContent = `${data.temperature_f}°F`;
-    document.getElementById('current-condition').textContent = data.condition || 'Unknown';
-    document.getElementById('current-wind-speed').textContent = `${data.wind_kph} kph`;
-    document.getElementById('current-humidity').textContent = `${data.humidity}%`;
-    document.getElementById('current-feels-like').textContent = `${data.feelslike_f}°F`;
-    
-    // Update right sidebar details
-    document.getElementById('detail-location').textContent = data.location;
-    document.getElementById('detail-temperature').textContent = `${data.temperature_f}°F`;
-    document.getElementById('detail-feels-like').textContent = `${data.feelslike_f}°F`;
-    document.getElementById('detail-wind-speed').textContent = `${data.wind_kph} kph`;
-    document.getElementById('detail-humidity').textContent = `${data.humidity}%`;
-    
-    // Update last updated text
-    document.getElementById('last-updated-text').textContent = `Last updated: ${data.last_updated}`;
-    
-  } catch (error) {
-    console.error('Error fetching initial weather data:', error);
-    // Set fallback values if everything fails
-    document.getElementById('current-temperature').textContent = `72°F`;
-    document.getElementById('current-condition').textContent = 'Unknown';
-    document.getElementById('current-wind-speed').textContent = `10 kph`;
-    document.getElementById('current-humidity').textContent = `65%`;
-    document.getElementById('current-feels-like').textContent = `70°F`;
-    document.getElementById('last-updated-text').textContent = `Last updated: Unable to fetch`;
-  }
-}
-
+    marker.bindPopup(popupContent, {
+      className: 'fire-popup',
+      maxWidth: 200
+    });
+  });
+});
 </script>
