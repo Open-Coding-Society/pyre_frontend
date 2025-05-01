@@ -155,22 +155,18 @@ title: Dashboard
       <!-- Wind widget -->
       <div class="mb-6">
         <h3 class="text-sm text-gray-400 mb-3">Wind Analysis</h3>
-        <div class="bg-gray-900/70 rounded-lg p-3 h-40">
-          <!-- Wind chart -->
-          <div class="h-full w-full rounded flex items-end space-x-1">
-            <div class="h-2/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-3/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-1/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-2/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-1/4 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-3/5 w-6 bg-orange-600 rounded-t"></div>
-            <div class="h-4/5 w-6 bg-orange-600 rounded-t"></div>
+        <div class="bg-gray-900/70 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm">Current Wind Speed</div>
+            <div id="current-wind-speed" class="font-medium">-- kph</div>
           </div>
-          <div class="flex justify-between text-xs text-gray-500 mt-2">
-            <div>Mon</div>
-            <div>Wed</div>
-            <div>Fri</div>
-            <div>Sun</div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm">Humidity</div>
+            <div id="current-humidity" class="font-medium">--%</div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="text-sm">Feels Like</div>
+            <div id="current-feels-like" class="font-medium">--°F</div>
           </div>
         </div>
       </div>
@@ -190,11 +186,11 @@ title: Dashboard
               </svg>
               Layers
             </button>
-            <button class="bg-gray-200 bg-opacity-20 backdrop-blur-sm rounded-md px-3 py-1 text-sm text-gray-200 flex items-center hover:bg-opacity-30">
+            <button id="toggle-climate-data" class="bg-gray-200 bg-opacity-20 backdrop-blur-sm rounded-md px-3 py-1 text-sm text-gray-200 flex items-center hover:bg-opacity-30">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
               </svg>
-              Markers
+              Toggle Climate Data
             </button>
           </div>
         </div>
@@ -207,14 +203,14 @@ title: Dashboard
               <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
               <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
             </svg>
-            Predictive Models
+            Weather Forecast
           </button>
           <button class="flex items-center text-gray-400 hover:text-white">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
               <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
             </svg>
-            Communications
+            Alerts
           </button>
         </div>
         <div class="flex items-center space-x-4">
