@@ -17,9 +17,9 @@ show_reading_time: false
     <!-- Secondary navigation -->
     <div class="absolute top-24 right-6 z-10">
         <div class="flex space-x-8">
-            <a href="https://www.fire.ca.gov/incidents" class="text-white hover:text-red-500 transition-colors duration-300 text-sm font-medium">WHAT HAPPENED</a>
-            <a href="https://www.fire.ca.gov/" class="text-white hover:text-red-500 transition-colors duration-300 text-sm font-medium">MEDIA</a>
-            <a href="https://www.fire.ca.gov/" class="text-white hover:text-red-500 transition-colors duration-300 text-sm font-medium">HOW TO HELP</a>
+            <a href="{{ site.baseurl }}/whathappened/" class="text-white hover:text-red-500 transition-colors duration-300 text-sm font-medium">WHAT HAPPENED</a>
+            <a href="{{ site.baseurl }}/media/" class="text-white hover:text-red-500 transition-colors duration-300 text-sm font-medium">MEDIA</a>
+            <a href="{{ site.baseurl }}/howtohelp/" class="text-white hover:text-red-500 transition-colors duration-300 text-sm font-medium">HOW TO HELP</a>
             <button id="shareButton" class="text-white hover:text-red-500 transition-colors duration-300 text-sm font-medium">SHARE</button>
         </div>
     </div>
