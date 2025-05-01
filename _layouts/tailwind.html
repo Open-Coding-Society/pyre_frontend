@@ -64,8 +64,9 @@ layout: base
       🌙 Dark Mode
     </button>
   </nav> -->
+
   <!-- NOTE: I removed the following classes from the class list for the nav tag: fixed and w-full to adapt to mort setup -->
-  <nav id="navbar" class="z-30 flex justify-between items-center px-6 py-3 bg-black bg-opacity-80 backdrop-blur-md border-b border-red-500 border-opacity-30">
+  <!-- <nav id="navbar" class="z-30 flex justify-between items-center px-6 py-3 bg-black bg-opacity-80 backdrop-blur-md border-b border-red-500 border-opacity-30">
     <div class="flex items-center">
       <a href="/QcommVNE_Frontend/" class="text-lg font-bold text-white flex items-center">
         <span class="text-red-500 mr-2">🔥</span> Pyre AI
@@ -78,17 +79,14 @@ layout: base
         <a href="/QcommVNE_Frontend/login" class="text-white text-opacity-80 hover:text-red-500 font-medium transition-colors duration-200">Login</a>
       </div>
     </div>
-    <!-- <button id="theme-toggle" class="bg-gradient-to-r from-red-600 to-red-500 text-white font-medium px-4 py-2 rounded shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5 transition-all duration-200">
-      <span class="mr-2">☀️</span> Light Mode
-    </button> -->
-  </nav>
+  </nav> -->
 
   <!-- Page Content -->
   <main class="w-full">
     {{ content }}
   </main>
 
-  <!-- Theme Toggle Script -->
+  <!-- Theme Toggle Script
   <script>
     const toggleButton = document.getElementById("theme-toggle");
     const body = document.body;
@@ -107,5 +105,5 @@ layout: base
       const newTheme = body.classList.contains("dark") ? "light" : "dark";
       setTheme(newTheme);
     });
-  </script>
+  </script> -->
 </body>

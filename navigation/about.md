@@ -4,6 +4,7 @@ search_exclude: true
 hide: true
 show_reading_time: false
 permalink: /about/
+title: About
 ---
 
 <!-- NOTE: I removed that part from the class part of the overall div, when switching to the base layout -->
