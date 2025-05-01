@@ -325,10 +325,15 @@ title: Dashboard
 
 <!-- Map initialization and data loading script -->
 <script type="module">
-    // Define the pythonURI since the import might not be working
-    import { pythonURI, fetchOptions } from '/QcommVNE_Frontend/assets/js/api/config.js';
+  // Import dependencies
+  import { pythonURI, fetchOptions } from '/QcommVNE_Frontend/assets/js/api/config.js';
+
+  // Main Fire Dashboard Script with ML Integration
+  document.addEventListener('DOMContentLoaded', function() {
     
-    // Define fetchFireData function before it's called
+    // ============ FIRE INCIDENT DATA FUNCTIONS ============
+    
+    // Fetch fire incident data from backend
     async function fetchFireData() {
       try {
         // Make the actual API request to the endpoint
@@ -339,19 +344,17 @@ title: Dashboard
         }
 
         const data = await response.json();
-        console.log(data)
-        console.log(data.today_incidents)
-        console.log(data.category_counts)
-        console.log(data.category_counts['HAZARD'])
-        console.log(data.category_counts['Life-Threatening Emergency Response'])
-        console.log(data.category_counts['Life-Threatening Emergency Response'] + data.category_counts['HAZARD'])
-        console.log(typeof data.category_counts)
-        let total_incidents = data.category_counts['Life-Threatening Emergency Response'] + data.category_counts['HAZARD'] + data.category_counts['Non-Life-Threatening Response'] + data.category_counts['Urgent Response']
+        
+        // Calculate total incidents
+        let total_incidents = data.category_counts['Life-Threatening Emergency Response'] + 
+                            data.category_counts['HAZARD'] + 
+                            data.category_counts['Non-Life-Threatening Response'] + 
+                            data.category_counts['Urgent Response'];
         
         // Update the incident table
         updateIncidentTable(data.today_incidents);
         
-        // // Update counters and stats
+        // Update counters and stats
         document.getElementById('total-incidents').textContent = total_incidents;
         document.getElementById('incident-count').textContent = total_incidents;
         document.getElementById('last-updated').textContent = data.last_update;
@@ -405,157 +408,439 @@ title: Dashboard
       });
     }
 
-    fetchFireData();
+    // ============ MAP AND FIRE VISUALIZATION FUNCTIONS ============
+    
+    // Find the map container and initialize it if it doesn't exist
+    const mapContainer = document.querySelector('.bg-gray-900\\/50.rounded-lg.overflow-hidden.h-full.relative.border.border-gray-800');
+    if (mapContainer && !document.getElementById('map')) {
+      mapContainer.innerHTML = '<div id="map" style="width:100%;height:100%;"></div>';
+    }
+    
+    // Initialize map centered on San Diego
+    const map = L.map('map', {
+      center: [32.7157, -117.1611], // San Diego coordinates
+      zoom: 11,
+      zoomControl: false // We'll add custom controls
+    });
+    
+    // Add dark-themed map tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+    
+    // Add zoom control to top-right
+    L.control.zoom({
+      position: 'topright'
+    }).addTo(map);
+    
+    // Function to fetch fire data from FIRMS API
+    async function fetchFIRMSData() {
+      try {
+        const response = await fetch('https://firms.modaps.eosdis.nasa.gov/api/country/csv/60d99d6a7687be4ce5cd594d754872df/VIIRS_SNPP_NRT/USA/2');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.text();
+        return parseCSV(data);
+      } catch (error) {
+        console.error('Error fetching FIRMS fire data:', error);
+        return [];
+      }
+    }
 
-    // Map initialization code
-    document.addEventListener('DOMContentLoaded', function() {
-      // Find the map container
-      const mapContainer = document.querySelector('.bg-gray-900\\/50.rounded-lg.overflow-hidden.h-full.relative.border.border-gray-800');
+    // Function to parse CSV data into usable format
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split('\n');
+      const headers = lines[0].split(',');
       
-      // Clear placeholder content
-      mapContainer.innerHTML = '<div id="map"></div>';
+      const fireData = [];
+      let id = 1;
       
-      // Initialize the map centered on San Diego
-      const map = L.map('map', {
-        center: [32.7157, -117.1611], // San Diego coordinates
-        zoom: 11,
-        zoomControl: false // We'll add custom controls
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        if (values.length !== headers.length) continue;
+        
+        const dataObj = {};
+        for (let j = 0; j < headers.length; j++) {
+          dataObj[headers[j]] = values[j];
+        }
+        
+        // Generate a unique name based on location and date
+        const locationName = `Fire-${dataObj.latitude.substring(0, 5)}-${dataObj.longitude.substring(0, 6)}`;
+        
+        fireData.push({
+          id: id++,
+          position: [parseFloat(dataObj.latitude), parseFloat(dataObj.longitude)],
+          name: locationName,
+          confidence: dataObj.confidence,
+          intensity: dataObj.frp, // Using FRP (Fire Radiative Power) for intensity
+          acq_date: dataObj.acq_date,
+          acq_time: dataObj.acq_time,
+          daynight: dataObj.daynight,
+          latitude: parseFloat(dataObj.latitude),
+          longitude: parseFloat(dataObj.longitude)
+        });
+      }
+      
+      return fireData;
+    }
+
+    // ============ WEATHER DATA FUNCTIONS ============
+    
+    // Function to get weather data for a specific location
+    async function getWeatherForLocation(lat, lon) {
+      try {
+        const response = await fetch(`${pythonURI}/api/get_weather?lat=${lat}&lon=${lon}`);
+        
+        if (!response.ok) {
+          throw new Error('Weather API response was not ok');
+        }
+
+        const data = await response.json();
+        return data.weather;
+      } catch (error) {
+        console.error(`Error fetching weather for location [${lat}, ${lon}]:`, error);
+        // Return default values if weather data fetch fails
+        return {
+          temperature: 25,
+          wind_speed: 10,
+          humidity: 45,
+          conditions: "Unknown"
+        };
+      }
+    }
+
+    // Function to get user's local weather for dashboard display
+    async function getUserLocationWeather() {
+      // Check if we have stored coordinates
+      const storedLat = localStorage.getItem('weather_lat');
+      const storedLon = localStorage.getItem('weather_lon');
+      
+      // If we have stored coordinates, use them
+      if (storedLat && storedLon) {
+        return getWeatherForLocation(parseFloat(storedLat), parseFloat(storedLon))
+          .then(weatherData => {
+            updateWeatherDisplay({
+              weather: weatherData,
+              location: { name: localStorage.getItem('location_name') || "Current Location" }
+            });
+            return weatherData;
+          });
+      }
+      
+      // Try to get location from browser geolocation API
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0
+            });
+          });
+          
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          // Store coordinates for future use
+          localStorage.setItem('weather_lat', lat);
+          localStorage.setItem('weather_lon', lon);
+          
+          return getWeatherForLocation(lat, lon)
+            .then(weatherData => {
+              updateWeatherDisplay({
+                weather: weatherData,
+                location: { name: "Current Location" }
+              });
+              return weatherData;
+            });
+        } catch (error) {
+          console.warn("Could not get user location automatically:", error);
+          // If geolocation fails, use default San Diego location
+          return getDefaultLocationWeather();
+        }
+      } else {
+        console.warn("Geolocation is not supported by this browser");
+        return getDefaultLocationWeather();
+      }
+    }
+
+    // Function to get weather for default location (San Diego)
+    async function getDefaultLocationWeather() {
+      const defaultLat = 32.7157; // San Diego default
+      const defaultLon = -117.1611;
+      
+      // Store default coordinates
+      localStorage.setItem('weather_lat', defaultLat);
+      localStorage.setItem('weather_lon', defaultLon);
+      localStorage.setItem('location_name', "San Diego");
+      
+      return getWeatherForLocation(defaultLat, defaultLon)
+        .then(weatherData => {
+          updateWeatherDisplay({
+            weather: weatherData,
+            location: { name: "San Diego" }
+          });
+          return weatherData;
+        });
+    }
+
+    // Function to update all weather-related displays
+    function updateWeatherDisplay(weatherData) {
+      // Update temperature display
+      updateTemperatureDisplay(weatherData);
+      
+      // Update wind analysis display
+      updateWindDisplay(weatherData);
+    }
+
+    // Function to update the temperature display
+    function updateTemperatureDisplay(weatherData) {
+      // Update the temperature gauge
+      const temperature = weatherData.weather.temperature;
+      const tempElement = document.getElementById('current-temperature');
+      if (tempElement) {
+        tempElement.textContent = `${Math.round(temperature)}°`;
+      }
+      
+      // Update conditions
+      const conditionsEl = document.getElementById('weather-conditions');
+      if (conditionsEl) {
+        conditionsEl.textContent = weatherData.weather.conditions;
+      }
+      
+      // Update location
+      const locationEl = document.getElementById('weather-location');
+      if (locationEl) {
+        locationEl.textContent = weatherData.location.name;
+      }
+    }
+
+    // Function to update the wind analysis display
+    function updateWindDisplay(weatherData) {
+      // Update wind speed
+      const windSpeedEl = document.getElementById('current-wind-speed');
+      if (windSpeedEl) {
+        windSpeedEl.textContent = `${Math.round(weatherData.weather.wind_speed)} kph`;
+      }
+      
+      // Update humidity
+      const humidityEl = document.getElementById('current-humidity');
+      if (humidityEl) {
+        humidityEl.textContent = `${weatherData.weather.humidity}%`;
+      }
+      
+      // Update feels like
+      const feelsLikeEl = document.getElementById('current-feels-like');
+      if (feelsLikeEl) {
+        feelsLikeEl.textContent = `${Math.round(weatherData.weather.feels_like)}°F`;
+      }
+    }
+
+    // ============ ML PREDICTION FUNCTIONS ============
+    
+    // Get the day of week from a date string
+    function getDayOfWeek(dateStr) {
+      const date = new Date(dateStr);
+      const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      return days[date.getDay()];
+    }
+    
+    // Get the month abbreviation from a date string
+    function getMonthAbbr(dateStr) {
+      const date = new Date(dateStr);
+      const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+      return months[date.getMonth()];
+    }
+
+    // Predict fire size using ML model
+    async function predictFireSize(fireData, weatherData) {
+      try {
+        // Format date for ML model
+        const day = getDayOfWeek(fireData.acq_date);
+        const month = getMonthAbbr(fireData.acq_date);
+        
+        // Build the prediction request body
+        const predictionData = {
+          X: fireData.latitude,
+          Y: fireData.longitude,
+          month: month,
+          day: day,
+          temp: weatherData.temperature,
+          RH: weatherData.humidity || 45, // Default humidity if not available
+          wind: weatherData.wind_speed,
+          rain: 0.0 // Assuming no rain data available, default to 0
+        };
+        
+        console.log("Sending prediction request:", predictionData);
+        
+        // Make request to ML model endpoint
+        const response = await fetch(`${pythonURI}/api/forest-fire/predict`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(predictionData)
+        });
+        
+        if (!response.ok) {
+          throw new Error('ML prediction API response was not ok');
+        }
+        
+        const predictionResult = await response.json();
+        console.log("Received prediction:", predictionResult);
+        return predictionResult.predicted_area || 0.5; // Assuming the API returns { predicted_size: X }
+      } catch (error) {
+        console.error('Error predicting fire size:', error);
+        // Return a default prediction based on fire intensity if ML fails
+        return (parseFloat(fireData.intensity) * 2) || 0.5;
+      }
+    }
+
+    // ============ VISUALIZATION FUNCTIONS ============
+    
+    // Create a fire icon with size based on predicted size
+    function createFireIcon(intensity, predictedSize) {
+      // Determine icon size based on predicted hectares
+      let iconSize = 30; // Default size
+      
+      if (predictedSize > 50) {
+        iconSize = 50; // Very large fire
+      } else if (predictedSize > 20) {
+        iconSize = 45; // Large fire
+      } else if (predictedSize > 10) {
+        iconSize = 40; // Medium-large fire
+      } else if (predictedSize > 5) {
+        iconSize = 35; // Medium fire
+      }
+      
+      // Determine color based on intensity
+      const intensityValue = parseFloat(intensity);
+      let bgColor = 'bg-yellow-500'; // Low intensity
+      
+      if (intensityValue > 1.0) {
+        bgColor = 'bg-red-600'; // High intensity
+      } else if (intensityValue > 0.5) {
+        bgColor = 'bg-orange-500'; // Medium intensity
+      }
+      
+      // Create the icon
+      const icon = L.divIcon({
+        className: `map-marker ${bgColor}`,
+        html: `<span>🔥</span>`,
+        iconSize: [iconSize, iconSize],
+        iconAnchor: [iconSize/2, iconSize/2]
       });
       
-      // Add dark-themed map tiles
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
-      }).addTo(map);
-      
-      // Add zoom control to top-right
-      L.control.zoom({
-        position: 'topright'
-      }).addTo(map);
-      
-      // Sample fire data
-      async function fetchFireData() {
-        try {
-          const response = await fetch('https://firms.modaps.eosdis.nasa.gov/api/country/csv/60d99d6a7687be4ce5cd594d754872df/VIIRS_SNPP_NRT/USA/2');
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          
-          const data = await response.text();
-          return parseCSV(data);
-        } catch (error) {
-          console.error('Error fetching fire data:', error);
-          return [];
-        }
-      }
+      return icon;
+    }
 
-      // Function to parse CSV data into usable format
-      function parseCSV(csvText) {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',');
+    // Add fire markers to map with prediction info
+    async function addFireMarkersToMapWithPrediction() {
+      // Clear existing markers
+      map.eachLayer(layer => {
+        if (layer instanceof L.Marker || layer instanceof L.Circle) {
+          map.removeLayer(layer);
+        }
+      });
+      
+      // Fetch fire data
+      const fireData = await fetchFIRMSData();
+      console.log("Fetched FIRMS fire data:", fireData);
+      
+      // Process each fire with prediction
+      for (const fire of fireData) {
+        // Get weather for this specific fire location
+        const weatherData = await getWeatherForLocation(fire.latitude, fire.longitude);
+        console.log(`Weather for fire ${fire.name}:`, weatherData);
         
-        const fireData = [];
-        let id = 1;
+        // Predict fire size
+        const predictedSize = await predictFireSize(fire, weatherData);
+        console.log(`Predicted size for fire ${fire.name}: ${predictedSize} hectares`);
         
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',');
-          if (values.length !== headers.length) continue;
-          
-          const dataObj = {};
-          for (let j = 0; j < headers.length; j++) {
-            dataObj[headers[j]] = values[j];
-          }
-          
-          // Generate a unique name based on location and date
-          const locationName = `Fire-${dataObj.latitude.substring(0, 5)}-${dataObj.longitude.substring(0, 6)}`;
-          
-          fireData.push({
-            id: id++,
-            position: [parseFloat(dataObj.latitude), parseFloat(dataObj.longitude)],
-            name: locationName,
-            confidence: dataObj.confidence,
-            intensity: dataObj.frp, // Using FRP (Fire Radiative Power) for intensity
-            acq_date: dataObj.acq_date,
-            acq_time: dataObj.acq_time,
-            daynight: dataObj.daynight
-          });
+        // Store prediction with fire data
+        fire.predictedSize = predictedSize;
+        
+        // Create marker with size based on prediction
+        const marker = L.marker(fire.position, {
+          icon: createFireIcon(fire.intensity, predictedSize)
+        }).addTo(map);
+        
+        // Determine risk class based on predicted size
+        let riskLevel = 'low';
+        if (predictedSize > 20) {
+          riskLevel = 'high';
+        } else if (predictedSize > 5) {
+          riskLevel = 'medium';
         }
         
-        return fireData;
-      }
-
-      // Custom fire icon function
-      function createFireIcon(intensity) {
-        // Convert intensity (FRP) to risk level
-        const intensityValue = parseFloat(intensity);
-        const riskLevel = intensityValue > 1.0 ? 'high' : 
-                        intensityValue > 0.5 ? 'medium' : 
-                        'low';
+        // Format intensity for display
+        const intensityValue = parseFloat(fire.intensity);
+        const intensityPercent = Math.min(Math.round(intensityValue * 100), 100) + '%';
         
-        const className = riskLevel === 'high' ? 'map-marker bg-red-600' : 
-                          riskLevel === 'medium' ? 'map-marker bg-orange-500' : 
-                          'map-marker bg-yellow-500';
-        
-        const icon = L.divIcon({
-          className: className,
-          html: `<span>🔥</span>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15]
-        });
-        
-        return icon;
-      }
-
-      // Function to add fire markers to map
-      async function addFireMarkersToMap() {
-        const fireData = await fetchFireData();
-        
-        fireData.forEach(fire => {
-          const marker = L.marker(fire.position, {
-            icon: createFireIcon(fire.intensity)
-          }).addTo(map);
-          
-          // Determine risk class based on intensity
-          const intensityValue = parseFloat(fire.intensity);
-          const riskLevel = intensityValue > 1.0 ? 'high' : 
-                          intensityValue > 0.5 ? 'medium' : 
-                          'low';
-          const riskClass = riskLevel === 'high' ? 'risk-high' : 
-                          riskLevel === 'medium' ? 'risk-medium' : 
-                          'risk-low';
-          
-          // Format intensity as percentage for display
-          const intensityPercent = Math.min(Math.round(intensityValue * 100), 100) + '%';
-          
-          // Custom popup content
-          const popupContent = `
-            <div class="fire-details">
-              <h3 class="font-bold text-lg">${fire.name}</h3>
-              <div class="mt-2">
-                <p>Confidence: ${fire.confidence}</p>
-                <p>Intensity: ${fire.intensity}</p>
-                <p>Date: ${fire.acq_date} Time: ${fire.acq_time}</p>
-                <p>Day/Night: ${fire.daynight}</p>
-                <div class="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
-                  <div class="h-full bg-orange-500 rounded-full" style="width: ${intensityPercent}"></div>
-                </div>
+        // Custom popup content with prediction info
+        const popupContent = `
+          <div class="fire-details">
+            <h3 class="font-bold text-lg">${fire.name}</h3>
+            <div class="mt-2">
+              <p>Confidence: ${fire.confidence}</p>
+              <p>Intensity: ${fire.intensity}</p>
+              <p>Date: ${fire.acq_date} Time: ${fire.acq_time}</p>
+              <p>Day/Night: ${fire.daynight}</p>
+              <p class="font-bold mt-1">Predicted Size: ${predictedSize.toFixed(2)} hectares</p>
+              <p>Risk Level: <span class="text-${riskLevel === 'high' ? 'red' : riskLevel === 'medium' ? 'orange' : 'yellow'}-500">${riskLevel.toUpperCase()}</span></p>
+              <div class="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
+                <div class="h-full bg-orange-500 rounded-full" style="width: ${intensityPercent}"></div>
               </div>
             </div>
-          `;
-          
-          marker.bindPopup(popupContent);
-        });
+          </div>
+        `;
+        
+        marker.bindPopup(popupContent);
+        
+        // Add circle overlay to visualize predicted fire size
+        const radiusInMeters = Math.sqrt(predictedSize * 10000 / Math.PI); // Convert hectares to radius in meters
+        L.circle(fire.position, {
+          radius: radiusInMeters,
+          fillColor: riskLevel === 'high' ? '#ef4444' : 
+                  riskLevel === 'medium' ? '#f97316' : 
+                  '#eab308',
+          fillOpacity: 0.2,
+          color: riskLevel === 'high' ? '#dc2626' : 
+              riskLevel === 'medium' ? '#ea580c' : 
+              '#ca8a04',
+          weight: 1
+        }).addTo(map);
       }
+      
+      return fireData;
+    }
 
-      // Call the function to load and display fire data
-      addFireMarkersToMap();
+    // ============ INITIALIZATION AND EVENT HANDLERS ============
+    
+    // Function to initialize all dashboard components
+    async function initializeDashboard() {
+      // Get user's weather data for dashboard display
+      await getUserLocationWeather();
       
-      // Fix layer and marker buttons event handlers to use proper DOM methods
+      // Fetch fire incident data for table
+      await fetchFireData();
+      
+      // Add fire markers to map with ML predictions
+      await addFireMarkersToMapWithPrediction();
+      
+      // Add event listeners for control buttons
+      setupControlButtons();
+    }
+    
+    // Set up control button event listeners
+    function setupControlButtons() {
+      // Layer button handler
       const layersButton = document.querySelector('button:nth-child(1)');
-      const markersButton = document.querySelector('button:nth-child(2)');
-      
       if (layersButton) {
         layersButton.addEventListener('click', function() {
           // In a real app, this would toggle different map layers
@@ -563,6 +848,8 @@ title: Dashboard
         });
       }
       
+      // Markers button handler
+      const markersButton = document.querySelector('button:nth-child(2)');
       if (markersButton) {
         markersButton.addEventListener('click', function() {
           // In a real app, this would toggle marker visibility
@@ -570,173 +857,20 @@ title: Dashboard
         });
       }
       
-      // Add refresh handler
-      document.getElementById('refresh-data').addEventListener('click', function() {
-        fetchFireData();
-        console.log("Refresh clicked, fetching new data...");
-      });
-    });
-</script>
-
-<script type="module">
-  import { pythonURI, fetchOptions } from '/QcommVNE_Frontend/assets/js/api/config.js';
-  // Weather API integration
-  async function getUserLocation() {
-    // Check if we have stored coordinates
-    const storedLat = localStorage.getItem('weather_lat');
-    const storedLon = localStorage.getItem('weather_lon');
-    
-    // If we have stored coordinates, use them
-    if (storedLat && storedLon) {
-      return {
-        lat: parseFloat(storedLat),
-        lon: parseFloat(storedLon)
-      };
-    }
-    
-    // Try to get location from browser geolocation API
-    if (navigator.geolocation) {
-      try {
-        const position = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-          });
+      // Refresh button handler
+      const refreshButton = document.getElementById('refresh-data');
+      if (refreshButton) {
+        refreshButton.addEventListener('click', async function() {
+          console.log("Refresh clicked, fetching new data...");
+          // Update all data components
+          await getUserLocationWeather();
+          await fetchFireData();
+          await addFireMarkersToMapWithPrediction();
         });
-        
-        const coordinates = {
-          lat: position.coords.latitude,
-          lon: position.coords.longitude
-        };
-        
-        // Store coordinates for future use
-        localStorage.setItem('weather_lat', coordinates.lat);
-        localStorage.setItem('weather_lon', coordinates.lon);
-        
-        return coordinates;
-      } catch (error) {
-        console.warn("Could not get user location automatically:", error);
-        // If geolocation fails, ask user for manual input
-        return promptForCoordinates();
       }
-    } else {
-      console.warn("Geolocation is not supported by this browser");
-      // If geolocation is not supported, ask user for manual input
-      return promptForCoordinates();
-    }
-  }
-
-  // Function to prompt user for coordinates
-  function promptForCoordinates() {
-    // Show modal or use prompt for simplicity
-    const defaultLat = 32.7157; // San Diego default
-    const defaultLon = -117.1611;
-    
-    let lat = parseFloat(prompt("Please enter latitude (default is San Diego):", defaultLat));
-    let lon = parseFloat(prompt("Please enter longitude (default is San Diego):", defaultLon));
-    
-    // Validate input and use defaults if invalid
-    lat = isNaN(lat) ? defaultLat : lat;
-    lon = isNaN(lon) ? defaultLon : lon;
-    
-    // Store coordinates for future use
-    localStorage.setItem('weather_lat', lat);
-    localStorage.setItem('weather_lon', lon);
-    
-    return { lat, lon };
-  }
-
-  async function fetchWeatherData() {
-    try {
-      // Get user location first
-      const { lat, lon } = await getUserLocation();
-      
-      // Simulate API call for now (since we may not have access to the actual API)
-      const response = await fetch(`${pythonURI}/api/get_weather?lat=${lat}&lon=${lon}`);
-      
-      if (!response.ok) {
-        throw new Error('Weather API response was not ok');
-      }
-
-      const data = await response.json();
-      
-      console.log("Weather data:", data);
-      
-      // Update UI with weather data
-      updateWeatherDisplay(data);
-      
-      return data;
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      return null;
-    }
-  }
-
-  // Function to update all weather-related displays
-  function updateWeatherDisplay(weatherData) {
-    // Update temperature display
-    updateTemperatureDisplay(weatherData);
-    
-    // Update wind analysis display
-    updateWindDisplay(weatherData);
-  }
-
-  // Function to update the temperature display
-  function updateTemperatureDisplay(weatherData) {
-    // Update the temperature gauge
-    const temperature = weatherData.weather.temperature;
-    const tempElement = document.getElementById('current-temperature');
-    if (tempElement) {
-      tempElement.textContent = `${Math.round(temperature)}°`;
     }
     
-    // Update conditions
-    const conditionsEl = document.getElementById('weather-conditions');
-    if (conditionsEl) {
-      conditionsEl.textContent = weatherData.weather.conditions;
-    }
-    
-    // Update location
-    const locationEl = document.getElementById('weather-location');
-    if (locationEl) {
-      locationEl.textContent = weatherData.location.name;
-    }
-  }
-
-  // Function to update the wind analysis display
-  function updateWindDisplay(weatherData) {
-    // Update wind speed
-    const windSpeedEl = document.getElementById('current-wind-speed');
-    if (windSpeedEl) {
-      windSpeedEl.textContent = `${Math.round(weatherData.weather.wind_speed)} kph`;
-    }
-    
-    // Update humidity
-    const humidityEl = document.getElementById('current-humidity');
-    if (humidityEl) {
-      humidityEl.textContent = `${weatherData.weather.humidity}%`;
-    }
-    
-    // Update feels like
-    const feelsLikeEl = document.getElementById('current-feels-like');
-    if (feelsLikeEl) {
-      feelsLikeEl.textContent = `${Math.round(weatherData.weather.feels_like)}°F`;
-    }
-  }
-
-  // Call fetchWeatherData when document is loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Fetch weather data initially
-    fetchWeatherData();
-    
-    // Add refresh weather data to the refresh button click handler
-    const refreshButton = document.getElementById('refresh-data');
-    if (refreshButton) {
-      refreshButton.addEventListener('click', function() {
-        fetchWeatherData();
-        console.log("Refreshing weather data...");
-      });
-    }
+    // Initialize the dashboard when document is ready
+    initializeDashboard();
   });
 </script>
