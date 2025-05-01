@@ -131,10 +131,9 @@ title: Dashboard
         </div>
       </div>
       <!-- Temperature widget -->
-      <div class="mb-6">
+      <!-- <div class="mb-6">
         <h3 class="text-sm text-gray-400 mb-3">Temperature Trend</h3>
         <div class="bg-gray-900/70 rounded-lg p-3 h-40">
-          <!-- Temperature chart -->
           <div class="h-full w-full rounded flex items-end space-x-1">
             <div class="h-1/4 w-8 bg-orange-600 rounded-t"></div>
             <div class="h-2/5 w-8 bg-orange-600 rounded-t"></div>
@@ -152,7 +151,59 @@ title: Dashboard
           </div>
         </div>
       </div>
-      <!-- Wind widget -->
+      <div class="mb-6">
+        <h3 class="text-sm text-gray-400 mb-3">Wind Analysis</h3>
+        <div class="bg-gray-900/70 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm">Current Wind Speed</div>
+            <div id="current-wind-speed" class="font-medium">-- kph</div>
+          </div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm">Humidity</div>
+            <div id="current-humidity" class="font-medium">--%</div>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="text-sm">Feels Like</div>
+            <div id="current-feels-like" class="font-medium">--°F</div>
+          </div>
+        </div>
+      </div> -->
+      <div class="mb-6">
+        <h3 class="text-sm text-gray-400 mb-3">Current Temperature</h3>
+        <div class="flex justify-between text-xs text-gray-400 mb-1">
+          <div id="weather-location">--</div>
+          <div id="weather-conditions">--</div>
+        </div>
+        <div class="bg-gray-900/70 rounded-lg p-3 h-40">
+          <!-- Temperature gauge -->
+          <div class="h-full w-full flex items-center justify-center">
+            <div class="w-32 h-32 relative">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div id="current-temperature" class="text-3xl font-bold">--°</div>
+              </div>
+              <svg class="absolute inset-0" viewBox="0 0 100 100">
+                <path 
+                  d="M 50,50 m 0,47 a 47,47 0 1 1 0,-94 a 47,47 0 1 1 0,94" 
+                  fill="none" 
+                  stroke="#374151" 
+                  stroke-width="6"
+                />
+                <path 
+                  id="gauge-path"
+                  d="M 50,50 m 0,47 a 47,47 0 1 1 0,-94 a 47,47 0 1 1 0,94" 
+                  fill="none" 
+                  stroke-linecap="round"
+                  class="stroke-blue-500"
+                  stroke-width="6"
+                  stroke-dasharray="295.31" 
+                  stroke-dashoffset="220"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Wind widget - Replace the existing widget with this -->
       <div class="mb-6">
         <h3 class="text-sm text-gray-400 mb-3">Wind Analysis</h3>
         <div class="bg-gray-900/70 rounded-lg p-3">
@@ -354,6 +405,8 @@ title: Dashboard
       });
     }
 
+    fetchFireData();
+
     // Map initialization code
     document.addEventListener('DOMContentLoaded', function() {
       // Find the map container
@@ -382,22 +435,68 @@ title: Dashboard
       }).addTo(map);
       
       // Sample fire data
-      const fireData = [
-        { id: 1, position: [32.8328, -117.2713], name: "Torrey Pines", risk: "high", containment: "35%" },
-        { id: 2, position: [32.7336, -117.1831], name: "Balboa Park", risk: "medium", containment: "70%" },
-        { id: 3, position: [32.7638, -117.2273], name: "Mission Bay", risk: "medium", containment: "55%" },
-        { id: 4, position: [32.5967, -117.1139], name: "Chula Vista", risk: "low", containment: "90%" },
-        { id: 5, position: [33.1192, -117.0864], name: "Escondido", risk: "high", containment: "20%" },
-        { id: 6, position: [32.7953, -116.9422], name: "El Cajon", risk: "medium", containment: "45%" },
-        { id: 7, position: [32.8328, -116.7764], name: "Alpine", risk: "high", containment: "15%" },
-        { id: 8, position: [33.0169, -116.9678], name: "Poway", risk: "low", containment: "85%" }
-      ];
-      
+      async function fetchFireData() {
+        try {
+          const response = await fetch('https://firms.modaps.eosdis.nasa.gov/api/country/csv/60d99d6a7687be4ce5cd594d754872df/VIIRS_SNPP_NRT/USA/2');
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          
+          const data = await response.text();
+          return parseCSV(data);
+        } catch (error) {
+          console.error('Error fetching fire data:', error);
+          return [];
+        }
+      }
+
+      // Function to parse CSV data into usable format
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',');
+        
+        const fireData = [];
+        let id = 1;
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',');
+          if (values.length !== headers.length) continue;
+          
+          const dataObj = {};
+          for (let j = 0; j < headers.length; j++) {
+            dataObj[headers[j]] = values[j];
+          }
+          
+          // Generate a unique name based on location and date
+          const locationName = `Fire-${dataObj.latitude.substring(0, 5)}-${dataObj.longitude.substring(0, 6)}`;
+          
+          fireData.push({
+            id: id++,
+            position: [parseFloat(dataObj.latitude), parseFloat(dataObj.longitude)],
+            name: locationName,
+            confidence: dataObj.confidence,
+            intensity: dataObj.frp, // Using FRP (Fire Radiative Power) for intensity
+            acq_date: dataObj.acq_date,
+            acq_time: dataObj.acq_time,
+            daynight: dataObj.daynight
+          });
+        }
+        
+        return fireData;
+      }
+
       // Custom fire icon function
-      function createFireIcon(risk) {
-        const className = risk === 'high' ? 'map-marker bg-red-600' : 
-                        risk === 'medium' ? 'map-marker bg-orange-500' : 
-                        'map-marker bg-yellow-500';
+      function createFireIcon(intensity) {
+        // Convert intensity (FRP) to risk level
+        const intensityValue = parseFloat(intensity);
+        const riskLevel = intensityValue > 1.0 ? 'high' : 
+                        intensityValue > 0.5 ? 'medium' : 
+                        'low';
+        
+        const className = riskLevel === 'high' ? 'map-marker bg-red-600' : 
+                          riskLevel === 'medium' ? 'map-marker bg-orange-500' : 
+                          'map-marker bg-yellow-500';
         
         const icon = L.divIcon({
           className: className,
@@ -408,48 +507,50 @@ title: Dashboard
         
         return icon;
       }
-      
-      // Add fire markers to map
-      fireData.forEach(fire => {
-        const marker = L.marker(fire.position, {
-          icon: createFireIcon(fire.risk)
-        }).addTo(map);
+
+      // Function to add fire markers to map
+      async function addFireMarkersToMap() {
+        const fireData = await fetchFireData();
         
-        const riskClass = fire.risk === 'high' ? 'risk-high' : 
-                         fire.risk === 'medium' ? 'risk-medium' : 
-                         'risk-low';
-        
-        // Custom popup content
-        const popupContent = `
-          <div class="fire-details">
-            <h3 class="font-bold text-lg">${fire.name}</h3>
-            <div class="mt-2">
-              <p>Risk Level: <span class="${riskClass} font-medium">${fire.risk.toUpperCase()}</span></p>
-              <p>Containment: ${fire.containment}</p>
-              <div class="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
-                <div class="h-full bg-orange-500 rounded-full" style="width: ${fire.containment}"></div>
+        fireData.forEach(fire => {
+          const marker = L.marker(fire.position, {
+            icon: createFireIcon(fire.intensity)
+          }).addTo(map);
+          
+          // Determine risk class based on intensity
+          const intensityValue = parseFloat(fire.intensity);
+          const riskLevel = intensityValue > 1.0 ? 'high' : 
+                          intensityValue > 0.5 ? 'medium' : 
+                          'low';
+          const riskClass = riskLevel === 'high' ? 'risk-high' : 
+                          riskLevel === 'medium' ? 'risk-medium' : 
+                          'risk-low';
+          
+          // Format intensity as percentage for display
+          const intensityPercent = Math.min(Math.round(intensityValue * 100), 100) + '%';
+          
+          // Custom popup content
+          const popupContent = `
+            <div class="fire-details">
+              <h3 class="font-bold text-lg">${fire.name}</h3>
+              <div class="mt-2">
+                <p>Confidence: ${fire.confidence}</p>
+                <p>Intensity: ${fire.intensity}</p>
+                <p>Date: ${fire.acq_date} Time: ${fire.acq_time}</p>
+                <p>Day/Night: ${fire.daynight}</p>
+                <div class="mt-2 h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-orange-500 rounded-full" style="width: ${intensityPercent}"></div>
+                </div>
               </div>
             </div>
-          </div>
-        `;
+          `;
           
-        marker.bindPopup(popupContent, {
-          className: 'fire-popup',
-          maxWidth: 200
+          marker.bindPopup(popupContent);
         });
-      });
-      
-      // Draw a fire risk heatmap overlay
-      const riskArea = L.polygon([
-        [32.8428, -117.2813],
-        [32.8528, -117.2513],
-        [32.8228, -117.2513],
-        [32.8128, -117.2813]
-      ], {
-        color: '#ef4444',
-        fillColor: '#ef4444',
-        fillOpacity: 0.3
-      }).addTo(map);
+      }
+
+      // Call the function to load and display fire data
+      addFireMarkersToMap();
       
       // Fix layer and marker buttons event handlers to use proper DOM methods
       const layersButton = document.querySelector('button:nth-child(1)');
@@ -469,9 +570,6 @@ title: Dashboard
         });
       }
       
-      // Fetch and display fire incident data
-      fetchFireData();
-      
       // Add refresh handler
       document.getElementById('refresh-data').addEventListener('click', function() {
         fetchFireData();
@@ -482,23 +580,91 @@ title: Dashboard
 
 <script type="module">
   import { pythonURI, fetchOptions } from '/QcommVNE_Frontend/assets/js/api/config.js';
+  // Weather API integration
+  async function getUserLocation() {
+    // Check if we have stored coordinates
+    const storedLat = localStorage.getItem('weather_lat');
+    const storedLon = localStorage.getItem('weather_lon');
+    
+    // If we have stored coordinates, use them
+    if (storedLat && storedLon) {
+      return {
+        lat: parseFloat(storedLat),
+        lon: parseFloat(storedLon)
+      };
+    }
+    
+    // Try to get location from browser geolocation API
+    if (navigator.geolocation) {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          });
+        });
+        
+        const coordinates = {
+          lat: position.coords.latitude,
+          lon: position.coords.longitude
+        };
+        
+        // Store coordinates for future use
+        localStorage.setItem('weather_lat', coordinates.lat);
+        localStorage.setItem('weather_lon', coordinates.lon);
+        
+        return coordinates;
+      } catch (error) {
+        console.warn("Could not get user location automatically:", error);
+        // If geolocation fails, ask user for manual input
+        return promptForCoordinates();
+      }
+    } else {
+      console.warn("Geolocation is not supported by this browser");
+      // If geolocation is not supported, ask user for manual input
+      return promptForCoordinates();
+    }
+  }
+
+  // Function to prompt user for coordinates
+  function promptForCoordinates() {
+    // Show modal or use prompt for simplicity
+    const defaultLat = 32.7157; // San Diego default
+    const defaultLon = -117.1611;
+    
+    let lat = parseFloat(prompt("Please enter latitude (default is San Diego):", defaultLat));
+    let lon = parseFloat(prompt("Please enter longitude (default is San Diego):", defaultLon));
+    
+    // Validate input and use defaults if invalid
+    lat = isNaN(lat) ? defaultLat : lat;
+    lon = isNaN(lon) ? defaultLon : lon;
+    
+    // Store coordinates for future use
+    localStorage.setItem('weather_lat', lat);
+    localStorage.setItem('weather_lon', lon);
+    
+    return { lat, lon };
+  }
+
   async function fetchWeatherData() {
     try {
-      // Make the API request to the weather endpoint
-      const response = await fetch(`${pythonURI}/api/get_weather`);
+      // Get user location first
+      const { lat, lon } = await getUserLocation();
+      
+      // Simulate API call for now (since we may not have access to the actual API)
+      const response = await fetch(`${pythonURI}/api/get_weather?lat=${lat}&lon=${lon}`);
       
       if (!response.ok) {
         throw new Error('Weather API response was not ok');
       }
 
       const data = await response.json();
+      
       console.log("Weather data:", data);
       
-      // Update the temperature trend chart with actual data
-      updateTemperatureChart(data);
-      
-      // Update the wind analysis chart
-      updateWindChart(data);
+      // Update UI with weather data
+      updateWeatherDisplay(data);
       
       return data;
     } catch (error) {
@@ -507,202 +673,70 @@ title: Dashboard
     }
   }
 
-  // Function to update the temperature chart with real data
-  function updateTemperatureChart(weatherData) {
-    const tempContainer = document.querySelector('.temperature-chart');
-    if (!tempContainer) {
-      console.error("Temperature chart container not found");
-      return;
-    }
+  // Function to update all weather-related displays
+  function updateWeatherDisplay(weatherData) {
+    // Update temperature display
+    updateTemperatureDisplay(weatherData);
     
-    // Clear existing chart
-    tempContainer.innerHTML = '';
-    
-    // Create line chart for temperature instead of bar chart
-    const chart = document.createElement('div');
-    chart.className = 'h-full w-full flex items-end relative';
-    
-    // Get temperature from weather data (assuming it's in Fahrenheit)
+    // Update wind analysis display
+    updateWindDisplay(weatherData);
+  }
+
+  // Function to update the temperature display
+  function updateTemperatureDisplay(weatherData) {
+    // Update the temperature gauge
     const temperature = weatherData.weather.temperature;
-    const timestamp = new Date(weatherData.timestamp * 1000);
-    
-    // Add temperature value display
-    const tempDisplay = document.createElement('div');
-    tempDisplay.className = 'absolute top-0 right-0 text-xl font-bold';
-    tempDisplay.textContent = `${Math.round(temperature)}°F`;
-    
-    // Add current conditions
-    const conditionsDisplay = document.createElement('div');
-    conditionsDisplay.className = 'absolute top-6 right-0 text-sm';
-    conditionsDisplay.textContent = weatherData.weather.conditions;
-    
-    // For a line chart, we'd need multiple data points
-    // For now, let's create a temperature gauge instead
-    const gaugeContainer = document.createElement('div');
-    gaugeContainer.className = 'h-full w-full flex items-center justify-center';
-    
-    // Create a semicircular gauge
-    const gauge = document.createElement('div');
-    gauge.className = 'w-32 h-32 relative';
-    
-    // Calculate temperature color (blue for cold, red for hot)
-    const getTemperatureColor = (temp) => {
-      if (temp < 40) return 'bg-blue-500';
-      if (temp < 60) return 'bg-green-500';
-      if (temp < 80) return 'bg-yellow-500';
-      if (temp < 90) return 'bg-orange-500';
-      return 'bg-red-500';
-    };
-    
-    const tempColor = getTemperatureColor(temperature);
-    
-    // Create gauge HTML
-    gauge.innerHTML = `
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div class="text-3xl font-bold">${Math.round(temperature)}°</div>
-      </div>
-      <svg class="absolute inset-0" viewBox="0 0 100 100">
-        <path 
-          d="M 50,50 m 0,47 a 47,47 0 1 1 0,-94 a 47,47 0 1 1 0,94" 
-          fill="none" 
-          stroke="#374151" 
-          stroke-width="6"
-        />
-        <path 
-          id="gauge-path"
-          d="M 50,50 m 0,47 a 47,47 0 1 1 0,-94 a 47,47 0 1 1 0,94" 
-          fill="none" 
-          stroke-linecap="round"
-          class="${tempColor.replace('bg-', 'stroke-')}"
-          stroke-width="6"
-          stroke-dasharray="295.31" 
-          stroke-dashoffset="${295.31 - (295.31 * (temperature - 0) / (120 - 0))}"
-        />
-      </svg>
-    `;
-    
-    gaugeContainer.appendChild(gauge);
-    chart.appendChild(gaugeContainer);
-    chart.appendChild(tempDisplay);
-    chart.appendChild(conditionsDisplay);
-    
-    // Add the chart to the container
-    tempContainer.appendChild(chart);
-    
-    // Update the weather conditions text
-    const conditionsElement = document.getElementById('weather-conditions');
-    if (conditionsElement) {
-      conditionsElement.textContent = weatherData.weather.description;
+    const tempElement = document.getElementById('current-temperature');
+    if (tempElement) {
+      tempElement.textContent = `${Math.round(temperature)}°`;
     }
     
-    // Add location information
-    const locationElement = document.getElementById('weather-location');
-    if (locationElement) {
-      locationElement.textContent = weatherData.location.name;
+    // Update conditions
+    const conditionsEl = document.getElementById('weather-conditions');
+    if (conditionsEl) {
+      conditionsEl.textContent = weatherData.weather.conditions;
+    }
+    
+    // Update location
+    const locationEl = document.getElementById('weather-location');
+    if (locationEl) {
+      locationEl.textContent = weatherData.location.name;
     }
   }
 
-  // Function to update the wind chart with real data
-  function updateWindChart(weatherData) {
-    const windContainer = document.querySelector('.wind-chart');
-    if (!windContainer) {
-      console.error("Wind chart container not found");
-      return;
+  // Function to update the wind analysis display
+  function updateWindDisplay(weatherData) {
+    // Update wind speed
+    const windSpeedEl = document.getElementById('current-wind-speed');
+    if (windSpeedEl) {
+      windSpeedEl.textContent = `${Math.round(weatherData.weather.wind_speed)} kph`;
     }
     
-    // Clear existing chart
-    windContainer.innerHTML = '';
-    
-    // Get wind data
-    const windSpeed = weatherData.weather.wind_speed;
-    const windDirection = weatherData.weather.wind_direction;
-    
-    // Create wind display
-    const windDisplay = document.createElement('div');
-    windDisplay.className = 'h-full w-full flex flex-col items-center justify-center';
-    
-    // Convert degrees to cardinal direction
-    function degreesToCardinal(degrees) {
-      const cardinals = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-      const index = Math.round(((degrees % 360) / 22.5));
-      return cardinals[index % 16];
+    // Update humidity
+    const humidityEl = document.getElementById('current-humidity');
+    if (humidityEl) {
+      humidityEl.textContent = `${weatherData.weather.humidity}%`;
     }
     
-    const cardinal = degreesToCardinal(windDirection);
-    
-    // Create HTML for wind display
-    windDisplay.innerHTML = `
-      <div class="relative w-32 h-32">
-        <div class="absolute inset-0 flex items-center justify-center">
-          <div class="text-3xl font-bold">${Math.round(windSpeed)}</div>
-        </div>
-        <div class="absolute bottom-0 left-0 right-0 text-center text-sm">mph</div>
-        <svg class="absolute inset-0" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill="none" stroke="#374151" stroke-width="2" />
-          <path 
-            d="M 50 50 L ${50 + 35 * Math.sin(windDirection * Math.PI / 180)} ${50 - 35 * Math.cos(windDirection * Math.PI / 180)}" 
-            stroke="${windSpeed > 15 ? '#ef4444' : windSpeed > 8 ? '#f97316' : '#10b981'}" 
-            stroke-width="3" 
-            stroke-linecap="round" 
-          />
-          <circle cx="50" cy="50" r="5" fill="${windSpeed > 15 ? '#ef4444' : windSpeed > 8 ? '#f97316' : '#10b981'}" />
-        </svg>
-      </div>
-      <div class="text-xl mt-2">${cardinal}</div>
-      <div class="text-sm opacity-70">Direction: ${Math.round(windDirection)}°</div>
-    `;
-    
-    windContainer.appendChild(windDisplay);
+    // Update feels like
+    const feelsLikeEl = document.getElementById('current-feels-like');
+    if (feelsLikeEl) {
+      feelsLikeEl.textContent = `${Math.round(weatherData.weather.feels_like)}°F`;
+    }
   }
 
   // Call fetchWeatherData when document is loaded
   document.addEventListener('DOMContentLoaded', function() {
-    // Update DOM to add classes for weather charts
-    const tempChart = document.querySelector('.mb-6:nth-of-type(2) .bg-gray-900\\/70.rounded-lg.p-3.h-40');
-    if (tempChart) {
-      const tempChartContent = tempChart.querySelector('.h-full.w-full.rounded.flex.items-end.space-x-1');
-      if (tempChartContent) {
-        tempChartContent.className = 'temperature-chart h-full w-full';
-      }
-    }
-    
-    const windChart = document.querySelector('.mb-6:nth-of-type(3) .bg-gray-900\\/70.rounded-lg.p-3.h-40');
-    if (windChart) {
-      const windChartContent = windChart.querySelector('.h-full.w-full.rounded.flex.items-end.space-x-1');
-      if (windChartContent) {
-        windChartContent.className = 'wind-chart h-full w-full';
-      }
-    }
-    
-    // Add weather condition and location elements
-    const tempWidget = document.querySelector('.mb-6:nth-of-type(2)');
-    if (tempWidget) {
-      const tempHeader = tempWidget.querySelector('h3');
-      if (tempHeader) {
-        tempHeader.textContent = 'Current Temperature';
-        tempHeader.insertAdjacentHTML('afterend', `
-          <div class="flex justify-between text-xs text-gray-400 mb-1">
-            <div id="weather-location">--</div>
-            <div id="weather-conditions">--</div>
-          </div>
-        `);
-      }
-    }
-    
     // Fetch weather data initially
     fetchWeatherData();
     
     // Add refresh weather data to the refresh button click handler
     const refreshButton = document.getElementById('refresh-data');
     if (refreshButton) {
-      const originalClickHandler = refreshButton.onclick;
-      refreshButton.onclick = async function(e) {
-        if (originalClickHandler) {
-          originalClickHandler.call(this, e);
-        }
-        await fetchWeatherData();
-      };
+      refreshButton.addEventListener('click', function() {
+        fetchWeatherData();
+        console.log("Refreshing weather data...");
+      });
     }
   });
 </script>
-
