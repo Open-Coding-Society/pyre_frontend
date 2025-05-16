@@ -608,7 +608,7 @@ categories: [Documentation]
             </div>
         </div>
     </div>
-    
+<!--     
     <div class="grid">
         <div class="card">
             <div class="card-header">
@@ -653,7 +653,7 @@ categories: [Documentation]
     
     <div class="footer">
         Data sources: National Interagency Fire Center, U.S. Forest Service, EPA, CalFire, and Congressional Research Service (2023-2024)
-    </div>
+    </div> -->
 </div>
 
 
