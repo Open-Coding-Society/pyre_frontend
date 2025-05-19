@@ -23,4 +23,8 @@ header_pages:
   - navigation/crowd.md
   - navigation/notification.md
   - navigation/historical.md
+<<<<<<< HEAD
+=======
+  - navigation/stats.md
+>>>>>>> ac833d53ba64975681e3b996ae5a2b62e99b3592
   - navigation/search.md
