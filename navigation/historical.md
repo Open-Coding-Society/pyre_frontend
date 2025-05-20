@@ -5,9 +5,6 @@ hide: true
 show_reading_time: false
 permalink: /historical/
 title: Historical
-<<<<<<< HEAD
----
-=======
 ---
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -524,4 +521,3 @@ title: Historical
             document.getElementById('errorMessage').classList.add('hidden');
         }
 </script>
->>>>>>> ac833d53ba64975681e3b996ae5a2b62e99b3592
