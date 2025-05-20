@@ -23,4 +23,5 @@ header_pages:
   - navigation/crowd.md
   - navigation/notification.md
   - navigation/historical.md
+  - navigation/stats.md
   - navigation/search.md

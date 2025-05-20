@@ -11,7 +11,11 @@ title: Report
   <div class="max-w-4xl mx-auto">
     <div class="mb-8 text-center">
       <h1 class="text-3xl font-bold text-red-600">Fire Hazard Reporting</h1>
+<<<<<<< HEAD
       <p class="mt-2 text-gray-600">Help keep our community safe by reporting potential fire hazards</p>
+=======
+      <p class="mt-2 text-gray-600">Help keep our community safe and healthy by reporting potential fire hazards</p>
+>>>>>>> ac833d53ba64975681e3b996ae5a2b62e99b3592
     </div>
     <div class="bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 class="text-xl font-semibold mb-4">Report a Fire Hazard</h2>
