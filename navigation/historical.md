@@ -146,6 +146,67 @@ title: Historical
                 <canvas id="correlationChart" class="w-full h-64"></canvas>
             </div>
         </div>
+        <!-- Advanced Regression Analysis -->
+        <div class="mt-12">
+            <h2 class="text-3xl font-bold text-white mb-6 text-center">Advanced Regression Analysis</h2>
+            <!-- Advanced Controls -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex-1 min-w-200">
+                        <label for="analysisType" class="block text-sm font-medium text-gray-700 mb-2">Analysis Type</label>
+                        <select id="analysisType" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            <option value="comprehensive">Comprehensive Analysis</option>
+                            <option value="time_series">Time Series Forecasting</option>
+                            <option value="spatial">Spatial Clustering</option>
+                            <option value="statistics">Statistical Summary</option>
+                            <option value="animation">Animated Visualization</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-200">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">&nbsp;</label>
+                        <button id="loadAdvancedData" class="w-full bg-purple-600 text-white px-6 py-2 rounded-md shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200">
+                            Run Advanced Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Advanced Stats Cards -->
+            <div id="advancedStatsSection" class="hidden grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <!-- Stats will be populated dynamically -->
+            </div>
+            <!-- Advanced Visualizations -->
+            <div id="advancedVisualizationsSection" class="hidden grid grid-cols-1 gap-8">
+                <!-- Time Series Forecast Chart -->
+                <div id="forecastChartContainer" class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Time Series Forecast</h3>
+                    <div id="forecastChart" class="w-full h-96 border rounded-lg"></div>
+                </div>
+                <!-- Spatial Analysis -->
+                <div id="spatialAnalysisContainer" class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Spatial Clustering Analysis</h3>
+                    <div id="spatialChart" class="w-full h-96 border rounded-lg"></div>
+                </div>
+                <!-- Statistical Insights -->
+                <div id="statisticalInsightsContainer" class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Statistical Insights</h3>
+                    <div id="statisticalContent" class="space-y-4"></div>
+                </div>
+                <!-- Animation Container -->
+                <div id="animationContainer" class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Dynamic Visualization</h3>
+                    <div id="animationContent" class="w-full h-96 border rounded-lg flex items-center justify-center">
+                        <p class="text-gray-500">Select animation analysis to view dynamic visualizations</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Advanced Loading Indicator -->
+            <div id="advancedLoadingIndicator" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                    <span class="text-gray-700">Running advanced analysis...</span>
+                </div>
+            </div>
+        </div>
         <!-- Error Message -->
         <div id="errorMessage" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
             <div class="flex">
@@ -166,6 +227,10 @@ title: Historical
 
 <script type="module">
         import { pythonURI, fetchOptions } from '/QcommVNE_Frontend/assets/js/api/config.js';
+
+        // ----------------------------------------------------------------
+        // INITIAL MAPS, METRICS & DISPLAY W/ LISTENER SETUP
+        // ----------------------------------------------------------------
 
         // Global variables
         let map;
@@ -519,5 +584,269 @@ title: Historical
         // Hide error message
         function hideError() {
             document.getElementById('errorMessage').classList.add('hidden');
+        }
+        
+        // ----------------------------------------------------------------
+        // ADVANCED ML MODEL CALL & DISPLAY
+        // ----------------------------------------------------------------
+        let advancedData = null;
+
+        // Setup advanced analysis event listeners
+        function setupAdvancedEventListeners() {
+            document.getElementById('loadAdvancedData').addEventListener('click', loadAdvancedAnalysis);
+        }
+
+        // Load advanced analysis data
+        async function loadAdvancedAnalysis() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            const analysisType = document.getElementById('analysisType').value;
+            
+            showAdvancedLoading(true);
+            hideAdvancedError();
+
+            try {
+                const requestBody = {
+                    year: parseInt(year),
+                    month: parseInt(month),
+                    analysis_type: analysisType
+                };
+
+                const response = await fetch(`${pythonURI}/advanced/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                advancedData = data;
+                
+                displayAdvancedResults(data, analysisType);
+                
+            } catch (error) {
+                console.error('Error loading advanced analysis:', error);
+                showAdvancedError(`Failed to load advanced analysis: ${error.message}`);
+            } finally {
+                showAdvancedLoading(false);
+            }
+        }
+
+        // Display advanced analysis results
+        function displayAdvancedResults(data, analysisType) {
+            // Show the sections
+            document.getElementById('advancedStatsSection').classList.remove('hidden');
+            document.getElementById('advancedVisualizationsSection').classList.remove('hidden');
+            
+            // Update advanced stats
+            updateAdvancedStats(data);
+            
+            // Display visualizations based on analysis type
+            switch(analysisType) {
+                case 'comprehensive':
+                    displayComprehensiveAnalysis(data);
+                    break;
+                case 'time_series':
+                    displayTimeSeriesAnalysis(data);
+                    break;
+                case 'spatial':
+                    displaySpatialAnalysis(data);
+                    break;
+                case 'statistics':
+                    displayStatisticalAnalysis(data);
+                    break;
+                case 'animation':
+                    displayAnimationAnalysis(data);
+                    break;
+            }
+        }
+
+        // Update advanced statistics cards
+        function updateAdvancedStats(data) {
+            const statsSection = document.getElementById('advancedStatsSection');
+            
+            // Extract relevant statistics from the API response
+            const stats = data.statistics || {};
+            
+            statsSection.innerHTML = `
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-purple-100 rounded-lg">
+                            <div class="w-6 h-6 bg-purple-600 rounded"></div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-500">Prediction Accuracy</h3>
+                            <p class="text-2xl font-semibold text-gray-900">${stats.accuracy || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-indigo-100 rounded-lg">
+                            <div class="w-6 h-6 bg-indigo-600 rounded"></div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-500">Forecast Trend</h3>
+                            <p class="text-2xl font-semibold text-gray-900">${stats.trend || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <div class="w-6 h-6 bg-blue-600 rounded"></div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-500">Clusters Found</h3>
+                            <p class="text-2xl font-semibold text-gray-900">${stats.clusters || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-teal-100 rounded-lg">
+                            <div class="w-6 h-6 bg-teal-600 rounded"></div>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-sm font-medium text-gray-500">R² Score</h3>
+                            <p class="text-2xl font-semibold text-gray-900">${stats.r2_score || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Display comprehensive analysis
+        function displayComprehensiveAnalysis(data) {
+            // Show all charts if they exist in the response
+            if (data.plots) {
+                displayBase64Images(data.plots);
+            }
+            
+            if (data.forecast_data) {
+                displayTimeSeriesChart(data.forecast_data);
+            }
+            
+            if (data.clustering_results) {
+                displayClusteringResults(data.clustering_results);
+            }
+        }
+
+        // Display time series analysis
+        function displayTimeSeriesAnalysis(data) {
+            if (data.forecast_data) {
+                displayTimeSeriesChart(data.forecast_data);
+            }
+        }
+
+        // Display spatial analysis
+        function displaySpatialAnalysis(data) {
+            if (data.clustering_results) {
+                displayClusteringResults(data.clustering_results);
+            }
+        }
+
+        // Display statistical analysis
+        function displayStatisticalAnalysis(data) {
+            const container = document.getElementById('statisticalContent');
+            
+            if (data.statistics) {
+                const stats = data.statistics;
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-2">Model Performance</h4>
+                            <ul class="space-y-1 text-sm text-gray-600">
+                                <li>R² Score: ${stats.r2_score || 'N/A'}</li>
+                                <li>RMSE: ${stats.rmse || 'N/A'}</li>
+                                <li>MAE: ${stats.mae || 'N/A'}</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-2">Data Insights</h4>
+                            <ul class="space-y-1 text-sm text-gray-600">
+                                <li>Total Records: ${stats.total_records || 'N/A'}</li>
+                                <li>Peak Month: ${stats.peak_month || 'N/A'}</li>
+                                <li>Trend: ${stats.trend || 'N/A'}</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Display animation analysis
+        function displayAnimationAnalysis(data) {
+            const container = document.getElementById('animationContent');
+            
+            if (data.animation_data) {
+                // Handle GIF or other animation data
+                if (data.animation_data.gif_base64) {
+                    container.innerHTML = `
+                        <img src="data:image/gif;base64,${data.animation_data.gif_base64}" 
+                            alt="Fire Data Animation" 
+                            class="max-w-full h-auto rounded-lg" />
+                    `;
+                } else {
+                    container.innerHTML = '<p class="text-gray-500">Animation data received but format not supported</p>';
+                }
+            }
+        }
+
+        // Helper function to display base64 encoded images
+        function displayBase64Images(plots) {
+            Object.keys(plots).forEach(plotName => {
+                const plotData = plots[plotName];
+                if (plotData.includes('base64,')) {
+                    // Find appropriate container based on plot name
+                    let containerId = '';
+                    if (plotName.includes('forecast')) containerId = 'forecastChart';
+                    else if (plotName.includes('spatial')) containerId = 'spatialChart';
+                    
+                    if (containerId) {
+                        const container = document.getElementById(containerId);
+                        if (container) {
+                            container.innerHTML = `<img src="${plotData}" alt="${plotName}" class="max-w-full h-auto rounded-lg" />`;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Helper function to display time series forecast chart
+        function displayTimeSeriesChart(forecastData) {
+            const container = document.getElementById('forecastChart');
+            // This would typically integrate with your existing Chart.js setup
+            // For now, display as text or wait for base64 image
+            container.innerHTML = '<p class="text-gray-500">Time series forecast visualization loaded</p>';
+        }
+
+        // Helper function to display clustering results
+        function displayClusteringResults(clusteringData) {
+            const container = document.getElementById('spatialChart');
+            // Display clustering results
+            container.innerHTML = '<p class="text-gray-500">Spatial clustering analysis loaded</p>';
+        }
+
+        // Show/hide advanced loading indicator
+        function showAdvancedLoading(show) {
+            const indicator = document.getElementById('advancedLoadingIndicator');
+            indicator.classList.toggle('hidden', !show);
+        }
+
+        // Show advanced error message
+        function showAdvancedError(message) {
+            // You can reuse the existing error display or create a new one
+            showError(message);
+        }
+
+        // Hide advanced error message
+        function hideAdvancedError() {
+            hideError();
         }
 </script>
