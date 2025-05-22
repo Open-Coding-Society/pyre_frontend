@@ -331,3 +331,86 @@ Where `λ(x) = 1/ε` is the density level.
 
 ---
 
+## 5. Implementation Details
+
+### 5.1 Singleton Pattern Architecture
+
+All three models implement the Singleton pattern to ensure single instance management:
+
+```python
+class FireDataAnalysisAdvancedRegressionModel:
+    _instance = None
+
+    @staticmethod
+    def get_instance():
+        if FireDataAnalysisAdvancedRegressionModel._instance is None:
+            FireDataAnalysisAdvancedRegressionModel()
+        return FireDataAnalysisAdvancedRegressionModel._instance
+
+    def __init__(self):
+        if FireDataAnalysisAdvancedRegressionModel._instance is not None:
+            raise Exception("This class is a singleton!")
+        else:
+            FireDataAnalysisAdvancedRegressionModel._instance = self
+            self.data = None
+            self.prophet_model = None
+            self.clustering_model = None
+            self.scaler = StandardScaler()
+```
+
+**Benefits:**
+- **Memory Efficiency**: Single instance per model type
+- **State Consistency**: Maintains model state across method calls
+- **Resource Management**: Prevents multiple expensive model initializations
+
+### 5.2 Data Pipeline Implementation
+
+**Flexible Filtering System:**
+```python
+def filter_data_by_period(self, year=None, month=None):
+    """Filter data by specific year and/or month"""
+    if self.data is None:
+        return None
+        
+    filtered_data = self.data.copy()
+    
+    if year is not None:
+        filtered_data = filtered_data[filtered_data['year'] == year]
+    
+    if month is not None:
+        filtered_data = filtered_data[filtered_data['month'] == month]
+        
+    return filtered_data
+```
+
+**Robust Error Handling:**
+```python
+try:
+    # Model operations
+    result = self.perform_analysis()
+    return {"status": "success", "data": result}
+except Exception as e:
+    return {"status": "error", "message": str(e)}
+```
+
+### 5.3 Visualization Pipeline
+
+**Base64 Image Encoding:**
+```python
+def _fig_to_base64(self, fig):
+    """Convert matplotlib figure to base64 string"""
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format='png', dpi=150, bbox_inches='tight', facecolor='white')
+    buffer.seek(0)
+    image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    buffer.close()
+    return f"data:image/png;base64,{image_base64}"
+```
+
+This approach enables:
+- **Web Integration**: Direct embedding in HTML
+- **API Compatibility**: JSON-serializable image data
+- **High Quality**: Configurable DPI and formatting
+
+---
+
