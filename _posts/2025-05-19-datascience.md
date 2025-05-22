@@ -116,3 +116,152 @@ Where:
 
 ---
 
+## 3. General Pipeline and Process
+
+### 3.1 Data Loading and Preprocessing
+
+The data pipeline begins with robust loading and preprocessing:
+
+```python
+def load_data(self, file_path="fire_archive.csv"):
+    """Load and preprocess the fire data"""
+    try:
+        self.data = pd.read_csv(file_path, parse_dates=['acq_date'])
+        # Filter data to reasonable range
+        self.data = self.data[(self.data['acq_date'].dt.year >= 2015) & 
+                             (self.data['acq_date'].dt.year <= 2022)]
+        
+        # Add additional time features
+        self.data['year'] = self.data['acq_date'].dt.year
+        self.data['month'] = self.data['acq_date'].dt.month
+        self.data['day_of_year'] = self.data['acq_date'].dt.dayofyear
+        self.data['year_month'] = self.data['acq_date'].dt.to_period('M')
+        
+        return {"status": "success", "message": "Data loaded successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+```
+
+**Key Preprocessing Steps:**
+1. **Date Parsing**: Converting string dates to datetime objects
+2. **Data Filtering**: Removing outliers and invalid entries
+3. **Feature Engineering**: Creating temporal and spatial features
+4. **Missing Value Handling**: Implementing appropriate imputation strategies
+
+### 3.2 Feature Engineering
+
+Feature engineering transforms raw data into meaningful inputs for machine learning models:
+
+**Temporal Features:**
+- `year`, `month`, `day_of_year`: Capturing different time scales
+- `year_month`: Monthly aggregation periods
+- `timestamp`: Unix timestamp for regression models
+
+**Spatial Features:**
+- `latitude`, `longitude`: Geographic coordinates
+- Spatial binning (optional): Grid-based location grouping
+
+**Fire-specific Features:**
+- `brightness`: Satellite-detected fire intensity
+- `frp`: Fire Radiative Power
+- `daynight`: Day/night occurrence indicator
+
+### 3.3 Model Training and Validation
+
+Each model follows a structured training approach:
+
+**Prophet Training Pipeline:**
+```python
+# Prepare data for Prophet
+daily_fires = filtered_data.groupby('acq_date').size().reset_index(name='fire_count')
+daily_fires['ds'] = daily_fires['acq_date']  # Prophet requires 'ds' column
+daily_fires['y'] = daily_fires['fire_count']   # Prophet requires 'y' column
+
+# Train Prophet model
+model = Prophet(yearly_seasonality=True, daily_seasonality=(month is not None))
+model.fit(daily_fires[['ds', 'y']])
+
+# Generate forecast
+future = model.make_future_dataframe(periods=periods, freq=freq)
+forecast = model.predict(future)
+```
+
+**Polynomial Regression Pipeline:**
+```python
+# Prepare features and target
+X = fires_per_month['timestamp'].values.reshape(-1, 1)
+y = fires_per_month['fire_count'].values
+
+# Train polynomial model
+poly_model = make_pipeline(PolynomialFeatures(degree=degree), LinearRegression())
+poly_model.fit(X, y)
+
+# Generate predictions
+fires_per_month['poly_pred'] = poly_model.predict(X)
+```
+
+**HDBSCAN Clustering Pipeline:**
+```python
+# Normalize features
+features = ['latitude', 'longitude', 'brightness', 'frp', 'month', 'hour', 'is_day']
+X_scaled = self.scaler.fit_transform(self.clustered_data[features])
+
+# Perform HDBSCAN clustering
+self.clusterer = hdbscan.HDBSCAN(
+    min_cluster_size=min_cluster_size,
+    min_samples=min_samples
+)
+clusters = self.clusterer.fit_predict(X_scaled)
+```
+
+### 3.4 Visualization and Interpretation
+
+Comprehensive visualization pipeline includes:
+
+1. **Time Series Plots**: Trends, forecasts, and components
+2. **Spatial Maps**: Geographic distribution and clusters
+3. **Statistical Distributions**: Feature distributions by cluster
+4. **Model Diagnostics**: Residuals, coefficients, and performance metrics
+
+---
+
+## 4. Mathematical Foundations
+
+### 4.1 Prophet Model Components
+
+Prophet decomposes time series data into interpretable components:
+
+**Additive Model:**
+```
+y(t) = g(t) + s(t) + h(t) + εₜ
+```
+
+Where:
+- `g(t)`: Trend function modeling non-periodic changes
+- `s(t)`: Seasonal components (yearly, weekly, daily)
+- `h(t)`: Holiday effects
+- `εₜ`: Error term
+
+**Trend Function Options:**
+
+*Linear Trend:*
+```
+g(t) = (k + a(t)ᵀδ) × t + (m + a(t)ᵀγ)
+```
+
+*Logistic Growth Trend:*
+```
+g(t) = C(t) / (1 + exp(-(k + a(t)ᵀδ)(t - (m + a(t)ᵀγ))))
+```
+
+**Seasonal Component:**
+Prophet uses Fourier series to model seasonality:
+```
+s(t) = Σₙ₌₁ᴺ (aₙcos(2πnt/P) + bₙsin(2πnt/P))
+```
+
+Where:
+- `P`: Period of seasonality (365.25 for yearly)
+- `N`: Number of Fourier terms
+- `aₙ, bₙ`: Fourier coefficients
+
