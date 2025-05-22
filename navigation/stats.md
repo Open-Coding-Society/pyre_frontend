@@ -9,140 +9,160 @@ permalink: /stats/
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NASA FIRMS VIIRS Data Viewer</title>
+  <title>NASA FIRMS Data Visualizer</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 40px;
-      background-color: #f4f4f9;
-      color: #333;
+      background-color: #f5f5f5;
+      color: #000;
     }
-
     h1 {
       text-align: center;
     }
-
     .dropdown-container {
       text-align: center;
-      margin-bottom: 20px;
+      margin: 20px;
     }
-
     select {
       font-size: 1rem;
       padding: 10px;
-      width: 250px;
+      width: 300px;
     }
-
-    .card {
-      display: none;
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 600px;
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .card.active {
-      display: block;
-    }
-
-    .stat {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-
-    .explanation {
-      font-size: 0.95rem;
-      color: #555;
+    #chart {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
     }
   </style>
 </head>
 <body>
 
-  <h1>NASA FIRMS - VIIRS Data Viewer</h1>
+  <h1>NASA Fire Data Visualizer</h1>
 
   <div class="dropdown-container">
-    <label for="data-select">Choose a Data Point:</label>
+    <label for="data-select">Choose a Visualization:</label>
     <select id="data-select">
       <option value="">-- Select an option --</option>
+      <option value="map">Latitude & Longitude (Map)</option>
+      <option value="bright_ti4">Brightness TI4</option>
+      <option value="bright_ti5">Brightness TI5</option>
+      <option value="scan_track">Scan / Track</option>
+      <option value="confidence">Confidence</option>
+      <option value="frp">Fire Radiative Power (FRP)</option>
       <option value="satellite">Satellite</option>
       <option value="instrument">Instrument</option>
-      <option value="scantrack">Scan / Track</option>
+      <option value="daynight">Day / Night</option>
       <option value="version">Data Version</option>
-      <option value="bright_ti5">Brightness TI5</option>
+      <option value="acq_date">Acquisition Dates</option>
     </select>
   </div>
 
-  <div id="satellite" class="card">
-    <div class="stat" id="satellite-stat"></div>
-    <div class="explanation">Shows the satellite platform (e.g., VIIRS). Useful for filtering or verifying source consistency.</div>
-  </div>
-
-  <div id="instrument" class="card">
-    <div class="stat" id="instrument-stat"></div>
-    <div class="explanation">This field specifies the onboard instrument capturing data. Important for sensor-specific analysis.</div>
-  </div>
-
-  <div id="scantrack" class="card">
-    <div class="stat" id="scantrack-stat"></div>
-    <div class="explanation">Scan and track widths define the pixel resolution of data capture, indicating image detail.</div>
-  </div>
-
-  <div id="version" class="card">
-    <div class="stat" id="version-stat"></div>
-    <div class="explanation">Data version helps with backend troubleshooting or comparing revisions of datasets.</div>
-  </div>
-
-  <div id="bright_ti5" class="card">
-    <div class="stat" id="bright_ti5-stat"></div>
-    <div class="explanation">Brightness TI5 is measured in longwave infrared and is used in fire detection or thermal anomaly studies.</div>
-  </div>
+  <div id="chart"></div>
 
   <script>
-    const apiURL = "https://firms.modaps.eosdis.nasa.gov/usfs/api/area/csv/a5c78a9b1ae831d370494dacf4428024/VIIRS_SNPP_NRT/world/1";
+    const filePath = "2025-03-01.txt";
+    d3.csv(filePath).then(data => {
+      const dropdown = document.getElementById("data-select");
+      dropdown.addEventListener("change", () => {
+        const selected = dropdown.value;
+        document.getElementById("chart").innerHTML = "";
 
-    document.getElementById("data-select").addEventListener("change", function () {
-      const selected = this.value;
-      document.querySelectorAll(".card").forEach(card => card.classList.remove("active"));
-      if (selected) document.getElementById(selected).classList.add("active");
-    });
+        if (selected === "map") {
+          const lats = data.map(d => +d.latitude);
+          const lons = data.map(d => +d.longitude);
 
-    fetch(apiURL)
-      .then(response => response.text())
-      .then(csv => {
-        const rows = csv.trim().split("\n").slice(1).map(row => row.split(","));
-        
-        // Get specific columns by their position
-        const satelliteData = rows.map(r => r[7]);
-        const instrumentData = rows.map(r => r[8]);
-        const scanData = rows.map(r => parseFloat(r[4]));
-        const trackData = rows.map(r => parseFloat(r[5]));
-        const versionData = rows.map(r => r[10]);
-        const brightTI5Data = rows.map(r => parseFloat(r[11]));
+          Plotly.newPlot("chart", [{
+            type: "scattergeo",
+            mode: "markers",
+            lat: lats,
+            lon: lons,
+            marker: { color: 'red', size: 4 },
+            name: "Fires"
+          }], {
+            geo: {
+              projection: { type: "natural earth" },
+              showland: true
+            },
+            title: "Fire Locations"
+          });
+        }
 
-        // Populate card stats
-        document.getElementById("satellite-stat").innerText = 
-          "Satellites Detected: " + [...new Set(satelliteData)].join(", ");
+        else if (selected === "bright_ti4" || selected === "bright_ti5" || selected === "frp") {
+          const values = data.map(d => +d[selected]);
+          Plotly.newPlot("chart", [{
+            type: "histogram",
+            x: values,
+            marker: { color: "#0077b6" }
+          }], {
+            title: `${selected.replace("_", " ").toUpperCase()} Distribution`,
+            xaxis: { title: selected },
+            yaxis: { title: "Count" }
+          });
+        }
 
-        document.getElementById("instrument-stat").innerText = 
-          "Instruments Detected: " + [...new Set(instrumentData)].join(", ");
+        else if (selected === "scan_track") {
+          Plotly.newPlot("chart", [{
+            x: data.map(d => +d.scan),
+            y: data.map(d => +d.track),
+            mode: "markers",
+            type: "scatter",
+            marker: { size: 6, color: "#ff8800" }
+          }], {
+            title: "Scan vs. Track Width",
+            xaxis: { title: "Scan" },
+            yaxis: { title: "Track" }
+          });
+        }
 
-        const avg = arr => (arr.reduce((a,b) => a+b, 0) / arr.length).toFixed(2);
+        else if (selected === "confidence" || selected === "satellite" || selected === "instrument" || selected === "daynight" || selected === "version") {
+          const counts = {};
+          data.forEach(row => {
+            const key = row[selected];
+            counts[key] = (counts[key] || 0) + 1;
+          });
+          const labels = Object.keys(counts);
+          const values = Object.values(counts);
 
-        document.getElementById("scantrack-stat").innerText = 
-          `Average Scan: ${avg(scanData)} | Average Track: ${avg(trackData)}`;
+          Plotly.newPlot("chart", [{
+            type: "bar",
+            x: labels,
+            y: values,
+            marker: { color: "#0096c7" }
+          }], {
+            title: `Distribution of ${selected}`,
+            xaxis: { title: selected },
+            yaxis: { title: "Count" }
+          });
+        }
 
-        document.getElementById("version-stat").innerText = 
-          "Data Versions: " + [...new Set(versionData)].join(", ");
+        else if (selected === "acq_date") {
+          const dateCounts = {};
+          data.forEach(d => {
+            dateCounts[d.acq_date] = (dateCounts[d.acq_date] || 0) + 1;
+          });
 
-        document.getElementById("bright_ti5-stat").innerText = 
-          `Avg Brightness TI5: ${avg(brightTI5Data)} (K)`;
-      })
-      .catch(error => {
-        console.error("Data fetch failed:", error);
-        document.body.innerHTML += "<p style='color:red;'>Failed to load data from API.</p>";
+          const dates = Object.keys(dateCounts);
+          const counts = Object.values(dateCounts);
+
+          Plotly.newPlot("chart", [{
+            x: dates,
+            y: counts,
+            type: "bar",
+            marker: { color: "#6a4c93" }
+          }], {
+            title: "Fires by Acquisition Date",
+            xaxis: { title: "Date" },
+            yaxis: { title: "Number of Fires" }
+          });
+        }
       });
+    }).catch(err => {
+      document.getElementById("chart").innerHTML = "<p style='color:red;'>Failed to load data file.</p>";
+      console.error("CSV load error:", err);
+    });
   </script>
 </body>
 </html>
