@@ -198,7 +198,7 @@ title: Earthquakes
             <div class="space-y-4">
                 <div class="help-feature" style="color: #fff;">
                     <h3 class="text-lg font-medium mb-2" style="color: #fff;">Real-time Data</h3>
-                    <p style="color: #fff;">Live earthquake data fetched from your Flask API at <code>/api/earthquake/records</code></p>
+                    <p style="color: #fff;">Live earthquake data fetched from your Flask API at <code>/api/earthquake/resource</code></p>
                 </div>
                 
                 <div class="help-feature" style="color: #fff;">
@@ -431,7 +431,14 @@ title: Earthquakes
 
     <script>
         // Configuration
-        const API_BASE_URL = 'http://localhost:5000/api/earthquake';
+        const pythonURI = 'http://127.0.0.1:8505';
+        const API_ENDPOINTS = {
+            predict: `${pythonURI}/api/earthquake/predict`,
+            records: `${pythonURI}/api/earthquake/records`,  // This is the main endpoint we should use
+            record: `${pythonURI}/api/earthquake/record`,
+            riskFactors: `${pythonURI}/api/earthquake/calculate-risk-factors`,
+            restore: `${pythonURI}/api/earthquake/restore`
+        };
         
         // Global variables
         let map;
@@ -496,7 +503,7 @@ title: Earthquakes
             try {
                 updateApiStatus('loading');
                 
-                const response = await fetch(`${API_BASE_URL}/records`);
+                const response = await fetch(API_ENDPOINTS.records);  // Use the records endpoint
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -517,6 +524,88 @@ title: Earthquakes
             }
         }
 
+        // Update dashboard with earthquake data
+        function updateDashboard() {
+            if (earthquakeData.length > 0) {
+                // Update total incidents
+                document.getElementById('total-incidents').textContent = earthquakeData.length;
+                document.getElementById('incident-count').textContent = earthquakeData.length;
+
+                // Calculate magnitude categories
+                const categories = {
+                    'Major (7.0+)': earthquakeData.filter(q => q.magnitude >= 7.0).length,
+                    'Strong (5.0-6.9)': earthquakeData.filter(q => q.magnitude >= 5.0 && q.magnitude < 7.0).length,
+                    'Light (<5.0)': earthquakeData.filter(q => q.magnitude < 5.0).length
+                };
+
+                // Update category stats
+                const statsContainer = document.getElementById('category-stats');
+                statsContainer.innerHTML = '';
+                
+                Object.entries(categories).forEach(([category, count]) => {
+                    const percentage = (count / earthquakeData.length * 100) || 0;
+                    const categoryEl = document.createElement('div');
+                    categoryEl.innerHTML = `
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm">${category}</span>
+                            <span class="text-sm">${count}</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                    `;
+                    statsContainer.appendChild(categoryEl);
+                });
+
+                // Update depth analysis
+                const depths = earthquakeData.map(quake => quake.depth);
+                document.getElementById('avg-depth').textContent = 
+                    (depths.reduce((a, b) => a + b, 0) / depths.length).toFixed(1) + ' km';
+                document.getElementById('max-depth').textContent = 
+                    Math.max(...depths).toFixed(1) + ' km';
+                document.getElementById('min-depth').textContent = 
+                    Math.min(...depths).toFixed(1) + ' km';
+                
+                // Update current magnitude (latest event)
+                document.getElementById('current-magnitude').textContent = 
+                    earthquakeData[0].magnitude.toFixed(1);
+
+                // Update incidents table
+                const tableBody = document.getElementById('incidents-table-body');
+                tableBody.innerHTML = earthquakeData.map(quake => `
+                    <tr>
+                        <td class="${getMagnitudeClass(quake.magnitude)}">${quake.magnitude.toFixed(1)}</td>
+                        <td>${quake.depth.toFixed(1)} km</td>
+                        <td>${quake.latitude.toFixed(2)}, ${quake.longitude.toFixed(2)}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function getMagnitudeClass(magnitude) {
+            if (magnitude >= 7.0) return 'magnitude-high';
+            if (magnitude >= 5.0) return 'magnitude-medium';
+            return 'magnitude-low';
+        }
+
+        function updateApiStatus(status) {
+            const statusEl = document.getElementById('api-status');
+            switch (status) {
+                case 'loading':
+                    statusEl.textContent = 'Loading...';
+                    statusEl.className = 'font-medium text-yellow-400';
+                    break;
+                case 'connected':
+                    statusEl.textContent = 'Connected';
+                    statusEl.className = 'font-medium text-green-400';
+                    break;
+                case 'error':
+                    statusEl.textContent = 'Error';
+                    statusEl.className = 'font-medium text-red-400';
+                    break;
+            }
+        }
+
         // Handle prediction form submission
         async function handlePrediction() {
             const predictionData = {
@@ -529,7 +618,7 @@ title: Earthquakes
             };
 
             try {
-                const response = await fetch(`${API_BASE_URL}/predict`, {
+                const response = await fetch(API_ENDPOINTS.predict, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -572,7 +661,7 @@ title: Earthquakes
             };
 
             try {
-                const response = await fetch(`${API_BASE_URL}/calculate-risk-factors`, {
+                const response = await fetch(API_ENDPOINTS.riskFactors, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -612,7 +701,7 @@ title: Earthquakes
             };
 
             try {
-                const response = await fetch(`${API_BASE_URL}/record`, {
+                const response = await fetch(API_ENDPOINTS.record, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -636,7 +725,7 @@ title: Earthquakes
         // Export data
         async function exportData() {
             try {
-                const response = await fetch(`${API_BASE_URL}/records`);
+                const response = await fetch(API_ENDPOINTS.records);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -669,7 +758,7 @@ title: Earthquakes
             earthquakeData.forEach(quake => {
                 const magnitude = parseFloat(quake.magnitude);
                 const markerSize = Math.max(20, magnitude * 8);
-                const markerColor = magnitude >= 5 ? 'red' : magnitude >= 3.5 ? 'orange' : 'blue';
+                const markerColor = magnitude >= 7.0 ? 'red' : magnitude >= 5.0 ? 'orange' : 'blue';
 
                 const marker = L.divIcon({
                     className: 'map-marker',
@@ -681,7 +770,7 @@ title: Earthquakes
                     .bindPopup(`
                         <div class="earthquake-popup">
                             <h3 class="font-bold mb-2">Earthquake Details</h3>
-                            <p>Magnitude: <span class="${magnitude >= 5 ? 'magnitude-high' : magnitude >= 3.5 ? 'magnitude-medium' : 'magnitude-low'}">${magnitude.toFixed(1)}</span></p>
+                            <p>Magnitude: <span class="${getMagnitudeClass(magnitude)}">${magnitude.toFixed(1)}</span></p>
                             <p>Depth: ${quake.depth} km</p>
                             <p>Location: ${quake.latitude.toFixed(4)}, ${quake.longitude.toFixed(4)}</p>
                             <p>Time of Day: ${quake.time_of_day}:00</p>
