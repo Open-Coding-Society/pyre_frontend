@@ -265,3 +265,69 @@ Where:
 - `N`: Number of Fourier terms
 - `aₙ, bₙ`: Fourier coefficients
 
+### 4.2 Polynomial Features and Regression
+
+**Polynomial Feature Generation:**
+For degree `d`, features are generated as:
+```
+φ(x) = [1, x, x², x³, ..., xᵈ]
+```
+
+**Extended Feature Matrix:**
+For multivariate polynomial regression:
+```
+Φ(X) = [φ(x₁), φ(x₂), ..., φ(xₘ)]ᵀ
+```
+
+**Normal Equation Solution:**
+```
+β = (ΦᵀΦ)⁻¹Φᵀy
+```
+
+**Regularization (Optional):**
+Ridge regression adds L2 penalty:
+```
+β = (ΦᵀΦ + λI)⁻¹Φᵀy
+```
+
+**Model Evaluation Metrics:**
+
+*Mean Squared Error:*
+```
+MSE = (1/n)Σᵢ₌₁ⁿ(yᵢ - ŷᵢ)²
+```
+
+*R-squared:*
+```
+R² = 1 - (SS_res/SS_tot)
+```
+
+Where:
+- `SS_res = Σ(yᵢ - ŷᵢ)²` (Residual sum of squares)
+- `SS_tot = Σ(yᵢ - ȳ)²` (Total sum of squares)
+
+### 4.3 HDBSCAN Clustering Theory
+
+**Core Distance:**
+```
+core_k(x) = distance to kth nearest neighbor of x
+```
+
+**Mutual Reachability Distance:**
+```
+d_mreach-k(x,y) = max{core_k(x), core_k(y), d(x,y)}
+```
+
+**Minimum Spanning Tree:**
+HDBSCAN builds MST using mutual reachability distances, then extracts cluster hierarchy.
+
+**Cluster Stability:**
+For each cluster C and threshold ε:
+```
+stability(C) = Σₓ∈C (λ(x) - λ_birth(C))
+```
+
+Where `λ(x) = 1/ε` is the density level.
+
+---
+
