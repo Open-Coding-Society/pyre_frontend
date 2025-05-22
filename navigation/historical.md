@@ -362,6 +362,9 @@ title: Historical
         function setupEventListeners() {
             document.getElementById('loadData').addEventListener('click', loadData);
             document.getElementById('mapType').addEventListener('change', updateMapVisualization);
+
+            // advanced regression (prophet) ML model listener
+            setupAdvancedEventListeners();
         }
 
         // Load data from API
@@ -591,6 +594,15 @@ title: Historical
         // ----------------------------------------------------------------
         let advancedData = null;
 
+        function getMonthName(monthNum) {
+            if (!monthNum) return 'N/A';
+            const months = [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ];
+            return months[monthNum - 1] || 'N/A';
+        }
+
         // Setup advanced analysis event listeners
         function setupAdvancedEventListeners() {
             document.getElementById('loadAdvancedData').addEventListener('click', loadAdvancedAnalysis);
@@ -612,7 +624,7 @@ title: Historical
                     analysis_type: analysisType
                 };
 
-                const response = await fetch(`${pythonURI}/advanced/analyze`, {
+                const response = await fetch(`${pythonURI}/api/historical-fire/advanced/analyze`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -625,6 +637,7 @@ title: Historical
                 }
                 
                 const data = await response.json();
+                console.log(data)
                 advancedData = data;
                 
                 displayAdvancedResults(data, analysisType);
