@@ -414,3 +414,424 @@ This approach enables:
 
 ---
 
+## 6. Code Deep Dive
+
+### 6.1 Prophet Implementation
+
+**Time Series Data Preparation:**
+```python
+def generate_time_series_analysis(self, year=None, month=None):
+    try:
+        filtered_data = self.filter_data_by_period(year, month)
+        if filtered_data is None or len(filtered_data) == 0:
+            return {"error": "No data available for the specified period"}
+
+        # Adaptive aggregation based on time scope
+        if month is not None:
+            # Daily aggregation for specific month
+            daily_fires = filtered_data.groupby('acq_date').size().reset_index(name='fire_count')
+            daily_fires['ds'] = daily_fires['acq_date']
+            daily_fires['y'] = daily_fires['fire_count']
+            freq = 'D'
+            periods = 30  # Forecast 30 days
+        else:
+            # Monthly aggregation for broader analysis
+            monthly_fires = filtered_data.groupby('year_month').size().reset_index(name='fire_count')
+            monthly_fires['ds'] = pd.to_datetime(monthly_fires['year_month'].astype(str))
+            monthly_fires['y'] = monthly_fires['fire_count']
+            daily_fires = monthly_fires
+            freq = 'M'
+            periods = 12  # Forecast 12 months
+```
+
+**Model Configuration and Training:**
+```python
+        # Train Prophet model with adaptive seasonality
+        model = Prophet(
+            yearly_seasonality=True, 
+            daily_seasonality=(month is not None),
+            changepoint_prior_scale=0.05,  # Adjust trend flexibility
+            seasonality_prior_scale=10.0   # Adjust seasonality strength
+        )
+        model.fit(daily_fires[['ds', 'y']])
+        
+        # Generate forecast
+        future = model.make_future_dataframe(periods=periods, freq=freq)
+        forecast = model.predict(future)
+```
+
+**Comprehensive Visualization:**
+```python
+        # Forecast plot
+        fig1, ax1 = plt.subplots(figsize=(12, 6))
+        model.plot(forecast, ax=ax1)
+        ax1.set_title(f"Fire Count Forecast - {year or 'All Years'} {month or 'All Months'}")
+        ax1.set_xlabel("Date")
+        ax1.set_ylabel("Fire Count")
+        plots['forecast'] = self._fig_to_base64(fig1)
+        plt.close(fig1)
+        
+        # Components plot
+        fig2 = model.plot_components(forecast)
+        fig2.suptitle(f"Forecast Components - {year or 'All Years'} {month or 'All Months'}")
+        plots['components'] = self._fig_to_base64(fig2)
+        plt.close(fig2)
+```
+
+### 6.2 Polynomial Regression Implementation
+
+**Feature Engineering for Regression:**
+```python
+def train_polynomial_model(self, filtered_data, degree=4):
+    """Train polynomial regression model on filtered data"""
+    try:
+        from sklearn.linear_model import LinearRegression
+        from sklearn.preprocessing import PolynomialFeatures
+        from sklearn.pipeline import make_pipeline
+        
+        # Aggregate data by month
+        fires_per_month = filtered_data.groupby('year_month').size().reset_index(name='fire_count')
+        fires_per_month['year_month_str'] = fires_per_month['year_month'].astype(str)
+        
+        # Convert to timestamp for regression
+        fires_per_month['timestamp'] = pd.to_datetime(fires_per_month['year_month_str']).astype(int) / 10**9
+        
+        # Prepare features and target
+        X = fires_per_month['timestamp'].values.reshape(-1, 1)
+        y = fires_per_month['fire_count'].values
+        
+        # Train polynomial model
+        poly_model = make_pipeline(PolynomialFeatures(degree=degree), LinearRegression())
+        poly_model.fit(X, y)
+        
+        # Generate predictions
+        fires_per_month['poly_pred'] = poly_model.predict(X)
+        
+        return {
+            "model": poly_model,
+            "data": fires_per_month,
+            "X": X,
+            "y": y
+        }
+```
+
+**Degree Comparison Analysis:**
+```python
+def compare_polynomial_degrees(self, year=None, month=None, degrees=[2, 3, 4, 5]):
+    """Compare different polynomial degrees"""
+    try:
+        filtered_data = self.filter_data_by_period(year, month)
+        if filtered_data is None or len(filtered_data) == 0:
+            return {"error": "No data available for the specified period"}
+
+        from sklearn.metrics import mean_squared_error, r2_score
+        
+        comparison_results = []
+        
+        for degree in degrees:
+            model_result = self.train_polynomial_model(filtered_data, degree)
+            if "error" not in model_result:
+                fires_per_month = model_result["data"]
+                y_true = model_result["y"]
+                y_pred = fires_per_month['poly_pred']
+                
+                mse = mean_squared_error(y_true, y_pred)
+                r2 = r2_score(y_true, y_pred)
+                
+                comparison_results.append({
+                    "degree": degree,
+                    "mse": float(mse),
+                    "r2_score": float(r2),
+                    "avg_prediction": float(y_pred.mean())
+                })
+```
+
+### 6.3 HDBSCAN Clustering Implementation
+
+**Data Preparation for Clustering:**
+```python
+def prepare_clustering_data(self, sample_size=10000, random_state=42):
+    """Prepare and clean data for clustering"""
+    try:
+        if self.data is None:
+            return {"status": "error", "message": "Data not loaded"}
+        
+        # Feature selection
+        features = ['latitude', 'longitude', 'brightness', 'frp', 'month', 'hour', 'is_day']
+        
+        # Check if all required features exist
+        missing_features = [f for f in features if f not in self.data.columns]
+        if missing_features:
+            return {"status": "error", "message": f"Missing features: {missing_features}"}
+        
+        # Clean and sample data
+        df_clean = self.data[features].dropna()
+        
+        if len(df_clean) == 0:
+            return {"status": "error", "message": "No valid data after cleaning"}
+        
+        # Sample data if it's larger than sample_size
+        if len(df_clean) > sample_size:
+            df_clean = df_clean.sample(sample_size, random_state=random_state)
+        
+        self.clustered_data = df_clean.copy()
+```
+
+**HDBSCAN Clustering Execution:**
+```python
+def perform_clustering(self, min_cluster_size=20, min_samples=None):
+    """Perform HDBSCAN clustering"""
+    try:
+        if self.clustered_data is None:
+            prep_result = self.prepare_clustering_data()
+            if prep_result["status"] == "error":
+                return prep_result
+        
+        # Normalize features
+        features = ['latitude', 'longitude', 'brightness', 'frp', 'month', 'hour', 'is_day']
+        X_scaled = self.scaler.fit_transform(self.clustered_data[features])
+        
+        # Perform HDBSCAN clustering
+        self.clusterer = hdbscan.HDBSCAN(
+            min_cluster_size=min_cluster_size,
+            min_samples=min_samples,
+            metric='euclidean',
+            cluster_selection_method='eom'  # Excess of Mass
+        )
+        clusters = self.clusterer.fit_predict(X_scaled)
+        
+        # Add cluster labels to data
+        self.clustered_data['cluster'] = clusters
+        
+        # Calculate cluster statistics
+        unique_clusters = np.unique(clusters)
+        n_clusters = len(unique_clusters[unique_clusters != -1])  # Exclude noise (-1)
+        n_noise = np.sum(clusters == -1)
+```
+
+**t-SNE Dimensionality Reduction:**
+```python
+def generate_tsne_projection(self, perplexity=50, random_state=42):
+    """Generate t-SNE projection of clustered data"""
+    try:
+        if self.clustered_data is None or 'cluster' not in self.clustered_data.columns:
+            return {"status": "error", "message": "Clustering must be performed first"}
+        
+        # Prepare scaled data for t-SNE
+        features = ['latitude', 'longitude', 'brightness', 'frp', 'month', 'hour', 'is_day']
+        X_scaled = self.scaler.transform(self.clustered_data[features])
+        
+        # Perform t-SNE
+        self.tsne_model = TSNE(
+            n_components=2, 
+            random_state=random_state, 
+            perplexity=perplexity,
+            learning_rate=200,
+            n_iter=1000
+        )
+        tsne_results = self.tsne_model.fit_transform(X_scaled)
+        
+        # Add t-SNE results to data
+        self.clustered_data['tsne-1'] = tsne_results[:, 0]
+        self.clustered_data['tsne-2'] = tsne_results[:, 1]
+```
+
+---
+
+## 7. Future Extensions
+
+### 7.1 Advanced Time Series Methods
+
+**LSTM Neural Networks:**
+```python
+# Potential implementation for deep learning time series
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+
+class LSTMFirePredictor:
+    def __init__(self, lookback_window=30):
+        self.lookback_window = lookback_window
+        self.model = None
+    
+    def build_model(self, input_shape):
+        model = Sequential([
+            LSTM(50, return_sequences=True, input_shape=input_shape),
+            Dropout(0.2),
+            LSTM(50, return_sequences=False),
+            Dropout(0.2),
+            Dense(25),
+            Dense(1)
+        ])
+        model.compile(optimizer='adam', loss='mean_squared_error')
+        return model
+```
+
+**Ensemble Methods:**
+```python
+class EnsembleFirePredictor:
+    def __init__(self):
+        self.models = {
+            'prophet': Prophet(),
+            'arima': ARIMA(),
+            'lstm': LSTMFirePredictor(),
+            'polynomial': PolynomialRegressor()
+        }
+    
+    def fit_ensemble(self, data):
+        predictions = {}
+        for name, model in self.models.items():
+            model.fit(data)
+            predictions[name] = model.predict()
+        
+        # Weighted average ensemble
+        weights = self.optimize_weights(predictions, data)
+        return self.combine_predictions(predictions, weights)
+```
+
+### 7.2 Spatial Analysis Extensions
+
+**Geospatial Clustering:**
+```python
+# Geographic-aware clustering
+from geopy.distance import geodesic
+import geopandas as gpd
+
+class GeospatialFireAnalyzer:
+    def __init__(self):
+        self.spatial_index = None
+    
+    def geographic_clustering(self, data, max_distance_km=50):
+        """Cluster fires based on geographic proximity"""
+        # Use geographic distance metrics
+        # Implement spatial density-based clustering
+        pass
+    
+    def hotspot_detection(self, data, confidence_level=0.95):
+        """Detect statistically significant fire hotspots"""
+        # Implement Getis-Ord Gi* statistic
+        pass
+```
+
+**Multi-temporal Analysis:**
+```python
+class TemporalFireEvolution:
+    def analyze_fire_progression(self, data):
+        """Analyze how fire patterns evolve over time"""
+        # Track cluster evolution across time periods
+        # Identify emerging and declining fire regions
+        pass
+    
+    def seasonal_cluster_migration(self, data):
+        """Track seasonal movement of fire clusters"""
+        # Analyze cluster centroid movement
+        # Seasonal migration patterns
+        pass
+```
+
+### 7.3 Real-time Integration
+
+**Stream Processing:**
+```python
+from kafka import KafkaConsumer
+import asyncio
+
+class RealTimeFireAnalyzer:
+    def __init__(self):
+        self.consumer = KafkaConsumer('fire_alerts')
+        self.models = self.load_trained_models()
+    
+    async def process_stream(self):
+        """Process real-time fire data stream"""
+        for message in self.consumer:
+            fire_data = json.loads(message.value)
+            
+            # Real-time prediction
+            prediction = self.predict_fire_risk(fire_data)
+            
+            # Alert system
+            if prediction['risk'] > 0.8:
+                await self.send_alert(fire_data, prediction)
+```
+
+### 7.4 Weather Integration
+
+**Meteorological Data Fusion:**
+```python
+class WeatherAwareFireModel:
+    def __init__(self):
+        self.weather_features = [
+            'temperature', 'humidity', 'wind_speed', 
+            'precipitation', 'pressure'
+        ]
+    
+    def integrate_weather_data(self, fire_data, weather_data):
+        """Combine fire data with meteorological information"""
+        # Spatial-temporal joining of datasets
+        # Feature engineering from weather patterns
+        pass
+    
+    def weather_driven_clustering(self, data):
+        """Cluster fires based on weather conditions"""
+        # Multi-dimensional clustering including weather
+        pass
+```
+
+---
+
+## 8. Common Mistakes and Best Practices
+
+### 8.1 Data Quality Issues
+
+**Common Mistake: Ignoring Missing Data Patterns**
+```python
+# WRONG: Simply dropping all missing values
+data_clean = data.dropna()
+
+# BETTER: Analyze missing data patterns
+def analyze_missing_data(data):
+    missing_summary = data.isnull().sum()
+    missing_percentage = (missing_summary / len(data)) * 100
+    
+    print("Missing Data Analysis:")
+    for col, pct in missing_percentage.items():
+        if pct > 0:
+            print(f"{col}: {pct:.2f}% missing")
+    
+    # Decide on appropriate handling strategy
+    return missing_summary
+
+# Implement targeted missing data handling
+def handle_missing_data(data):
+    # Time-based interpolation for temporal features
+    data['acq_date'] = data['acq_date'].interpolate(method='time')
+    
+    # Forward fill for categorical features
+    data['daynight'] = data['daynight'].fillna(method='ffill')
+    
+    # Median imputation for numerical features
+    data['brightness'] = data['brightness'].fillna(data['brightness'].median())
+    
+    return data
+```
+
+**Best Practice: Robust Date Handling**
+```python
+def robust_date_parsing(data, date_column='acq_date'):
+    """Robust date parsing with multiple format support"""
+    date_formats = ['%Y-%m-%d', '%d/%m/%Y', '%m/%d/%Y', '%Y%m%d']
+    
+    for fmt in date_formats:
+        try:
+            data[date_column] = pd.to_datetime(data[date_column], format=fmt)
+            return data
+        except:
+            continue
+    
+    # If all formats fail, use pandas' flexible parsing
+    try:
+        data[date_column] = pd.to_datetime(data[date_column], infer_datetime_format=True)
+    except:
+        raise ValueError(f"Unable to parse dates in column {date_column}")
+    
+    return data
+```
