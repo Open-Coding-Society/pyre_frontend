@@ -29,7 +29,7 @@ title: Help
         }
 
         .help-header {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 30px;
@@ -40,7 +40,7 @@ title: Help
 
         .help-tabs {
             display: flex;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.9);
             border-radius: 12px;
             padding: 8px;
             margin-bottom: 20px;
@@ -95,18 +95,27 @@ title: Help
         .form-input, .form-select, .form-textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solidrgb(0, 0, 0);
+            border: 2px solid rgb(0, 0, 0);
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s ease;
+            box-sizing: border-box;
+            min-width: 0;
+        }
+
+        .form-input, .form-select {
+            height: auto;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
         }
 
         .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
             border-color: #b91c1c;
-        }
-
-        .form-textarea {
+        }    .form-textarea {
             min-height: 120px;
             resize: vertical;
         }
@@ -160,7 +169,7 @@ title: Help
         .request-title {
             font-size: 18px;
             font-weight: 600;
-            color: #111827;
+            color:rgb(62, 66, 73);
         }
 
         .status-badge {
@@ -171,7 +180,7 @@ title: Help
             text-transform: uppercase;
         }
 
-        .status-open { background: #fee2e2; color: #dc2626; }
+        .status-open { background:rgb(0, 0, 0); color: #dc2626; }
         .status-in_progress { background: #fef3c7; color: #d97706; }
         .status-resolved { background: #dcfce7; color: #16a34a; }
         .status-closed { background: #f3f4f6; color: #6b7280; }
@@ -274,7 +283,7 @@ title: Help
         }
 
         .request-detail {
-            background: #f9fafb;
+            background:rgb(44, 45, 46);
             border-radius: 8px;
             padding: 16px;
             margin-top: 12px;
@@ -309,11 +318,10 @@ title: Help
         }
 
         .stat-card {
-            background: white;
-            border-radius: 8px;
+            background: #23272f; /* dark, not black */    border-radius: 8px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(121, 22, 22, 0.59);
         }
 
         .stat-number {
@@ -740,7 +748,7 @@ title: Help
                     <div class="request-header">
                         <div>
                             <div class="request-title">${request.title}</div>
-                            <div style="margin-top: 4px; color: #6b7280; font-size: 14px;">
+                            <div style="margin-top: 4px; color:rgb(139, 141, 144); font-size: 14px;">
                                 ${request.category.replace('_', ' ')} • ${formatDate(request.created_date)}
                                 ${isAdmin ? ` • User: ${request.user_name || 'Unknown'}` : ''}
                             </div>
@@ -753,7 +761,7 @@ title: Help
                     <div class="request-detail">
                         <p style="margin: 0; color: #4b5563;">${request.description}</p>
                         ${isAdmin ? `
-                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solidrgb(39, 39, 40);">
                                 <button class="btn btn-primary" onclick="respondToRequest(${request.id})" style="margin-right: 8px;">Respond</button>
                                 <button class="btn btn-secondary" onclick="updateRequestStatus(${request.id})">Update Status</button>
                             </div>
