@@ -398,34 +398,11 @@ title: Earthquakes
                 </div>
             </div>
         </div>
-        
-        <!-- Right sidebar - Earthquake Events Table -->
-        <div class="w-72 bg-gray-900/50 border-l border-gray-800 p-4 overflow-y-auto">
-            <div class="mb-4 flex justify-between items-center">
-                <h2 class="text-lg font-medium">Earthquake Events</h2>
-                <div class="text-xs text-gray-400 flex items-center">
-                    <span id="incident-count" class="mr-1">--</span> events
-                </div>
-            </div>
-            
-            <div class="overflow-y-auto max-h-full">
-                <table class="incidents-table text-sm">
-                    <thead>
-                        <tr>
-                            <th class="sticky top-0 z-10">Magnitude</th>
-                            <th class="sticky top-0 z-10">Depth</th>
-                            <th class="sticky top-0 z-10">Location</th>
-                        </tr>
-                    </thead>
-                    <tbody id="incidents-table-body">
-                        <tr class="animate-pulse">
-                            <td><div class="h-4 bg-gray-700 rounded w-16"></div></td>
-                            <td><div class="h-4 bg-gray-700 rounded w-12"></div></td>
-                            <td><div class="h-4 bg-gray-700 rounded w-20"></div></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+        <!-- Hidden container for maintaining API data -->
+        <div style="display: none;">
+            <div id="incident-count">--</div>
+            <div id="incidents-table-body"></div>
         </div>
     </div>
 
@@ -527,7 +504,7 @@ title: Earthquakes
         // Update dashboard with earthquake data
         function updateDashboard() {
             if (earthquakeData.length > 0) {
-                // Update total incidents
+                // Update total incidents (keeping this for API data consistency)
                 document.getElementById('total-incidents').textContent = earthquakeData.length;
                 document.getElementById('incident-count').textContent = earthquakeData.length;
 
@@ -570,7 +547,7 @@ title: Earthquakes
                 document.getElementById('current-magnitude').textContent = 
                     earthquakeData[0].magnitude.toFixed(1);
 
-                // Update incidents table
+                // Keep updating the hidden table body for API data consistency
                 const tableBody = document.getElementById('incidents-table-body');
                 tableBody.innerHTML = earthquakeData.map(quake => `
                     <tr>
