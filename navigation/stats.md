@@ -318,9 +318,13 @@ permalink: /stats/
 
     // --- WEATHER DATA LOGIC ---
     // Fetch San Diego weather from your Flask API and display in the card
-    fetch('/api/current_api')
-      .then(res => res.json())
-      .then(data => {
+    async function fetchSanDiegoWeather() {
+      try {
+        const response = await fetch('/api/current_api');
+        if (!response.ok) {
+          throw new Error('Weather API response was not ok');
+        }
+        const data = await response.json();
         if (data.weather) {
           document.getElementById('weather-content').innerHTML = `
             <b>Description:</b> ${data.weather.description}<br>
@@ -331,9 +335,11 @@ permalink: /stats/
         } else {
           document.getElementById('weather-content').innerHTML = `<span style="color:#ff5500;">Weather data unavailable.</span>`;
         }
-      })
-      .catch(() => {
+      } catch (error) {
+        console.error('Error fetching San Diego weather:', error);
         document.getElementById('weather-content').innerHTML = `<span style="color:#ff5500;">Failed to load weather data.</span>`;
-      });
+      }
+    }
+    fetchSanDiegoWeather();
   </script>
 
