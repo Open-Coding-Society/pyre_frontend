@@ -1,6 +1,6 @@
 ---
 layout: tailwind 
-title: Wildfire Statistics Dashboard
+title: Statistics
 search_exclude: true
 permalink: /stats/
 ---
