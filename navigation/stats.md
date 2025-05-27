@@ -5,10 +5,6 @@ search_exclude: true
 permalink: /stats/
 ---
 
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wildfire Statistics Dashboard</title>
   <style>
     body {
@@ -114,8 +110,6 @@ permalink: /stats/
       }
     }
   </style>
-</head>
-<body>
   <div class="container">
     <h1 style="color:#ff5500; margin-bottom:0.5em;">Wildfire Statistics Dashboard</h1>
     
@@ -323,43 +317,23 @@ permalink: /stats/
     });
 
     // --- WEATHER DATA LOGIC ---
-    const weatherApiKey = "YOUR_API_KEY";
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=San+Diego,CA,US&appid=${weatherApiKey}&units=imperial`;
-
-    async function fetchWeather() {
-      try {
-        const response = await fetch(weatherUrl);
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
-        updateWeatherCard(data);
-      } catch (error) {
-        console.error("Error fetching weather data:", error);
-        document.getElementById("weather-content").innerHTML = "<em>Error loading weather data</em>";
-      }
-    }
-
-    function updateWeatherCard(data) {
-      const { main, weather, wind } = data;
-      const temperature = Math.round(main.temp);
-      const tempMin = Math.round(main.temp_min);
-      const tempMax = Math.round(main.temp_max);
-      const humidity = Math.round(main.humidity);
-      const windSpeed = Math.round(wind.speed);
-      const weatherDescription = weather[0].description;
-
-      document.getElementById("weather-content").innerHTML = `
-        <div style="font-size:1.2em; margin-bottom:0.5em;">
-          <b>${temperature}°F</b> | ${weatherDescription}
-        </div>
-        <div style="font-size:0.9em; color:#ccc;">
-          Min: ${tempMin}°F | Max: ${tempMax}°F | Humidity: ${humidity}% | Wind: ${windSpeed} mph
-        </div>
-      `;
-    }
-
-    fetchWeather();
-    setInterval(fetchWeather, 10 * 60 * 1000); // Update weather data every 10 minutes
+    // Fetch San Diego weather from your Flask API and display in the card
+    fetch('/api/current_api')
+      .then(res => res.json())
+      .then(data => {
+        if (data.weather) {
+          document.getElementById('weather-content').innerHTML = `
+            <b>Description:</b> ${data.weather.description}<br>
+            <b>Temperature:</b> ${(data.weather.temperature - 273.15).toFixed(1)}°C<br>
+            <b>Humidity:</b> ${data.weather.humidity}%<br>
+            <b>Wind Speed:</b> ${data.weather.wind_speed} m/s
+          `;
+        } else {
+          document.getElementById('weather-content').innerHTML = `<span style="color:#ff5500;">Weather data unavailable.</span>`;
+        }
+      })
+      .catch(() => {
+        document.getElementById('weather-content').innerHTML = `<span style="color:#ff5500;">Failed to load weather data.</span>`;
+      });
   </script>
-</body>
-</html>
 
