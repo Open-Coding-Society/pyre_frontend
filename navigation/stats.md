@@ -202,6 +202,23 @@ permalink: /stats/
         <tbody id="data-table"></tbody>
       </table>
     </div>
+
+    <!-- Weather Card Grid -->
+    <div class="grid" id="weather-grid">
+      <div class="card" id="weather-card">
+        <div class="card-header">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="#ff5500" stroke-width="2"/>
+            <path d="M12 6v6l4 2" stroke="#ff5500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h2>San Diego Weather (Live)</h2>
+        </div>
+        <div id="weather-content" style="color:#eee;">
+          <em>Loading weather data...</em>
+        </div>
+      </div>
+    </div>
+
     <div class="footer">
       Data sources: National Interagency Fire Center, U.S. Forest Service, Congressional Research Service (2023-2024)
     </div>
@@ -304,6 +321,44 @@ permalink: /stats/
         toggleBtn.textContent = "Show Data Table";
       }
     });
+
+    // --- WEATHER DATA LOGIC ---
+    const weatherApiKey = "YOUR_API_KEY";
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=San+Diego,CA,US&appid=${weatherApiKey}&units=imperial`;
+
+    async function fetchWeather() {
+      try {
+        const response = await fetch(weatherUrl);
+        if (!response.ok) throw new Error("Network response was not ok");
+        const data = await response.json();
+        updateWeatherCard(data);
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+        document.getElementById("weather-content").innerHTML = "<em>Error loading weather data</em>";
+      }
+    }
+
+    function updateWeatherCard(data) {
+      const { main, weather, wind } = data;
+      const temperature = Math.round(main.temp);
+      const tempMin = Math.round(main.temp_min);
+      const tempMax = Math.round(main.temp_max);
+      const humidity = Math.round(main.humidity);
+      const windSpeed = Math.round(wind.speed);
+      const weatherDescription = weather[0].description;
+
+      document.getElementById("weather-content").innerHTML = `
+        <div style="font-size:1.2em; margin-bottom:0.5em;">
+          <b>${temperature}°F</b> | ${weatherDescription}
+        </div>
+        <div style="font-size:0.9em; color:#ccc;">
+          Min: ${tempMin}°F | Max: ${tempMax}°F | Humidity: ${humidity}% | Wind: ${windSpeed} mph
+        </div>
+      `;
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 10 * 60 * 1000); // Update weather data every 10 minutes
   </script>
 </body>
 </html>
