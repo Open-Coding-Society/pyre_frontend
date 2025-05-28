@@ -232,6 +232,7 @@ permalink: /stats/
     </div>
   </div>
   <script>
+    import { pythonURI, fetchOptions } from '/QcommVNE_Frontend/assets/js/api/config.js';
     // --- DATA AND LOGIC FROM stats.md ---
     const rawData = `
 2024	64897	8924884
