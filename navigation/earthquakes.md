@@ -184,6 +184,15 @@ title: Earthquakes
             padding: 1rem;
             margin-top: 1rem;
         }
+        .prediction-result h3 {
+            color: white !important;
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .prediction-result p:not(.text-blue-400) {
+            color: white !important;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-950 text-gray-200">
@@ -617,7 +626,6 @@ title: Earthquakes
                 const predictionContent = document.getElementById('prediction-content');
                 predictionContent.innerHTML = `
                     <p class="text-lg font-bold text-blue-400 mb-2">Predicted Magnitude: ${result.predicted_magnitude.toFixed(2)}</p>
-                    <p class="text-sm text-gray-400">Confidence Score: ${(result.confidence_score * 100).toFixed(1)}%</p>
                 `;
                 predictionResult.style.display = 'block';
 
