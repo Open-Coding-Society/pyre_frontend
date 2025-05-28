@@ -434,10 +434,18 @@ title: Earthquakes
         const pythonURI = 'http://127.0.0.1:8505';
         const API_ENDPOINTS = {
             predict: `${pythonURI}/api/earthquake/predict`,
-            records: `${pythonURI}/api/earthquake/records`,  // This is the main endpoint we should use
+            records: `${pythonURI}/api/earthquake/records`,
             record: `${pythonURI}/api/earthquake/record`,
             riskFactors: `${pythonURI}/api/earthquake/calculate-risk-factors`,
             restore: `${pythonURI}/api/earthquake/restore`
+        };
+
+        // California boundaries
+        const CA_BOUNDS = {
+            north: 42.0,
+            south: 32.5,
+            west: -124.4,
+            east: -114.1
         };
         
         // Global variables
@@ -503,13 +511,19 @@ title: Earthquakes
             try {
                 updateApiStatus('loading');
                 
-                const response = await fetch(API_ENDPOINTS.records);  // Use the records endpoint
+                const response = await fetch(API_ENDPOINTS.records);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                earthquakeData = Array.isArray(data) ? data : [data];
+                // Filter for California earthquakes only
+                earthquakeData = Array.isArray(data) ? data.filter(quake => 
+                    quake.latitude >= CA_BOUNDS.south && 
+                    quake.latitude <= CA_BOUNDS.north && 
+                    quake.longitude >= CA_BOUNDS.west && 
+                    quake.longitude <= CA_BOUNDS.east
+                ) : [];
                 
                 updateDashboard();
                 updateMap();
