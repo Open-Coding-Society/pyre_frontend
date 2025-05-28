@@ -166,6 +166,17 @@ title: Earthquakes
             padding: 1rem;
             margin-bottom: 1rem;
         }
+        .prediction-form label {
+            color: white !important;
+        }
+        .prediction-form input {
+            background-color: #1f2937;
+            border: 1px solid #4b5563;
+            color: white;
+        }
+        .prediction-form .text-sm {
+            color: white !important;
+        }
         .prediction-result {
             background-color: #1f2937;
             border: 1px solid #3b82f6;
