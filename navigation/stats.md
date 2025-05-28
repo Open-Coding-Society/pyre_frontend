@@ -209,16 +209,16 @@ permalink: /stats/
         </div>
         <div style="color:#eee;">
           <div style="font-size:2em; font-weight:700;">
-            <span id="current-temperature">--°</span>
-            <span style="font-size:0.5em; color:#ff5500;" id="weather-conditions"></span>
+            <span id="current-temperature">72°</span>
+            <span style="font-size:0.5em; color:#ff5500;" id="weather-conditions">Sunny</span>
           </div>
           <div style="margin: 8px 0;">
-            <b>Feels Like:</b> <span id="current-feels-like">--°F</span>
+            <b>Feels Like:</b> <span id="current-feels-like">74°F</span>
           </div>
           <div>
-            <b>Humidity:</b> <span id="current-humidity">--%</span>
+            <b>Humidity:</b> <span id="current-humidity">48%</span>
             &nbsp;|&nbsp;
-            <b>Wind:</b> <span id="current-wind-speed">-- kph</span>
+            <b>Wind:</b> <span id="current-wind-speed">12 kph</span>
           </div>
           <div style="margin-top:8px; color:#aaa;">
             <b>Location:</b> <span id="weather-location">San Diego</span>
