@@ -207,8 +207,22 @@ permalink: /stats/
           </svg>
           <h2>San Diego Weather (Live)</h2>
         </div>
-        <div id="weather-content" style="color:#eee;">
-          <em>Loading weather data...</em>
+        <div style="color:#eee;">
+          <div style="font-size:2em; font-weight:700;">
+            <span id="current-temperature">--°</span>
+            <span style="font-size:0.5em; color:#ff5500;" id="weather-conditions"></span>
+          </div>
+          <div style="margin: 8px 0;">
+            <b>Feels Like:</b> <span id="current-feels-like">--°F</span>
+          </div>
+          <div>
+            <b>Humidity:</b> <span id="current-humidity">--%</span>
+            &nbsp;|&nbsp;
+            <b>Wind:</b> <span id="current-wind-speed">-- kph</span>
+          </div>
+          <div style="margin-top:8px; color:#aaa;">
+            <b>Location:</b> <span id="weather-location">San Diego</span>
+          </div>
         </div>
       </div>
     </div>
@@ -316,30 +330,156 @@ permalink: /stats/
       }
     });
 
-    // --- WEATHER DATA LOGIC ---
-    // Fetch San Diego weather from your Flask API and display in the card
-    async function fetchSanDiegoWeather() {
+    // ============ WEATHER DATA FUNCTIONS ============
+    
+    // Function to get weather data for a specific location
+    async function getWeatherForLocation(lat, lon) {
       try {
-        const response = await fetch('/api/current_api');
+        const response = await fetch(`${pythonURI}/api/get_weather?lat=${lat}&lon=${lon}`);
+        
         if (!response.ok) {
           throw new Error('Weather API response was not ok');
         }
+
         const data = await response.json();
-        if (data.weather) {
-          document.getElementById('weather-content').innerHTML = `
-            <b>Description:</b> ${data.weather.description}<br>
-            <b>Temperature:</b> ${(data.weather.temperature - 273.15).toFixed(1)}°C<br>
-            <b>Humidity:</b> ${data.weather.humidity}%<br>
-            <b>Wind Speed:</b> ${data.weather.wind_speed} m/s
-          `;
-        } else {
-          document.getElementById('weather-content').innerHTML = `<span style="color:#ff5500;">Weather data unavailable.</span>`;
-        }
+        return data.weather;
       } catch (error) {
-        console.error('Error fetching San Diego weather:', error);
-        document.getElementById('weather-content').innerHTML = `<span style="color:#ff5500;">Failed to load weather data.</span>`;
+        console.error(`Error fetching weather for location [${lat}, ${lon}]:`, error);
+        // Return default values if weather data fetch fails
+        return {
+          temperature: 25,
+          wind_speed: 10,
+          humidity: 45,
+          conditions: "Unknown"
+        };
       }
     }
-    fetchSanDiegoWeather();
+
+    // Function to get user's local weather for dashboard display
+    async function getUserLocationWeather() {
+      // Check if we have stored coordinates
+      const storedLat = localStorage.getItem('weather_lat');
+      const storedLon = localStorage.getItem('weather_lon');
+      
+      // If we have stored coordinates, use them
+      if (storedLat && storedLon) {
+        return getWeatherForLocation(parseFloat(storedLat), parseFloat(storedLon))
+          .then(weatherData => {
+            updateWeatherDisplay({
+              weather: weatherData,
+              location: { name: localStorage.getItem('location_name') || "Current Location" }
+            });
+            return weatherData;
+          });
+      }
+      
+      // Try to get location from browser geolocation API
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0
+            });
+          });
+          
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          // Store coordinates for future use
+          localStorage.setItem('weather_lat', lat);
+          localStorage.setItem('weather_lon', lon);
+          
+          return getWeatherForLocation(lat, lon)
+            .then(weatherData => {
+              updateWeatherDisplay({
+                weather: weatherData,
+                location: { name: "Current Location" }
+              });
+              return weatherData;
+            });
+        } catch (error) {
+          console.warn("Could not get user location automatically:", error);
+          // If geolocation fails, use default San Diego location
+          return getDefaultLocationWeather();
+        }
+      } else {
+        console.warn("Geolocation is not supported by this browser");
+        return getDefaultLocationWeather();
+      }
+    }
+
+    // Function to get weather for default location (San Diego)
+    async function getDefaultLocationWeather() {
+      const defaultLat = 32.7157; // San Diego default
+      const defaultLon = -117.1611;
+      
+      // Store default coordinates
+      localStorage.setItem('weather_lat', defaultLat);
+      localStorage.setItem('weather_lon', defaultLon);
+      localStorage.setItem('location_name', "San Diego");
+      
+      return getWeatherForLocation(defaultLat, defaultLon)
+        .then(weatherData => {
+          updateWeatherDisplay({
+            weather: weatherData,
+            location: { name: "San Diego" }
+          });
+          return weatherData;
+        });
+    }
+
+    // Function to update all weather-related displays
+    function updateWeatherDisplay(weatherData) {
+      // Update temperature display
+      updateTemperatureDisplay(weatherData);
+      
+      // Update wind analysis display
+      updateWindDisplay(weatherData);
+    }
+
+    // Function to update the temperature display
+    function updateTemperatureDisplay(weatherData) {
+      // Update the temperature gauge
+      const temperature = weatherData.weather.temperature;
+      const tempElement = document.getElementById('current-temperature');
+      if (tempElement) {
+        tempElement.textContent = `${Math.round(temperature)}°`;
+      }
+      
+      // Update conditions
+      const conditionsEl = document.getElementById('weather-conditions');
+      if (conditionsEl) {
+        conditionsEl.textContent = weatherData.weather.conditions;
+      }
+      
+      // Update location
+      const locationEl = document.getElementById('weather-location');
+      if (locationEl) {
+        locationEl.textContent = weatherData.location.name;
+      }
+    }
+
+    // Function to update the wind analysis display
+    function updateWindDisplay(weatherData) {
+      // Update wind speed
+      const windSpeedEl = document.getElementById('current-wind-speed');
+      if (windSpeedEl) {
+        windSpeedEl.textContent = `${Math.round(weatherData.weather.wind_speed)} kph`;
+      }
+      
+      // Update humidity
+      const humidityEl = document.getElementById('current-humidity');
+      if (humidityEl) {
+        humidityEl.textContent = `${weatherData.weather.humidity}%`;
+      }
+      
+      // Update feels like
+      const feelsLikeEl = document.getElementById('current-feels-like');
+      if (feelsLikeEl) {
+        feelsLikeEl.textContent = `${Math.round(weatherData.weather.feels_like)}°F`;
+      }
+    }
   </script>
 
