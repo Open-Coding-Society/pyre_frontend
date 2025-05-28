@@ -390,42 +390,17 @@ title: Earthquakes
             
             <!-- Bottom toolbar -->
             <div class="bg-black border-t border-gray-800 py-3 px-6 flex justify-between items-center">
-                <div class="flex space-x-6">
-                    <button id="risk-analysis-btn" class="flex items-center text-gray-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
-                        </svg>
-                        Risk Analysis
-                    </button>
-                    <button id="alerts-btn" class="flex items-center text-gray-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 2L3 7v11c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V7l-7-5z" />
-                        </svg>
-                        Alerts <span id="alert-count" class="ml-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full">0</span>
-                    </button>
-                </div>
+                <div class="flex space-x-6"></div>
                 <div class="flex items-center space-x-4">
                     <div class="text-sm text-gray-400">Last updated: <span id="last-updated">--</span></div>
-                    <button class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-1 rounded flex items-center text-sm" id="refresh-data">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                        </svg>
-                        Refresh Data
-                    </button>
-                    <button id="export-btn" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-1 rounded flex items-center text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        Export Data
-                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Hidden container for maintaining API data -->
-        <div style="display: none;">
-            <div id="incident-count">--</div>
-            <div id="incidents-table-body"></div>
+            <!-- Hidden container for maintaining API data -->
+            <div style="display: none;">
+                <div id="incident-count">--</div>
+                <div id="incidents-table-body"></div>
+            </div>
         </div>
     </div>
 
@@ -493,15 +468,6 @@ title: Earthquakes
             // Prediction form
             document.getElementById('predict-btn').addEventListener('click', handlePrediction);
             
-            // Refresh data button
-            document.getElementById('refresh-data').addEventListener('click', loadEarthquakeData);
-            
-            // Risk analysis button
-            document.getElementById('risk-analysis-btn').addEventListener('click', calculateRiskFactors);
-            
-            // Export button
-            document.getElementById('export-btn').addEventListener('click', exportData);
-
             // Add record button
             document.getElementById('add-record-btn').addEventListener('click', handleAddRecord);
         }
@@ -661,45 +627,6 @@ title: Earthquakes
             }
         }
 
-        // Calculate risk factors
-        async function calculateRiskFactors() {
-            if (!earthquakeData.length) return;
-
-            const latestEvent = earthquakeData[0];
-            const riskData = {
-                latitude: latestEvent.latitude,
-                longitude: latestEvent.longitude,
-                depth: latestEvent.depth,
-                previous_magnitude: latestEvent.previous_magnitude,
-                distance_to_fault: latestEvent.distance_to_fault
-            };
-
-            try {
-                const response = await fetch(API_ENDPOINTS.riskFactors, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(riskData)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                alert(`Risk Analysis Results:\n
-                    Seismic Intensity: ${result.seismic_intensity.toFixed(2)}\n
-                    Ground Acceleration: ${result.ground_acceleration.toFixed(2)} g\n
-                    Liquefaction Potential: ${(result.liquefaction_potential * 100).toFixed(1)}%`);
-
-            } catch (error) {
-                console.error('Error calculating risk factors:', error);
-                alert('Failed to calculate risk factors. Please try again.');
-            }
-        }
-
         // Handle adding a new record
         async function handleAddRecord() {
             const newRecord = {
@@ -733,32 +660,6 @@ title: Earthquakes
             } catch (error) {
                 console.error('Error adding new record:', error);
                 alert('Failed to add new record. Please try again.');
-            }
-        }
-
-        // Export data
-        async function exportData() {
-            try {
-                const response = await fetch(API_ENDPOINTS.records);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const dataStr = JSON.stringify(data, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = window.URL.createObjectURL(dataBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `earthquake_data_${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-            } catch (error) {
-                console.error('Error exporting data:', error);
-                alert('Failed to export data. Please try again.');
             }
         }
 
