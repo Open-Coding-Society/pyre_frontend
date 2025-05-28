@@ -306,7 +306,7 @@ title: Earthquakes
     <div class="flex h-screen overflow-hidden">
         <!-- Left sidebar -->
         <div class="w-72 bg-gray-900/50 border-r border-gray-800 p-4 overflow-y-auto">
-            <h2 class="text-lg font-medium mb-4">Analytics Overview</h2>
+            <h2 class="text-lg font-medium mb-4 text-white">Analytics Overview</h2>
             <div class="mb-6">
                 <div class="text-sm text-gray-400 mb-1">Total Seismic Events</div>
                 <div class="text-4xl font-bold" id="total-incidents">--</div>
