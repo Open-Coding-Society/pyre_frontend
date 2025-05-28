@@ -231,7 +231,7 @@ permalink: /stats/
       Data sources: National Interagency Fire Center, U.S. Forest Service, Congressional Research Service (2023-2024)
     </div>
   </div>
-  <script>
+  <script type="module">
     import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
     // --- DATA AND LOGIC FROM stats.md ---
     const rawData = `
