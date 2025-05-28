@@ -45,6 +45,18 @@ title: Earthquakes
             border-radius: 0.375rem;
             padding: 0.5rem;
         }
+        .earthquake-popup h3,
+        .earthquake-popup p {
+            color: white !important;
+        }
+        .earthquake-popup p span {
+            color: white !important;
+        }
+        .earthquake-popup p span.magnitude-high,
+        .earthquake-popup p span.magnitude-medium,
+        .earthquake-popup p span.magnitude-low {
+            font-weight: bold;
+        }
         .magnitude-high { color: #ef4444; }
         .magnitude-medium { color: #f97316; }
         .magnitude-low { color: #3b82f6; }
@@ -748,11 +760,11 @@ title: Earthquakes
                         <div class="earthquake-popup">
                             <h3 class="font-bold mb-2">Earthquake Details</h3>
                             <p>Magnitude: <span class="${getMagnitudeClass(magnitude)}">${magnitude.toFixed(1)}</span></p>
-                            <p>Depth: ${quake.depth} km</p>
-                            <p>Location: ${quake.latitude.toFixed(4)}, ${quake.longitude.toFixed(4)}</p>
-                            <p>Time of Day: ${quake.time_of_day}:00</p>
-                            <p>Soil Type: ${quake.soil_type}</p>
-                            <p>Plate Boundary: ${quake.plate_boundary_type}</p>
+                            <p>Depth: <span>${quake.depth} km</span></p>
+                            <p>Location: <span>${quake.latitude.toFixed(4)}, ${quake.longitude.toFixed(4)}</span></p>
+                            <p>Time of Day: <span>${quake.time_of_day}:00</span></p>
+                            <p>Soil Type: <span>${quake.soil_type}</span></p>
+                            <p>Plate Boundary: <span>${quake.plate_boundary_type}</span></p>
                         </div>
                     `);
 
