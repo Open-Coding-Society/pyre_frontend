@@ -25,6 +25,19 @@ title: Earthquakes
         .leaflet-container {
             background-color: #1f2937;
         }
+        /* Hide zoom controls */
+        .leaflet-control-zoom {
+            display: none !important;
+        }
+        /* Adjust attribution z-index to prevent overlap with popups */
+        .leaflet-control-attribution {
+            z-index: 400 !important;
+        }
+        /* Ensure popups appear above attribution */
+        .help-overlay, 
+        .prediction-overlay {
+            z-index: 1000;
+        }
         .map-marker {
             display: flex;
             align-items: center;
