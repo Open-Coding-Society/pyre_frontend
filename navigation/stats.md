@@ -210,16 +210,16 @@ permalink: /stats/
         </div>
         <div style="color:#eee;">
           <div style="font-size:2em; font-weight:700;">
-            <span id="current-temperature">72°</span>
-            <span style="font-size:0.5em; color:#ff5500;" id="weather-conditions">Sunny</span>
+            <span id="current-temperature">--°</span>
+            <span style="font-size:0.5em; color:#ff5500;" id="weather-conditions">--</span>
           </div>
           <div style="margin: 8px 0;">
-            <b>Feels Like:</b> <span id="current-feels-like">74°F</span>
+            <b>Feels Like:</b> <span id="current-feels-like">--°F</span>
           </div>
           <div>
-            <b>Humidity:</b> <span id="current-humidity">48%</span>
+            <b>Humidity:</b> <span id="current-humidity">--%</span>
             &nbsp;|&nbsp;
-            <b>Wind:</b> <span id="current-wind-speed">12 kph</span>
+            <b>Wind:</b> <span id="current-wind-speed">-- m/s</span>
           </div>
           <div style="margin-top:8px; color:#aaa;">
             <b>Location:</b> <span id="weather-location">San Diego</span>
@@ -233,7 +233,7 @@ permalink: /stats/
     </div>
   
 
-    <a href="/pyre_frontend/help/" class="fixed bottom-4 right-4 bg-green-600 text-white rounded-full p-3 shadow-lg hover:bg-green-700 transition duration-200 flex items-center justify-center" title="Help Center" style="font-size:1.05em;">
+    <a href="/QcommVNE_Frontend/help/" class="fixed bottom-4 right-4 bg-green-600 text-white rounded-full p-3 shadow-lg hover:bg-green-700 transition duration-200 flex items-center justify-center" title="Help Center" style="font-size:1.05em;">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
       </svg>
@@ -367,131 +367,31 @@ permalink: /stats/
       }
     }
 
-    // Function to get user's local weather for dashboard display
-    async function getUserLocationWeather() {
-      // Check if we have stored coordinates
-      const storedLat = localStorage.getItem('weather_lat');
-      const storedLon = localStorage.getItem('weather_lon');
-      
-      // If we have stored coordinates, use them
-      if (storedLat && storedLon) {
-        return getWeatherForLocation(parseFloat(storedLat), parseFloat(storedLon))
-          .then(weatherData => {
-            updateWeatherDisplay({
-              weather: weatherData,
-              location: { name: localStorage.getItem('location_name') || "Current Location" }
-            });
-            return weatherData;
-          });
-      }
-      
-      // Try to get location from browser geolocation API
-      if (navigator.geolocation) {
-        try {
-          const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              enableHighAccuracy: true,
-              timeout: 5000,
-              maximumAge: 0
-            });
-          });
-          
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          
-          // Store coordinates for future use
-          localStorage.setItem('weather_lat', lat);
-          localStorage.setItem('weather_lon', lon);
-          
-          return getWeatherForLocation(lat, lon)
-            .then(weatherData => {
-              updateWeatherDisplay({
-                weather: weatherData,
-                location: { name: "Current Location" }
-              });
-              return weatherData;
-            });
-        } catch (error) {
-          console.warn("Could not get user location automatically:", error);
-          // If geolocation fails, use default San Diego location
-          return getDefaultLocationWeather();
+    // Fetch San Diego weather and update the card (no parameters needed)
+    async function getSanDiegoWeather() {
+      try {
+        const response = await fetch(`${pythonURI}/api/current_api`);
+        if (!response.ok) {
+          throw new Error('Weather API response was not ok');
         }
-      } else {
-        console.warn("Geolocation is not supported by this browser");
-        return getDefaultLocationWeather();
+        const data = await response.json();
+        if (data.weather) {
+          // Convert Kelvin to Fahrenheit for display
+          const tempF = ((data.weather.temperature - 273.15) * 9/5 + 32).toFixed(1);
+          document.getElementById('current-temperature').textContent = `${tempF}°`;
+          document.getElementById('weather-conditions').textContent = data.weather.description;
+          document.getElementById('current-feels-like').textContent = `${tempF}°F`;
+          document.getElementById('current-humidity').textContent = `${data.weather.humidity}%`;
+          document.getElementById('current-wind-speed').textContent = `${data.weather.wind_speed} m/s`;
+          document.getElementById('weather-location').textContent = "San Diego";
+        }
+      } catch (error) {
+        console.error('Error fetching San Diego weather:', error);
+        document.getElementById('weather-conditions').textContent = "Unavailable";
       }
     }
 
-    // Function to get weather for default location (San Diego)
-    async function getDefaultLocationWeather() {
-      const defaultLat = 32.7157; // San Diego default
-      const defaultLon = -117.1611;
-      
-      // Store default coordinates
-      localStorage.setItem('weather_lat', defaultLat);
-      localStorage.setItem('weather_lon', defaultLon);
-      localStorage.setItem('location_name', "San Diego");
-      
-      return getWeatherForLocation(defaultLat, defaultLon)
-        .then(weatherData => {
-          updateWeatherDisplay({
-            weather: weatherData,
-            location: { name: "San Diego" }
-          });
-          return weatherData;
-        });
-    }
-
-    // Function to update all weather-related displays
-    function updateWeatherDisplay(weatherData) {
-      // Update temperature display
-      updateTemperatureDisplay(weatherData);
-      
-      // Update wind analysis display
-      updateWindDisplay(weatherData);
-    }
-
-    // Function to update the temperature display
-    function updateTemperatureDisplay(weatherData) {
-      // Update the temperature gauge
-      const temperature = weatherData.weather.temperature;
-      const tempElement = document.getElementById('current-temperature');
-      if (tempElement) {
-        tempElement.textContent = `${Math.round(temperature)}°`;
-      }
-      
-      // Update conditions
-      const conditionsEl = document.getElementById('weather-conditions');
-      if (conditionsEl) {
-        conditionsEl.textContent = weatherData.weather.conditions;
-      }
-      
-      // Update location
-      const locationEl = document.getElementById('weather-location');
-      if (locationEl) {
-        locationEl.textContent = weatherData.location.name;
-      }
-    }
-
-    // Function to update the wind analysis display
-    function updateWindDisplay(weatherData) {
-      // Update wind speed
-      const windSpeedEl = document.getElementById('current-wind-speed');
-      if (windSpeedEl) {
-        windSpeedEl.textContent = `${Math.round(weatherData.weather.wind_speed)} kph`;
-      }
-      
-      // Update humidity
-      const humidityEl = document.getElementById('current-humidity');
-      if (humidityEl) {
-        humidityEl.textContent = `${weatherData.weather.humidity}%`;
-      }
-      
-      // Update feels like
-      const feelsLikeEl = document.getElementById('current-feels-like');
-      if (feelsLikeEl) {
-        feelsLikeEl.textContent = `${Math.round(weatherData.weather.feels_like)}°F`;
-      }
-    }
+    // Call this after DOM is loaded
+    getSanDiegoWeather();
 </script>
 
