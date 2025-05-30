@@ -133,8 +133,8 @@ Password hint is 3 Musketeers
 
 ## Server Setup
 
-1. **Clone backend repo**: `git clone https://github.com/SanPranav/QcommVNE_backend.git`
-2. **Navigate to repo**: `cd QcommVNE_backend`
+1. **Clone backend repo**: `git clone https://github.com/SanPranav/pyre_backend.git`
+2. **Navigate to repo**: `cd pyre_backend`
 3. **Build site**: `docker-compose up -d --build`
 4. **Test site**: `curl localhost:8505`
 
@@ -153,7 +153,7 @@ Go to AWS Route 53 and setup DNS subdomain for backend server.
 
 ### Pulling Changes into AWS EC2 deployment
 
-1. **Navigate to repo**: `cd ~/QcommVNE_backend`
+1. **Navigate to repo**: `cd ~/pyre_backend`
 2. **docker-compose down**
 3. **git pull**
 4. **Rebuild docker container**: `docker-compose up -d --build`
@@ -365,7 +365,7 @@ Steps:
 1. **Navigate to repo**:
 
     ```bash
-    cd ~/QcommVNE_2025
+    cd ~/pyre_2025
     ```
 
 2. **Stop running containers**:
@@ -469,16 +469,16 @@ The network layer of the TCP/IP protocol is responsible for accepting and delive
   - Crontab is a task scheduler that runs scripts at scheduled intervals.
   - We can use crontab to run `db_backup` at scheduled intervals using the following steps:
   - Run `crontab -e` to edit your user's crontab file
-  - `0 1 * * * bash /home/ubuntu/QcommVNE_backend/scripts/prsim_backup_sequence.sh` - This command runs a script every day at 1 AM.
-- Using the `RUN` command in the Dockerfile in QcommVNE_backend to run db_init, restore, and backup
+  - `0 1 * * * bash /home/ubuntu/pyre_backend/scripts/prsim_backup_sequence.sh` - This command runs a script every day at 1 AM.
+- Using the `RUN` command in the Dockerfile in pyre_backend to run db_init, restore, and backup
 
 
-Contents of `/home/ubuntu/QcommVNE_backend/scripts/prsim_backup_sequence`:
+Contents of `/home/ubuntu/pyre_backend/scripts/prsim_backup_sequence`:
 
 ```sh
     #!/bin/bash
 
-    cd /home/ubuntu/QcommVNE_backend
+    cd /home/ubuntu/pyre_backend
 
     # Verify the installation and check the Python version
     python --version
@@ -494,5 +494,5 @@ Contents of `/home/ubuntu/QcommVNE_backend/scripts/prsim_backup_sequence`:
     # Install the required Python packages
     pip install -r requirements.txt
 
-    cd /home/ubuntu/QcommVNE_backend
+    cd /home/ubuntu/pyre_backend
 ```

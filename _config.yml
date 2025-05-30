@@ -2,8 +2,8 @@ title: Pyre
 description : "Revolutionizing fire predictions with AI to make the community safer by at least 20%."
 owner_name: Pranav Santhosh
 github_username: SanPranav
-github_repo: "QcommVNE_Frontend" 
-baseurl: "/QcommVNE_Frontend"
+github_repo: "pyre_frontend" 
+baseurl: "/pyre_frontend"
 future: true
 remote_theme: jekyll/minima
 minima:
