@@ -155,7 +155,7 @@ permalink: /stats/
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 8.5V20H20V8.5L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <h2>About Wildfires</h2>
         </div>
-        <p>
+        <p style="color: #fff;">
           This dashboard presents annual wildland fire and acreage statistics for the United States (1983–2024), highlighting trends, averages, and record years. Data is sourced from the National Interagency Fire Center and U.S. Forest Service.
         </p>
       </div>
