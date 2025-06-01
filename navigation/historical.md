@@ -657,7 +657,7 @@ title: Historical
             document.getElementById('advancedVisualizationsSection').classList.remove('hidden');
             
             // Update advanced stats
-            updateAdvancedStats(data);
+            updateAdvancedStats(data, analysisType);
             
             // Display visualizations based on analysis type
             switch(analysisType) {
@@ -680,87 +680,250 @@ title: Historical
         }
 
         // Update advanced statistics cards
-        function updateAdvancedStats(data) {
+        function updateAdvancedStats(data, analysisType) {
             const statsSection = document.getElementById('advancedStatsSection');
             
-            // Extract relevant statistics from the API response
-            const stats = data.statistics || {};
+            let statsHtml = '';
             
-            statsSection.innerHTML = `
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-purple-100 rounded-lg">
-                            <div class="w-6 h-6 bg-purple-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-medium text-gray-500">Prediction Accuracy</h3>
-                            <p class="text-2xl font-semibold text-gray-900">${stats.accuracy || 'N/A'}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-indigo-100 rounded-lg">
-                            <div class="w-6 h-6 bg-indigo-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-medium text-gray-500">Forecast Trend</h3>
-                            <p class="text-2xl font-semibold text-gray-900">${stats.trend || 'N/A'}</p>
+            if (analysisType === 'comprehensive') {
+                // For comprehensive analysis, extract stats from different sections
+                const timeSeriesStats = data.time_series?.summary || {};
+                const spatialStats = data.spatial?.summary || {};
+                const animationStats = data.animation?.summary || {};
+                
+                statsHtml = `
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <div class="w-6 h-6 bg-purple-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Max Fires</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${animationStats.max_fires || 'N/A'}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-blue-100 rounded-lg">
-                            <div class="w-6 h-6 bg-blue-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-medium text-gray-500">Clusters Found</h3>
-                            <p class="text-2xl font-semibold text-gray-900">${stats.clusters || 'N/A'}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-teal-100 rounded-lg">
-                            <div class="w-6 h-6 bg-teal-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <h3 class="text-sm font-medium text-gray-500">R² Score</h3>
-                            <p class="text-2xl font-semibold text-gray-900">${stats.r2_score || 'N/A'}</p>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-indigo-100 rounded-lg">
+                                <div class="w-6 h-6 bg-indigo-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Min Fires</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${animationStats.min_fires || 'N/A'}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <div class="w-6 h-6 bg-blue-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Clusters Found</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${spatialStats.n_clusters || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-teal-100 rounded-lg">
+                                <div class="w-6 h-6 bg-teal-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Total Frames</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${animationStats.total_frames || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (analysisType === 'time_series') {
+                const stats = data.time_series?.summary || {};
+                statsHtml = `
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <div class="w-6 h-6 bg-purple-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Status</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${data.time_series?.status || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (analysisType === 'spatial') {
+                const stats = data.spatial?.summary || {};
+                statsHtml = `
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <div class="w-6 h-6 bg-blue-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Target Cluster</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${stats.target_cluster || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-indigo-100 rounded-lg">
+                                <div class="w-6 h-6 bg-indigo-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Clusters</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${stats.n_clusters || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <div class="w-6 h-6 bg-green-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Total Fires</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${stats.total_fires || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (analysisType === 'statistics') {
+                // For statistics, we don't have specific stats in the provided data
+                statsHtml = `
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <div class="w-6 h-6 bg-purple-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Analysis Status</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${data.statistics?.status || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (analysisType === 'animation') {
+                const stats = data.animation?.summary || {};
+                statsHtml = `
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <div class="w-6 h-6 bg-purple-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Max Fires</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${stats.max_fires || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-indigo-100 rounded-lg">
+                                <div class="w-6 h-6 bg-indigo-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Min Fires</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${stats.min_fires || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <div class="w-6 h-6 bg-blue-600 rounded"></div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-sm font-medium text-gray-500">Total Frames</h3>
+                                <p class="text-2xl font-semibold text-gray-900">${stats.total_frames || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            statsSection.innerHTML = statsHtml;
         }
 
-        // Display comprehensive analysis
+        // Display comprehensive analysis - FIXED VERSION
         function displayComprehensiveAnalysis(data) {
-            // Show all charts if they exist in the response
-            if (data.plots) {
-                displayBase64Images(data.plots);
+            // Clear existing content first
+            clearAdvancedVisualizationContainers();
+            
+            // Show all containers
+            showAllAdvancedContainers();
+            
+            // Display time series plots
+            if (data.time_series?.plots) {
+                console.log('Displaying time series plots:', data.time_series.plots);
+                displayTimeSeriesPlots(data.time_series.plots);
+            } else {
+                // Show fallback message for time series
+                const container = document.getElementById('forecastChart');
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No time series data available for this selection</p>';
             }
             
-            if (data.forecast_data) {
-                displayTimeSeriesChart(data.forecast_data);
+            // Display spatial clustering plots
+            if (data.spatial?.plots?.clusters) {
+                console.log('Displaying spatial plots:', data.spatial.plots.clusters);
+                displaySpatialPlots(data.spatial.plots.clusters);
+            } else {
+                // Show fallback message for spatial
+                const container = document.getElementById('spatialChart');
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No spatial clustering data available for this selection</p>';
             }
             
-            if (data.clustering_results) {
-                displayClusteringResults(data.clustering_results);
+            // Display animation data
+            if (data.animation?.animation_data) {
+                displayAnimationFromData(data.animation.animation_data);
             }
+            
+            // Display statistical analysis
+            if (data.statistics) {
+                displayStatisticalAnalysis(data);
+            }
+        }
+
+        // Helper function to clear visualization containers
+        function clearAdvancedVisualizationContainers() {
+            const containers = ['forecastChart', 'spatialChart', 'statisticalContent', 'animationContent'];
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = '';
+                }
+            });
+        }
+
+        // Helper function to show all advanced containers
+        function showAllAdvancedContainers() {
+            const containers = ['forecastChartContainer', 'spatialAnalysisContainer', 'statisticalInsightsContainer', 'animationContainer'];
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.style.display = 'block';
+                }
+            });
         }
 
         // Display time series analysis
         function displayTimeSeriesAnalysis(data) {
-            if (data.forecast_data) {
-                displayTimeSeriesChart(data.forecast_data);
+            clearAdvancedVisualizationContainers();
+            if (data.time_series?.plots) {
+                displayTimeSeriesPlots(data.time_series.plots);
             }
         }
 
         // Display spatial analysis
         function displaySpatialAnalysis(data) {
-            if (data.clustering_results) {
-                displayClusteringResults(data.clustering_results);
+            clearAdvancedVisualizationContainers();
+            if (data.spatial?.plots?.clusters) {
+                displaySpatialPlots(data.spatial.plots.clusters);
+            }
+            
+            if (data.spatial?.cluster_data) {
+                displayClusteringResults(data.spatial.cluster_data);
             }
         }
 
@@ -769,81 +932,273 @@ title: Historical
             const container = document.getElementById('statisticalContent');
             
             if (data.statistics) {
-                const stats = data.statistics;
-                container.innerHTML = `
+                // Check if there are CSV data or plots available
+                const hasCSVData = data.statistics.csv_data && data.statistics.csv_data.length > 0;
+                const hasPlots = data.statistics.plots && Object.keys(data.statistics.plots).length > 0;
+                
+                let content = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-semibold text-gray-800 mb-2">Model Performance</h4>
+                            <h4 class="font-semibold text-gray-800 mb-2">Analysis Status</h4>
                             <ul class="space-y-1 text-sm text-gray-600">
-                                <li>R² Score: ${stats.r2_score || 'N/A'}</li>
-                                <li>RMSE: ${stats.rmse || 'N/A'}</li>
-                                <li>MAE: ${stats.mae || 'N/A'}</li>
+                                <li>Status: ${data.statistics.status || 'N/A'}</li>
+                                <li>CSV Data Available: ${hasCSVData ? 'Yes' : 'No'}</li>
+                                <li>Plots Available: ${hasPlots ? 'Yes' : 'No'}</li>
                             </ul>
                         </div>
+                `;
+                
+                if (data.statistics.summary) {
+                    const summary = data.statistics.summary;
+                    content += `
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-2">Summary Statistics</h4>
+                            <ul class="space-y-1 text-sm text-gray-600">
+                                ${Object.entries(summary).map(([key, value]) => 
+                                    `<li>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}: ${value}</li>`
+                                ).join('')}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    content += `
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <h4 class="font-semibold text-gray-800 mb-2">Data Insights</h4>
-                            <ul class="space-y-1 text-sm text-gray-600">
-                                <li>Total Records: ${stats.total_records || 'N/A'}</li>
-                                <li>Peak Month: ${stats.peak_month || 'N/A'}</li>
-                                <li>Trend: ${stats.trend || 'N/A'}</li>
-                            </ul>
+                            <p class="text-sm text-gray-600">Statistical analysis completed successfully.</p>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
+                
+                content += '</div>';
+                container.innerHTML = content;
+                
+                // Display any plots if available
+                if (hasPlots) {
+                    displayStatisticalPlots(data.statistics.plots);
+                }
             }
         }
 
         // Display animation analysis
         function displayAnimationAnalysis(data) {
-            const container = document.getElementById('animationContent');
+            if (data.animation?.animation_data) {
+                displayAnimationFromData(data.animation.animation_data);
+            }
+        }
+
+        // NEW: Specific function to display time series plots
+        function displayTimeSeriesPlots(plots) {
+            const container = document.getElementById('forecastChart');
             
-            if (data.animation_data) {
-                // Handle GIF or other animation data
-                if (data.animation_data.gif_base64) {
-                    container.innerHTML = `
-                        <img src="data:image/gif;base64,${data.animation_data.gif_base64}" 
-                            alt="Fire Data Animation" 
-                            class="max-w-full h-auto rounded-lg" />
-                    `;
+            // Handle different plot formats
+            if (typeof plots === 'string') {
+                // Single base64 image
+                const imgSrc = plots.startsWith('data:image') ? plots : `data:image/png;base64,${plots}`;
+                container.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center">
+                        <img src="${imgSrc}" alt="Time Series Forecast" class="max-w-full max-h-full object-contain rounded-lg" />
+                    </div>
+                `;
+            } else if (typeof plots === 'object' && plots !== null) {
+                // Multiple plots object
+                const plotKeys = Object.keys(plots);
+                if (plotKeys.length > 0) {
+                    let plotsHtml = '<div class="space-y-4">';
+                    
+                    plotKeys.forEach(plotKey => {
+                        const plotData = plots[plotKey];
+                        const imgSrc = typeof plotData === 'string' 
+                            ? (plotData.startsWith('data:image') ? plotData : `data:image/png;base64,${plotData}`)
+                            : null;
+                        
+                        if (imgSrc) {
+                            plotsHtml += `
+                                <div class="text-center">
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">${plotKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                                    <img src="${imgSrc}" alt="${plotKey}" class="max-w-full h-auto rounded-lg mx-auto" style="max-height: 400px;" />
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    plotsHtml += '</div>';
+                    container.innerHTML = plotsHtml;
                 } else {
-                    container.innerHTML = '<p class="text-gray-500">Animation data received but format not supported</p>';
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No time series plots available</p>';
+                }
+            } else {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Invalid time series plot data format</p>';
+            }
+        }
+
+        // NEW: Specific function to display spatial plots with larger container
+        function displaySpatialPlots(plots) {
+            const container = document.getElementById('spatialChart');
+            
+            // Make the container larger for spatial plots
+            container.parentElement.style.minHeight = '600px';
+            
+            // Handle different plot formats
+            if (typeof plots === 'string') {
+                // Single base64 image
+                const imgSrc = plots.startsWith('data:image') ? plots : `data:image/png;base64,${plots}`;
+                container.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center" style="min-height: 500px;">
+                        <img src="${imgSrc}" alt="Spatial Clustering" class="max-w-full max-h-full object-contain rounded-lg" style="min-height: 400px;" />
+                    </div>
+                `;
+            } else if (typeof plots === 'object' && plots !== null) {
+                // Multiple plots object
+                const plotKeys = Object.keys(plots);
+                if (plotKeys.length > 0) {
+                    let plotsHtml = '<div class="space-y-6">';
+                    
+                    plotKeys.forEach(plotKey => {
+                        const plotData = plots[plotKey];
+                        const imgSrc = typeof plotData === 'string' 
+                            ? (plotData.startsWith('data:image') ? plotData : `data:image/png;base64,${plotData}`)
+                            : null;
+                        
+                        if (imgSrc) {
+                            plotsHtml += `
+                                <div class="text-center">
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">${plotKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                                    <img src="${imgSrc}" alt="${plotKey}" class="max-w-full h-auto rounded-lg mx-auto" style="min-height: 300px; max-height: 500px;" />
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    plotsHtml += '</div>';
+                    container.innerHTML = plotsHtml;
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No spatial clustering plots available</p>';
+                }
+            } else {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Invalid spatial plot data format</p>';
+            }
+        }
+
+        // NEW: Specific function to display statistical plots
+        function displayStatisticalPlots(plots) {
+            const container = document.getElementById('statisticalContent');
+            
+            if (typeof plots === 'object' && plots !== null) {
+                const plotKeys = Object.keys(plots);
+                if (plotKeys.length > 0) {
+                    let plotsHtml = '<div class="mt-6 space-y-4">';
+                    
+                    plotKeys.forEach(plotKey => {
+                        const plotData = plots[plotKey];
+                        const imgSrc = typeof plotData === 'string' 
+                            ? (plotData.startsWith('data:image') ? plotData : `data:image/png;base64,${plotData}`)
+                            : null;
+                        
+                        if (imgSrc) {
+                            plotsHtml += `
+                                <div class="text-center">
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">${plotKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                                    <img src="${imgSrc}" alt="${plotKey}" class="max-w-full h-auto rounded-lg mx-auto" style="max-height: 400px;" />
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    plotsHtml += '</div>';
+                    container.innerHTML += plotsHtml;
                 }
             }
         }
 
-        // Helper function to display base64 encoded images
-        function displayBase64Images(plots) {
-            Object.keys(plots).forEach(plotName => {
-                const plotData = plots[plotName];
-                if (plotData.includes('base64,')) {
-                    // Find appropriate container based on plot name
-                    let containerId = '';
-                    if (plotName.includes('forecast')) containerId = 'forecastChart';
-                    else if (plotName.includes('spatial')) containerId = 'spatialChart';
+        // Helper function to display animation data
+        function displayAnimationFromData(animationData) {
+            const container = document.getElementById('animationContent');
+            
+            if (Array.isArray(animationData) && animationData.length > 0) {
+                // Create a simple frame-by-frame animation viewer
+                let currentFrame = 0;
+                
+                container.innerHTML = `
+                    <div class="animation-viewer">
+                        <div class="mb-4 flex items-center justify-between">
+                            <button id="prevFrame" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Previous</button>
+                            <span class="text-gray-600">Frame ${currentFrame + 1} of ${animationData.length}</span>
+                            <button id="nextFrame" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Next</button>
+                        </div>
+                        <div id="frameDisplay" class="text-center">
+                            <p class="text-gray-600">Animation frames loaded (${animationData.length} frames)</p>
+                            <p class="text-sm text-gray-500">Use the controls above to navigate through frames</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Add event listeners for frame navigation
+                document.getElementById('prevFrame').addEventListener('click', () => {
+                    currentFrame = Math.max(0, currentFrame - 1);
+                    updateFrameDisplay();
+                });
+                
+                document.getElementById('nextFrame').addEventListener('click', () => {
+                    currentFrame = Math.min(animationData.length - 1, currentFrame + 1);
+                    updateFrameDisplay();
+                });
+                
+                function updateFrameDisplay() {
+                    const frameData = animationData[currentFrame];
+                    document.querySelector('.animation-viewer span').textContent = `Frame ${currentFrame + 1} of ${animationData.length}`;
                     
-                    if (containerId) {
-                        const container = document.getElementById(containerId);
-                        if (container) {
-                            container.innerHTML = `<img src="${plotData}" alt="${plotName}" class="max-w-full h-auto rounded-lg" />`;
-                        }
-                    }
+                    // Display frame information
+                    const frameDisplay = document.getElementById('frameDisplay');
+                    frameDisplay.innerHTML = `
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h5 class="font-semibold mb-2">Frame ${currentFrame + 1} Data</h5>
+                            <pre class="text-xs text-left overflow-auto max-h-64">${JSON.stringify(frameData, null, 2)}</pre>
+                        </div>
+                    `;
                 }
-            });
-        }
-
-        // Helper function to display time series forecast chart
-        function displayTimeSeriesChart(forecastData) {
-            const container = document.getElementById('forecastChart');
-            // This would typically integrate with your existing Chart.js setup
-            // For now, display as text or wait for base64 image
-            container.innerHTML = '<p class="text-gray-500">Time series forecast visualization loaded</p>';
+            } else {
+                container.innerHTML = '<p class="text-gray-500">No animation data available</p>';
+            }
         }
 
         // Helper function to display clustering results
-        function displayClusteringResults(clusteringData) {
+        function displayClusteringResults(clusterData) {
             const container = document.getElementById('spatialChart');
-            // Display clustering results
-            container.innerHTML = '<p class="text-gray-500">Spatial clustering analysis loaded</p>';
+            
+            if (Array.isArray(clusterData) && clusterData.length > 0) {
+                container.innerHTML = `
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-gray-800">Cluster Data (${clusterData.length} points)</h4>
+                        <div class="max-h-64 overflow-auto">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="px-2 py-1 text-left">Index</th>
+                                        <th class="px-2 py-1 text-left">Cluster Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${clusterData.slice(0, 10).map((cluster, index) => `
+                                        <tr class="border-t">
+                                            <td class="px-2 py-1">${index}</td>
+                                            <td class="px-2 py-1">${JSON.stringify(cluster)}</td>
+                                        </tr>
+                                    `).join('')}
+                                    ${clusterData.length > 10 ? `
+                                        <tr class="border-t">
+                                            <td colspan="2" class="px-2 py-1 text-center text-gray-500">
+                                                ... and ${clusterData.length - 10} more clusters
+                                            </td>
+                                        </tr>
+                                    ` : ''}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<p class="text-gray-500">No cluster data available</p>';
+            }
         }
 
         // Show/hide advanced loading indicator
@@ -851,7 +1206,6 @@ title: Historical
             const indicator = document.getElementById('advancedLoadingIndicator');
             indicator.classList.toggle('hidden', !show);
         }
-
         // Show advanced error message
         function showAdvancedError(message) {
             // You can reuse the existing error display or create a new one
