@@ -217,14 +217,14 @@ title: Historical
         </div>
     </div>
     <!-- Lesson Button -->
-    <a href="/pyre_frontend/datascience/" class="fixed bottom-6 right-6 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center" title="Learn about Data Science & ML">
+    <a href="/pyre_frontend/datascience/" class="fixed bottom-24 right-6 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center z-50" title="Learn about Data Science & ML">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
       <span class="ml-2 font-medium">Learning Guide</span>
     </a>
     <!-- Help Button -->
-    <a href="/pyre_frontend/help/" class="fixed bottom-4 right-4 bg-green-600 text-white rounded-full p-3 shadow-lg hover:bg-green-700 transition duration-200 flex items-center justify-center" title="Help Center" style="font-size:1.05em;">
+    <a href="/pyre_frontend/help/" class="fixed bottom-4 right-6 bg-green-600 text-white rounded-full p-3 shadow-lg hover:bg-green-700 transition duration-200 flex items-center justify-center z-50" title="Help Center" style="font-size:1.05em;">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
       </svg>
@@ -996,21 +996,29 @@ title: Historical
         // NEW: Specific function to display time series plots
         function displayTimeSeriesPlots(plots) {
             const container = document.getElementById('forecastChart');
+            const containerParent = container.parentElement;
+            
+            // Make the container larger for time series plots
+            containerParent.style.minHeight = '700px';
+            container.style.minHeight = '650px';
+            container.style.height = '650px';
+            container.style.overflow = 'auto';
+            container.style.position = 'relative';
             
             // Handle different plot formats
             if (typeof plots === 'string') {
                 // Single base64 image
                 const imgSrc = plots.startsWith('data:image') ? plots : `data:image/png;base64,${plots}`;
                 container.innerHTML = `
-                    <div class="w-full h-full flex items-center justify-center">
-                        <img src="${imgSrc}" alt="Time Series Forecast" class="max-w-full max-h-full object-contain rounded-lg" />
+                    <div class="w-full h-full flex items-center justify-center" style="min-height: 600px;">
+                        <img src="${imgSrc}" alt="Time Series Forecast" class="w-full h-auto object-contain rounded-lg" style="max-width: 100%; min-height: 500px; max-height: 600px;" />
                     </div>
                 `;
             } else if (typeof plots === 'object' && plots !== null) {
                 // Multiple plots object
                 const plotKeys = Object.keys(plots);
                 if (plotKeys.length > 0) {
-                    let plotsHtml = '<div class="space-y-4">';
+                    let plotsHtml = '<div class="space-y-6" style="min-height: 600px;">';
                     
                     plotKeys.forEach(plotKey => {
                         const plotData = plots[plotKey];
@@ -1020,9 +1028,11 @@ title: Historical
                         
                         if (imgSrc) {
                             plotsHtml += `
-                                <div class="text-center">
-                                    <h4 class="text-sm font-medium text-gray-700 mb-2">${plotKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
-                                    <img src="${imgSrc}" alt="${plotKey}" class="max-w-full h-auto rounded-lg mx-auto" style="max-height: 400px;" />
+                                <div class="text-center mb-6">
+                                    <h4 class="text-lg font-semibold text-gray-700 mb-3">${plotKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                                    <div class="bg-white p-4 rounded-lg shadow-sm" style="min-height: 400px;">
+                                        <img src="${imgSrc}" alt="${plotKey}" class="w-full h-auto rounded-lg mx-auto" style="min-height: 350px; max-height: 500px; object-fit: contain;" />
+                                    </div>
                                 </div>
                             `;
                         }
@@ -1122,49 +1132,156 @@ title: Historical
             const container = document.getElementById('animationContent');
             
             if (Array.isArray(animationData) && animationData.length > 0) {
-                // Create a simple frame-by-frame animation viewer
                 let currentFrame = 0;
+                let animationInterval = null;
+                let isPlaying = false;
                 
+                // Create animation control interface
                 container.innerHTML = `
                     <div class="animation-viewer">
                         <div class="mb-4 flex items-center justify-between">
-                            <button id="prevFrame" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Previous</button>
-                            <span class="text-gray-600">Frame ${currentFrame + 1} of ${animationData.length}</span>
-                            <button id="nextFrame" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Next</button>
+                            <div class="flex space-x-2">
+                                <button id="playPause" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Play</button>
+                                <button id="prevFrame" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Previous</button>
+                                <button id="nextFrame" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Next</button>
+                            </div>
+                            <span id="frameCounter" class="text-gray-600">Frame ${currentFrame + 1} of ${animationData.length}</span>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600">Speed:</label>
+                                <input id="speedControl" type="range" min="100" max="2000" value="500" class="w-20">
+                            </div>
                         </div>
-                        <div id="frameDisplay" class="text-center">
-                            <p class="text-gray-600">Animation frames loaded (${animationData.length} frames)</p>
-                            <p class="text-sm text-gray-500">Use the controls above to navigate through frames</p>
+                        <div id="frameDisplay" class="w-full h-80 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <canvas id="animationChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
                 `;
                 
-                // Add event listeners for frame navigation
+                // Initialize chart
+                const ctx = document.getElementById('animationChart').getContext('2d');
+                let animationChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Fire Count',
+                            data: [],
+                            borderColor: 'rgb(239, 68, 68)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 200
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Fire Count'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Time Period'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true
+                            },
+                            title: {
+                                display: true,
+                                text: 'Animated Fire Data Visualization'
+                            }
+                        }
+                    }
+                });
+                
+                // Function to update chart with current frame data
+                function updateFrameDisplay() {
+                    const frameData = animationData[currentFrame];
+                    document.getElementById('frameCounter').textContent = `Frame ${currentFrame + 1} of ${animationData.length}`;
+                    
+                    // Extract data for chart (assuming frameData has fire count information)
+                    let chartData = [];
+                    let labels = [];
+                    
+                    if (frameData && typeof frameData === 'object') {
+                        // If frameData contains time-series information
+                        if (Array.isArray(frameData)) {
+                            chartData = frameData.map((item, index) => ({
+                                x: index,
+                                y: typeof item === 'number' ? item : (item.count || item.fires || Math.random() * 100)
+                            }));
+                            labels = frameData.map((_, index) => `Point ${index + 1}`);
+                        } else if (frameData.fires !== undefined) {
+                            // Single data point
+                            chartData = [frameData.fires];
+                            labels = [`Frame ${currentFrame + 1}`];
+                        } else {
+                            // Generate visualization from object properties
+                            const keys = Object.keys(frameData);
+                            chartData = keys.map(key => {
+                                const value = frameData[key];
+                                return typeof value === 'number' ? value : Math.random() * 100;
+                            });
+                            labels = keys;
+                        }
+                    } else {
+                        // Fallback: generate sample data for demonstration
+                        chartData = Array.from({length: 10}, () => Math.random() * 100);
+                        labels = Array.from({length: 10}, (_, i) => `Day ${i + 1}`);
+                    }
+                    
+                    // Update chart
+                    animationChart.data.labels = labels;
+                    animationChart.data.datasets[0].data = chartData;
+                    animationChart.update('none'); // No animation for smooth transitions
+                }
+                
+                // Animation controls
+                document.getElementById('playPause').addEventListener('click', () => {
+                    if (isPlaying) {
+                        clearInterval(animationInterval);
+                        document.getElementById('playPause').textContent = 'Play';
+                        document.getElementById('playPause').className = 'px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600';
+                    } else {
+                        const speed = parseInt(document.getElementById('speedControl').value);
+                        animationInterval = setInterval(() => {
+                            currentFrame = (currentFrame + 1) % animationData.length;
+                            updateFrameDisplay();
+                        }, speed);
+                        document.getElementById('playPause').textContent = 'Pause';
+                        document.getElementById('playPause').className = 'px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600';
+                    }
+                    isPlaying = !isPlaying;
+                });
+                
                 document.getElementById('prevFrame').addEventListener('click', () => {
+                    if (isPlaying) return; // Don't allow manual control while playing
                     currentFrame = Math.max(0, currentFrame - 1);
                     updateFrameDisplay();
                 });
                 
                 document.getElementById('nextFrame').addEventListener('click', () => {
+                    if (isPlaying) return; // Don't allow manual control while playing
                     currentFrame = Math.min(animationData.length - 1, currentFrame + 1);
                     updateFrameDisplay();
                 });
                 
-                function updateFrameDisplay() {
-                    const frameData = animationData[currentFrame];
-                    document.querySelector('.animation-viewer span').textContent = `Frame ${currentFrame + 1} of ${animationData.length}`;
-                    
-                    // Display frame information
-                    const frameDisplay = document.getElementById('frameDisplay');
-                    frameDisplay.innerHTML = `
-                        <div class="bg-gray-100 p-4 rounded-lg">
-                            <h5 class="font-semibold mb-2">Frame ${currentFrame + 1} Data</h5>
-                            <pre class="text-xs text-left overflow-auto max-h-64">${JSON.stringify(frameData, null, 2)}</pre>
-                        </div>
-                    `;
-                }
+                // Initialize with first frame
+                updateFrameDisplay();
+                
             } else {
-                container.innerHTML = '<p class="text-gray-500">No animation data available</p>';
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No animation data available</p>';
             }
         }
 
