@@ -548,7 +548,7 @@ plt.show()
 Before diving into data analysis, it's crucial to ensure that your datasets are well-structured and designed for the intended operations. Poorly designed datasets can lead to inefficiencies, errors, and difficulties in testing.
 
 For example, the following issue highlights problems with improperly designed columns in a dataset:  
-[GitHub Issue #34: Example Results - Dataset Design Problems](https://github.com/SanPranav/QcommVNE_Frontend/issues/34)
+[GitHub Issue #34: Example Results - Dataset Design Problems](https://github.com/SanPranav/pyre_frontend/issues/34)
 
 We **highly recommend** reviewing and refining your datasets before creating a final cumulative set for testing. This step ensures that your data is clean, consistent, and optimized for analysis, reducing the risk of encountering issues during testing and implementation.
 

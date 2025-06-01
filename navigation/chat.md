@@ -69,6 +69,42 @@ permalink: /chat/
     </div>
 </div>
 
+<div class="help-float-btn">
+  <a href="/pyre_frontend/help/" title="Help Center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+    </svg>
+    <span class="ml-1 font-medium">Help</span>
+  </a>
+</div>
+<style>
+.help-float-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+}
+.help-float-btn a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #16a34a;
+  color: #fff !important;
+  border-radius: 9999px;
+  padding: 0.75rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  font-size: 1.05em;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.help-float-btn a:hover {
+  background: #15803d;
+}
+.help-float-btn svg {
+  margin-right: 0.5em;
+}
+</style>
+
 <style>
     table, th, td {
         border: 1px solid black;
@@ -503,4 +539,3 @@ permalink: /chat/
             }    
     }
 </script>
-

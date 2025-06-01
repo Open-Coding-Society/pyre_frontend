@@ -25,6 +25,19 @@ title: Earthquakes
         .leaflet-container {
             background-color: #1f2937;
         }
+        /* Hide zoom controls */
+        .leaflet-control-zoom {
+            display: none !important;
+        }
+        /* Adjust attribution z-index to prevent overlap with popups */
+        .leaflet-control-attribution {
+            z-index: 400 !important;
+        }
+        /* Ensure popups appear above attribution */
+        .help-overlay, 
+        .prediction-overlay {
+            z-index: 1000;
+        }
         .map-marker {
             display: flex;
             align-items: center;
@@ -44,6 +57,18 @@ title: Earthquakes
             border: 1px solid #374151;
             border-radius: 0.375rem;
             padding: 0.5rem;
+        }
+        .earthquake-popup h3,
+        .earthquake-popup p {
+            color: white !important;
+        }
+        .earthquake-popup p span {
+            color: white !important;
+        }
+        .earthquake-popup p span.magnitude-high,
+        .earthquake-popup p span.magnitude-medium,
+        .earthquake-popup p span.magnitude-low {
+            font-weight: bold;
         }
         .magnitude-high { color: #ef4444; }
         .magnitude-medium { color: #f97316; }
@@ -154,12 +179,32 @@ title: Earthquakes
             padding: 1rem;
             margin-bottom: 1rem;
         }
+        .prediction-form label {
+            color: white !important;
+        }
+        .prediction-form input {
+            background-color: #1f2937;
+            border: 1px solid #4b5563;
+            color: white;
+        }
+        .prediction-form .text-sm {
+            color: white !important;
+        }
         .prediction-result {
             background-color: #1f2937;
             border: 1px solid #3b82f6;
             border-radius: 0.5rem;
             padding: 1rem;
             margin-top: 1rem;
+        }
+        .prediction-result h3 {
+            color: white !important;
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .prediction-result p:not(.text-blue-400) {
+            color: white !important;
         }
     </style>
 </head>
@@ -274,7 +319,7 @@ title: Earthquakes
     <div class="flex h-screen overflow-hidden">
         <!-- Left sidebar -->
         <div class="w-72 bg-gray-900/50 border-r border-gray-800 p-4 overflow-y-auto">
-            <h2 class="text-lg font-medium mb-4">Analytics Overview</h2>
+            <h2 class="text-lg font-medium mb-4 text-white">Analytics Overview</h2>
             <div class="mb-6">
                 <div class="text-sm text-gray-400 mb-1">Total Seismic Events</div>
                 <div class="text-4xl font-bold" id="total-incidents">--</div>
@@ -367,64 +412,16 @@ title: Earthquakes
             
             <!-- Bottom toolbar -->
             <div class="bg-black border-t border-gray-800 py-3 px-6 flex justify-between items-center">
-                <div class="flex space-x-6">
-                    <button id="risk-analysis-btn" class="flex items-center text-gray-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
-                        </svg>
-                        Risk Analysis
-                    </button>
-                    <button id="alerts-btn" class="flex items-center text-gray-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10 2L3 7v11c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V7l-7-5z" />
-                        </svg>
-                        Alerts <span id="alert-count" class="ml-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full">0</span>
-                    </button>
-                </div>
+                <div class="flex space-x-6"></div>
                 <div class="flex items-center space-x-4">
                     <div class="text-sm text-gray-400">Last updated: <span id="last-updated">--</span></div>
-                    <button class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-1 rounded flex items-center text-sm" id="refresh-data">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                        </svg>
-                        Refresh Data
-                    </button>
-                    <button id="export-btn" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3 py-1 rounded flex items-center text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        Export Data
-                    </button>
                 </div>
             </div>
-        </div>
-        
-        <!-- Right sidebar - Earthquake Events Table -->
-        <div class="w-72 bg-gray-900/50 border-l border-gray-800 p-4 overflow-y-auto">
-            <div class="mb-4 flex justify-between items-center">
-                <h2 class="text-lg font-medium">Earthquake Events</h2>
-                <div class="text-xs text-gray-400 flex items-center">
-                    <span id="incident-count" class="mr-1">--</span> events
-                </div>
-            </div>
-            
-            <div class="overflow-y-auto max-h-full">
-                <table class="incidents-table text-sm">
-                    <thead>
-                        <tr>
-                            <th class="sticky top-0 z-10">Magnitude</th>
-                            <th class="sticky top-0 z-10">Depth</th>
-                            <th class="sticky top-0 z-10">Location</th>
-                        </tr>
-                    </thead>
-                    <tbody id="incidents-table-body">
-                        <tr class="animate-pulse">
-                            <td><div class="h-4 bg-gray-700 rounded w-16"></div></td>
-                            <td><div class="h-4 bg-gray-700 rounded w-12"></div></td>
-                            <td><div class="h-4 bg-gray-700 rounded w-20"></div></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- Hidden container for maintaining API data -->
+            <div style="display: none;">
+                <div id="incident-count">--</div>
+                <div id="incidents-table-body"></div>
             </div>
         </div>
     </div>
@@ -434,10 +431,18 @@ title: Earthquakes
         const pythonURI = 'http://127.0.0.1:8505';
         const API_ENDPOINTS = {
             predict: `${pythonURI}/api/earthquake/predict`,
-            records: `${pythonURI}/api/earthquake/records`,  // This is the main endpoint we should use
+            records: `${pythonURI}/api/earthquake/records`,
             record: `${pythonURI}/api/earthquake/record`,
             riskFactors: `${pythonURI}/api/earthquake/calculate-risk-factors`,
             restore: `${pythonURI}/api/earthquake/restore`
+        };
+
+        // California boundaries
+        const CA_BOUNDS = {
+            north: 42.0,
+            south: 32.5,
+            west: -124.4,
+            east: -114.1
         };
         
         // Global variables
@@ -485,15 +490,6 @@ title: Earthquakes
             // Prediction form
             document.getElementById('predict-btn').addEventListener('click', handlePrediction);
             
-            // Refresh data button
-            document.getElementById('refresh-data').addEventListener('click', loadEarthquakeData);
-            
-            // Risk analysis button
-            document.getElementById('risk-analysis-btn').addEventListener('click', calculateRiskFactors);
-            
-            // Export button
-            document.getElementById('export-btn').addEventListener('click', exportData);
-
             // Add record button
             document.getElementById('add-record-btn').addEventListener('click', handleAddRecord);
         }
@@ -503,13 +499,19 @@ title: Earthquakes
             try {
                 updateApiStatus('loading');
                 
-                const response = await fetch(API_ENDPOINTS.records);  // Use the records endpoint
+                const response = await fetch(API_ENDPOINTS.records);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                earthquakeData = Array.isArray(data) ? data : [data];
+                // Filter for California earthquakes only
+                earthquakeData = Array.isArray(data) ? data.filter(quake => 
+                    quake.latitude >= CA_BOUNDS.south && 
+                    quake.latitude <= CA_BOUNDS.north && 
+                    quake.longitude >= CA_BOUNDS.west && 
+                    quake.longitude <= CA_BOUNDS.east
+                ) : [];
                 
                 updateDashboard();
                 updateMap();
@@ -527,7 +529,7 @@ title: Earthquakes
         // Update dashboard with earthquake data
         function updateDashboard() {
             if (earthquakeData.length > 0) {
-                // Update total incidents
+                // Update total incidents (keeping this for API data consistency)
                 document.getElementById('total-incidents').textContent = earthquakeData.length;
                 document.getElementById('incident-count').textContent = earthquakeData.length;
 
@@ -570,7 +572,7 @@ title: Earthquakes
                 document.getElementById('current-magnitude').textContent = 
                     earthquakeData[0].magnitude.toFixed(1);
 
-                // Update incidents table
+                // Keep updating the hidden table body for API data consistency
                 const tableBody = document.getElementById('incidents-table-body');
                 tableBody.innerHTML = earthquakeData.map(quake => `
                     <tr>
@@ -637,52 +639,12 @@ title: Earthquakes
                 const predictionContent = document.getElementById('prediction-content');
                 predictionContent.innerHTML = `
                     <p class="text-lg font-bold text-blue-400 mb-2">Predicted Magnitude: ${result.predicted_magnitude.toFixed(2)}</p>
-                    <p class="text-sm text-gray-400">Confidence Score: ${(result.confidence_score * 100).toFixed(1)}%</p>
                 `;
                 predictionResult.style.display = 'block';
 
             } catch (error) {
                 console.error('Error making prediction:', error);
                 alert('Failed to make prediction. Please try again.');
-            }
-        }
-
-        // Calculate risk factors
-        async function calculateRiskFactors() {
-            if (!earthquakeData.length) return;
-
-            const latestEvent = earthquakeData[0];
-            const riskData = {
-                latitude: latestEvent.latitude,
-                longitude: latestEvent.longitude,
-                depth: latestEvent.depth,
-                previous_magnitude: latestEvent.previous_magnitude,
-                distance_to_fault: latestEvent.distance_to_fault
-            };
-
-            try {
-                const response = await fetch(API_ENDPOINTS.riskFactors, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(riskData)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                alert(`Risk Analysis Results:\n
-                    Seismic Intensity: ${result.seismic_intensity.toFixed(2)}\n
-                    Ground Acceleration: ${result.ground_acceleration.toFixed(2)} g\n
-                    Liquefaction Potential: ${(result.liquefaction_potential * 100).toFixed(1)}%`);
-
-            } catch (error) {
-                console.error('Error calculating risk factors:', error);
-                alert('Failed to calculate risk factors. Please try again.');
             }
         }
 
@@ -722,32 +684,6 @@ title: Earthquakes
             }
         }
 
-        // Export data
-        async function exportData() {
-            try {
-                const response = await fetch(API_ENDPOINTS.records);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                const dataStr = JSON.stringify(data, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = window.URL.createObjectURL(dataBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `earthquake_data_${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-            } catch (error) {
-                console.error('Error exporting data:', error);
-                alert('Failed to export data. Please try again.');
-            }
-        }
-
         // Update map with markers
         function updateMap() {
             // Clear existing markers
@@ -771,11 +707,11 @@ title: Earthquakes
                         <div class="earthquake-popup">
                             <h3 class="font-bold mb-2">Earthquake Details</h3>
                             <p>Magnitude: <span class="${getMagnitudeClass(magnitude)}">${magnitude.toFixed(1)}</span></p>
-                            <p>Depth: ${quake.depth} km</p>
-                            <p>Location: ${quake.latitude.toFixed(4)}, ${quake.longitude.toFixed(4)}</p>
-                            <p>Time of Day: ${quake.time_of_day}:00</p>
-                            <p>Soil Type: ${quake.soil_type}</p>
-                            <p>Plate Boundary: ${quake.plate_boundary_type}</p>
+                            <p>Depth: <span>${quake.depth} km</span></p>
+                            <p>Location: <span>${quake.latitude.toFixed(4)}, ${quake.longitude.toFixed(4)}</span></p>
+                            <p>Time of Day: <span>${quake.time_of_day}:00</span></p>
+                            <p>Soil Type: <span>${quake.soil_type}</span></p>
+                            <p>Plate Boundary: <span>${quake.plate_boundary_type}</span></p>
                         </div>
                     `);
 
@@ -790,5 +726,11 @@ title: Earthquakes
             }
         }
     </script>
+    <a href="/pyre_frontend/help/" class="fixed bottom-4 right-4 bg-green-600 text-white rounded-full p-3 shadow-lg hover:bg-green-700 transition duration-200 flex items-center justify-center" title="Help Center" style="font-size:1.05em;">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+      </svg>
+      <span class="ml-1 font-medium">Help</span>
+    </a>
 </body>
 </html>
