@@ -1,5 +1,5 @@
 ---
-layout: tailwind 
+layout: base_chat
 title: Statistics
 search_exclude: true
 permalink: /stats/
