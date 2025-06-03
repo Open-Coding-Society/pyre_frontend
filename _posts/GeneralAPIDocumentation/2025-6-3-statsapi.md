@@ -1,0 +1,407 @@
+---
+layout: post 
+search_exclude: false
+show_reading_time: false
+permalink: /StatsAPI
+title: Stats API Documentation
+categories: [GeneralAPIDocumentation]
+---
+'
+# Fire Statistics API Documentation
+
+## Overview
+
+The Fire Statistics API provides real-time access to wildfire statistics from the National Interagency Fire Center (NIFC). It scrapes data from official NIFC statistics pages and returns structured JSON responses containing historical fire data.
+
+## Technical Architecture
+
+### System Design Diagram
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Client App    │    │  Fire Stats API │    │   NIFC Website  │
+│                 │    │                 │    │                 │
+│  - Web App      │───▶│  - Flask/REST   │───▶│  - HTML Tables  │
+│  - Mobile App   │    │  - Web Scraper  │    │  - Statistics   │
+│  - Dashboard    │    │  - JSON Resp.   │    │  - Data Source  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Component Architecture
+
+```
+Fire Statistics API
+├── Flask Application Layer
+│   ├── Blueprint: stats_api
+│   ├── URL Prefix: /api/stats
+│   └── Flask-RESTful Integration
+├── Resource Classes
+│   ├── _HumanCaused
+│   └── _TotalWildfires
+├── Data Processing Layer
+│   ├── HTTP Requests (requests library)
+│   ├── HTML Parsing (BeautifulSoup)
+│   └── Data Extraction & Transformation
+└── Response Layer
+    ├── JSON Serialization
+    ├── Error Handling
+    └── HTTP Status Codes
+```
+
+## API Endpoints
+
+### Base URL
+```
+/api/stats
+```
+
+### 1. Human-Caused Fire Statistics
+
+**Endpoint:** `GET /api/stats/human_caused`
+
+**Description:** Retrieves historical data on human-caused wildfires, including number of fires and acres burned per year.
+
+**Request:**
+```http
+GET /api/stats/human_caused HTTP/1.1
+Host: your-domain.com
+Accept: application/json
+```
+
+**Response Schema:**
+```json
+{
+  "source": "string",
+  "data": [
+    {
+      "year": "string",
+      "human_caused_fires": "string",
+      "acres_burned": "string"
+    }
+  ]
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "source": "https://www.nifc.gov/fire-information/statistics/human-caused",
+  "data": [
+    {
+      "year": "2023",
+      "human_caused_fires": "45,000",
+      "acres_burned": "2,100,000"
+    },
+    {
+      "year": "2022",
+      "human_caused_fires": "47,500",
+      "acres_burned": "1,950,000"
+    }
+  ]
+}
+```
+
+**Error Response (500):**
+```json
+{
+  "error": "Failed to fetch human-caused fire data",
+  "message": "Connection timeout"
+}
+```
+
+### 2. Total Wildfire Statistics
+
+**Endpoint:** `GET /api/stats/total_wildfires`
+
+**Description:** Retrieves comprehensive wildfire statistics including total number of fires and total acres burned per year.
+
+**Request:**
+```http
+GET /api/stats/total_wildfires HTTP/1.1
+Host: your-domain.com
+Accept: application/json
+```
+
+**Response Schema:**
+```json
+{
+  "source": "string",
+  "data": [
+    {
+      "year": "string",
+      "total_fires": "string",
+      "total_acres": "string"
+    }
+  ]
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "source": "https://www.nifc.gov/fire-information/statistics/wildfires",
+  "data": [
+    {
+      "year": "2023",
+      "total_fires": "68,500",
+      "total_acres": "4,200,000"
+    },
+    {
+      "year": "2022",
+      "total_fires": "71,200",
+      "total_acres": "3,800,000"
+    }
+  ]
+}
+```
+
+**Error Response (500):**
+```json
+{
+  "error": "Failed to fetch wildfire stats",
+  "message": "HTML parsing failed"
+}
+```
+
+## Technical Implementation
+
+### Dependencies
+
+```python
+# Core Framework
+from flask import Blueprint, request, jsonify
+from flask_restful import Api, Resource
+
+# HTTP Client & Web Scraping
+import requests
+from bs4 import BeautifulSoup  # Note: Missing import in original code
+```
+
+### Code Structure
+
+```python
+# Blueprint Configuration
+stats_api = Blueprint('stats_api', __name__, url_prefix='/api/stats')
+api = Api(stats_api)
+
+# Resource Classes
+class FireStatsApi:
+    class _HumanCaused(Resource):
+        # Handles human-caused fire statistics
+        
+    class _TotalWildfires(Resource):
+        # Handles total wildfire statistics
+
+# Endpoint Registration
+api.add_resource(FireStatsApi._HumanCaused, '/human_caused')
+api.add_resource(FireStatsApi._TotalWildfires, '/total_wildfires')
+```
+
+### Data Flow
+
+```
+1. Client Request
+   ↓
+2. Flask Route Handler
+   ↓
+3. HTTP Request to NIFC
+   ↓
+4. HTML Response Parsing
+   ↓
+5. Data Extraction & Processing
+   ↓
+6. JSON Response Generation
+   ↓
+7. Client Response
+```
+
+## Error Handling
+
+### HTTP Status Codes
+
+| Code | Description | Scenario |
+|------|-------------|----------|
+| 200  | Success     | Data retrieved successfully |
+| 500  | Server Error| Web scraping failure, network issues, parsing errors |
+
+### Error Response Format
+
+```json
+{
+  "error": "Brief error description",
+  "message": "Detailed error message"
+}
+```
+
+## Rate Limiting & Best Practices
+
+### Recommendations
+
+1. **Caching**: Implement Redis/Memcached for response caching
+2. **Rate Limiting**: Add request throttling to prevent NIFC server overload
+3. **Retry Logic**: Implement exponential backoff for failed requests
+4. **Monitoring**: Add logging and health checks
+5. **Data Validation**: Validate scraped data before returning
+
+### Sample Caching Implementation
+
+```python
+from flask_caching import Cache
+
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+@cache.cached(timeout=3600)  # Cache for 1 hour
+def get_human_caused_stats():
+    # Implementation here
+    pass
+```
+
+## Frontend Integration
+
+### JavaScript/React Example
+
+```javascript
+// Fetch human-caused fire data
+const fetchHumanCausedStats = async () => {
+  try {
+    const response = await fetch('/api/stats/human_caused');
+    const data = await response.json();
+    
+    if (response.ok) {
+      setFireStats(data.data);
+    } else {
+      console.error('API Error:', data.error);
+    }
+  } catch (error) {
+    console.error('Network Error:', error);
+  }
+};
+
+// Usage in React component
+useEffect(() => {
+  fetchHumanCausedStats();
+}, []);
+```
+
+### Python Client Example
+
+```python
+import requests
+
+def get_wildfire_stats():
+    base_url = "http://your-api-domain.com/api/stats"
+    
+    try:
+        # Get human-caused stats
+        human_response = requests.get(f"{base_url}/human_caused")
+        human_data = human_response.json()
+        
+        # Get total wildfire stats
+        total_response = requests.get(f"{base_url}/total_wildfires")
+        total_data = total_response.json()
+        
+        return {
+            "human_caused": human_data,
+            "total_wildfires": total_data
+        }
+        
+    except requests.RequestException as e:
+        print(f"API request failed: {e}")
+        return None
+```
+
+## Security Considerations
+
+### Input Validation
+- Validate all scraped data before processing
+- Sanitize HTML content to prevent XSS
+
+### Rate Limiting
+- Implement per-IP rate limiting
+- Monitor requests to external NIFC endpoints
+
+### Error Information
+- Avoid exposing internal system details in error messages
+- Log detailed errors server-side for debugging
+
+## Deployment & Infrastructure
+
+### Docker Configuration
+
+```dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+EXPOSE 5000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+```
+
+### Requirements
+
+```txt
+Flask==2.3.2
+Flask-RESTful==0.3.10
+requests==2.31.0
+beautifulsoup4==4.12.2
+gunicorn==21.2.0
+```
+
+## Testing
+
+### Unit Test Example
+
+```python
+import unittest
+from unittest.mock import patch, Mock
+from your_app import FireStatsApi
+
+class TestFireStatsApi(unittest.TestCase):
+    
+    @patch('requests.get')
+    def test_human_caused_success(self, mock_get):
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.content = '<table><tr><td>2023</td><td>45000</td><td>2100000</td></tr></table>'
+        mock_get.return_value = mock_response
+        
+        # Test the endpoint
+        resource = FireStatsApi._HumanCaused()
+        result = resource.get()
+        
+        self.assertIn('data', result)
+        self.assertEqual(len(result['data']), 1)
+```
+
+## Monitoring & Analytics
+
+### Key Metrics
+- Request volume per endpoint
+- Response times
+- Error rates
+- Data freshness from NIFC sources
+
+### Health Check Endpoint
+
+```python
+@app.route('/health')
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
+    })
+```
+
+## Future Enhancements
+
+1. **Data Persistence**: Store historical data in database
+2. **Real-time Updates**: WebSocket support for live data
+3. **Additional Endpoints**: More specific fire statistics
+4. **Data Visualization**: Built-in charting capabilities
+5. **API Versioning**: Support multiple API versions
+6. **Authentication**: API key-based access control
