@@ -84,7 +84,7 @@ This project is split across two repositories:
 ### Frontend Setup
 1. **Clone the frontend repository:**
    ```
-   git clone https://github.com/examplelink.git
+   git clone https://github.com/Open-Coding-Society/pyre_frontend.git
    ```
 
 2. **Use the Makefile to set up and run:**
