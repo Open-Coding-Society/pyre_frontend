@@ -133,17 +133,17 @@ title: Historical
         <!-- Fire Count by Day -->
         <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Daily Fire Count</h2>
-        <canvas id="fireCountChart" class="w-full h-64"></canvas>
+        <canvas id="fireCountChart" class="w-full h-48"></canvas>
         </div>
         <!-- Brightness Distribution -->
         <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Brightness Distribution</h2>
-        <canvas id="brightnessChart" class="w-full h-64"></canvas>
+        <canvas id="brightnessChart" class="w-full h-48"></canvas>
         </div>
         <!-- FRP vs Brightness Correlation -->
         <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">FRP vs Brightness Correlation</h2>
-        <canvas id="correlationChart" class="w-full h-64"></canvas>
+        <canvas id="correlationChart" class="w-full h-48"></canvas>
         </div>
     </div>
     <!-- Advanced Regression Analysis -->
@@ -283,7 +283,8 @@ title: Historical
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
             plugins: {
             legend: {
                 display: false
@@ -313,7 +314,8 @@ title: Historical
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
             plugins: {
             legend: {
                 display: false
@@ -342,7 +344,8 @@ title: Historical
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
             scales: {
             x: {
                 title: {
@@ -595,7 +598,7 @@ title: Historical
     function hideError() {
         document.getElementById('errorMessage').classList.add('hidden');
     }
-    
+
     // ----------------------------------------------------------------
     // ADVANCED ML MODEL CALL & DISPLAY
     // ----------------------------------------------------------------
