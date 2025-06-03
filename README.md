@@ -61,7 +61,7 @@ This project is split across two repositories:
 ### Backend Setup
 1. **Clone the backend repository:**
    ```
-   git clone https://github.com/your-team/pyre-backend.git
+   git clone https://github.com/Open-Coding-Society/pyre_frontend.git
    cd pyre-backend
    ```
 
