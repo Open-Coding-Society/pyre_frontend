@@ -18,9 +18,8 @@ plugins:
 header_pages:
   - navigation/about.md
   - navigation/dashboard.md
-  - navigation/evac.md
+  - navigation/tools.md
   - navigation/crowd.md
   - navigation/historical.md
   - navigation/stats.md
-  - navigation/risk.md
   - navigation/search.md
