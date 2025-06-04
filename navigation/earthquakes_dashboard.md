@@ -3,8 +3,8 @@ layout: base_chat
 search_exclude: true
 hide: true
 show_reading_time: false
-permalink: /earthquakes/
-title: Earthquakes
+permalink: /earthquakesdashboard/
+title: Earthquake Dashboard
 ---
 
 <html lang="en">

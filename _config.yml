@@ -18,7 +18,6 @@ plugins:
 header_pages:
   - navigation/about.md
   - navigation/dashboard.md
-  - navigation/earthquakes.md
   - navigation/evac.md
   - navigation/crowd.md
   - navigation/notification.md
