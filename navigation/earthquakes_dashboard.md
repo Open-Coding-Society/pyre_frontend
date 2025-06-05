@@ -428,7 +428,8 @@ title: Earthquake Dashboard
 
     <script>
         // Configuration
-        import { pythonURI, fetchOptions } from '/pyre_frontend/assets/js/api/config.js';
+        const pythonURI = 'http://127.0.0.1:8505';
+
         const API_ENDPOINTS = {
             predict: `${pythonURI}/api/earthquake/predict`,
             records: `${pythonURI}/api/earthquake/records`,
